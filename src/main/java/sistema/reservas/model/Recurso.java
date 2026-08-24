@@ -1,0 +1,48 @@
+package sistema.reservas.model;
+
+public class Recurso {
+    private int id;
+    private String nombre;
+    private String descripcion;
+    private CategoriaRecurso categoria;
+
+    public Recurso(int id,String nombre,String descripcion, CategoriaRecurso categoria){
+        this.id=id;
+        this.nombre= nombre;
+        this.descripcion= descripcion;
+        this.categoria=categoria;
+
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public CategoriaRecurso getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(CategoriaRecurso categoria) {
+        this.categoria = categoria;
+    }
+}
