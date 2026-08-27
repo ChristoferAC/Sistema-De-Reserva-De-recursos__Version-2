@@ -45,4 +45,9 @@ public class Recurso {
     public void setCategoria(CategoriaRecurso categoria) {
         this.categoria = categoria;
     }
+
+    @Override
+    public String toString() {
+        return "Recurso{" + "id='" + id + '\'' + ", categoria=" + categoria + ", descripcion='" + descripcion + '\'' + '}';
+    }
 }
