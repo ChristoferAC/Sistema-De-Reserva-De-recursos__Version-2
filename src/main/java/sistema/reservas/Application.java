@@ -1,11 +1,13 @@
 package sistema.reservas;
 
+import sistema.reservas.view.MainWindow;
+
+import javax.swing.SwingUtilities;
+
 public class Application {
-    public void main (String[] args){
 
-        System.out.println("Sistema de reservas");
+    public static void main(String[] args) {
 
-        //Comentario de prueba
-
+        SwingUtilities.invokeLater(() -> new MainWindow().setVisible(true));
     }
 }
