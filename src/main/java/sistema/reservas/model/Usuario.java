@@ -1,17 +1,19 @@
 package sistema.reservas.model;
 
-public class Usuario {
+public abstract class Usuario {
     private int id;
     private String nombre;
     private String username;
     private String password;
 
-    public Usuario(int id,String nombre,String username,String password){
-        this.id=id;
-        this.nombre=nombre;
-        this.username=username;
-        this.password=password;
+    public Usuario(int id, String nombre, String username, String password) {
+        this.id = id;
+        this.nombre = nombre;
+        this.username = username;
+        this.password = password;
     }
+
+    public abstract String getRol();
 
     public int getId() {
         return id;
@@ -44,5 +46,5 @@ public class Usuario {
     public void setPassword(String password) {
         this.password = password;
     }
-
+}
 }
