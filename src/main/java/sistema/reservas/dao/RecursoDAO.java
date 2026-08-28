@@ -19,5 +19,5 @@ public interface RecursoDAO {
 
 
 /*
-    *** Este se modifica despues con el XML ***
+    *** Este se conecta despues con el XML compartido ***
 */
