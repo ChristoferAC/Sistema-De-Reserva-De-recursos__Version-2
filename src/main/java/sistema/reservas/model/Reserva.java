@@ -1,90 +1,70 @@
 package sistema.reservas.model;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 
 public class Reserva {
-
     private int id;
-    private Usuario usuario;
-    private String descripcion;
+    private Funcionario funcionario;
+    private String actividad;
     private LocalDate fecha;
     private LocalTime horaInicio;
     private LocalTime horaFin;
-    private List<Recurso> recursos;
 
-    public Reserva(
-            int id,
-            Usuario usuario,
-            String descripcion,
-            LocalDate fecha,
-            LocalTime horaInicio,
-            LocalTime horaFin,
-            List<Recurso> recursos) {
+    private List<CategoriaRecurso> categoriasSolicitadas;
+    private List<Recurso> recursosAsignados;
 
+    public Reserva() {
+        categoriasSolicitadas = new ArrayList<>();
+        recursosAsignados = new ArrayList<>();
+    }
+
+    public Reserva(int id, Funcionario funcionario, String actividad, LocalDate fecha, LocalTime horaInicio, LocalTime horaFin) {
         this.id = id;
-        this.usuario = usuario;
-        this.descripcion = descripcion;
+        this.funcionario = funcionario;
+        this.actividad = actividad;
         this.fecha = fecha;
         this.horaInicio = horaInicio;
         this.horaFin = horaFin;
-        this.recursos = recursos;
+
+        this.categoriasSolicitadas = new ArrayList<>();
+        this.recursosAsignados = new ArrayList<>();
     }
 
-    public int getId() {
-        return id;
-    }
+    public int getId() { return id;}
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    public void setId(int id) { this.id = id;}
 
-    public Usuario getUsuario() {
-        return usuario;
-    }
+    public Funcionario getFuncionario() { return funcionario;}
 
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
+    public void setFuncionario(Funcionario funcionario) { this.funcionario = funcionario;}
 
-    public String getDescripcion() {
-        return descripcion;
-    }
+    public String getActividad() {return actividad;}
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
+    public void setActividad(String actividad) { this.actividad = actividad;}
 
-    public LocalDate getFecha() {
-        return fecha;
-    }
+    public LocalDate getFecha() { return fecha;}
 
-    public void setFecha(LocalDate fecha) {
-        this.fecha = fecha;
-    }
+    public void setFecha(LocalDate fecha) { this.fecha = fecha;}
 
-    public LocalTime getHoraInicio() {
-        return horaInicio;
-    }
+    public LocalTime getHoraInicio() { return horaInicio;}
 
-    public void setHoraInicio(LocalTime horaInicio) {
-        this.horaInicio = horaInicio;
-    }
+    public void setHoraInicio(LocalTime horaInicio) { this.horaInicio = horaInicio;}
 
-    public LocalTime getHoraFin() {
-        return horaFin;
-    }
+    public LocalTime getHoraFin() { return horaFin;}
 
-    public void setHoraFin(LocalTime horaFin) {
-        this.horaFin = horaFin;
-    }
+    public void setHoraFin(LocalTime horaFin) { this.horaFin = horaFin;}
 
-    public List<Recurso> getRecursos() {
-        return recursos;
-    }
+    public List<CategoriaRecurso> getCategoriasSolicitadas() { return categoriasSolicitadas;}
 
-    public void setRecursos(List<Recurso> recursos) {
-        this.recursos = recursos;
-    }
+    public List<Recurso> getRecursosAsignados() { return recursosAsignados;}
+
+    public void agregarCategoria(CategoriaRecurso categoria) {categoriasSolicitadas.add(categoria);}
+
+    public void agregarRecurso(Recurso recurso) {recursosAsignados.add(recurso);}
+
+    public void limpiarRecursosAsignados() {recursosAsignados.clear();}
 }

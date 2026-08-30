@@ -1,12 +1,12 @@
 package sistema.reservas.model;
 
 public class Recurso {
-    private int id;
+    private String id;
     private String nombre;
     private String descripcion;
     private CategoriaRecurso categoria;
 
-    public Recurso(int id,String nombre,String descripcion, CategoriaRecurso categoria){
+    public Recurso(String id,String nombre,String descripcion, CategoriaRecurso categoria){
         this.id=id;
         this.nombre= nombre;
         this.descripcion= descripcion;
@@ -14,11 +14,11 @@ public class Recurso {
 
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -44,5 +44,10 @@ public class Recurso {
 
     public void setCategoria(CategoriaRecurso categoria) {
         this.categoria = categoria;
+    }
+
+    @Override
+    public String toString() {
+        return "Recurso{" + "id='" + id + '\'' + ", categoria=" + categoria + ", descripcion='" + descripcion + '\'' + '}';
     }
 }
