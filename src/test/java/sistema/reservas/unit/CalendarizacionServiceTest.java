@@ -28,7 +28,7 @@ class CalendarizacionServiceTest {
         Recurso laptop2 = new Recurso("45238", "Laptop #45238", "Laptop windows 11", categoriaLaptop);
         List<Recurso> recursos = List.of(laptop1, laptop2);
 
-        Funcionario juan = new Funcionario(111, "Juan Perez", "111", "111");
+        Funcionario juan = new Funcionario(111, "Juan Perez", "111", "111", "0000-0000");
         Reserva reserva = new Reserva(1, juan, "Sesion de Junta Directiva",
                 LocalDate.of(2026, 8, 5), LocalTime.of(9, 0), LocalTime.of(11, 0));
         reserva.agregarRecurso(laptop1);
