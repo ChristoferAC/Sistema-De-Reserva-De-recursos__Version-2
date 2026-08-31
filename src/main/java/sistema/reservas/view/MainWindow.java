@@ -1,5 +1,7 @@
 package sistema.reservas.view;
 
+import sistema.reservas.model.Usuario;
+
 import javax.swing.*;
 
 public class MainWindow extends JFrame {
@@ -14,7 +16,12 @@ public class MainWindow extends JFrame {
     public final ActividadPanel actividadPanel;
     public final EstadisticaPanel estadisticaPanel;
 
+    /** Mantiene compatibilidad si algo todavia crea MainWindow sin usuario. */
     public MainWindow() {
+        this(null);
+    }
+
+    public MainWindow(Usuario usuarioActual) {
         super("Sistema de Reserva de Recursos");
 
         funcionarioPanel = new FuncionarioPanel();
@@ -25,9 +32,21 @@ public class MainWindow extends JFrame {
         actividadPanel = new ActividadPanel();
         estadisticaPanel = new EstadisticaPanel();
 
+        boolean esAdministrador = usuarioActual != null && "ADMIN".equals(usuarioActual.getRol());
+
         tabbedPane = new JTabbedPane();
-        tabbedPane.addTab("Funcionarios", funcionarioPanel);           // I1
-        tabbedPane.addTab("Categorias", categoriaPanel);               // I1
+
+        // Segun el enunciado: Funcionarios y Categorias solo las puede
+        // usar un Administrador. Si no lo es, esas pestanas ni se crean.
+        if (esAdministrador) {
+            tabbedPane.addTab("Funcionarios", funcionarioPanel);           // I1 - solo Administrador
+            tabbedPane.addTab("Categorias", categoriaPanel);               // I1 - solo Administrador
+        }
+
+        // TODO (Integrante 2): el enunciado tambien restringe por rol
+        // "Lista de recursos" (solo Administrador, funcionalidad 5) y
+        // "Reservas" (solo Funcionario, funcionalidad 2). Aplicar el mismo
+        // patron aqui cuando se conecte RecursoPanel/ReservaPanel.
         tabbedPane.addTab("Recursos", recursoPanel);                   // I2
         tabbedPane.addTab("Reservas", reservaPanel);                   // I2
         tabbedPane.addTab("Calendarizacion", calendarizacionPanel);    // I3
