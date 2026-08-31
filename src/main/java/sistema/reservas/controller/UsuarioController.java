@@ -2,8 +2,11 @@ package sistema.reservas.controller;
 
 import sistema.reservas.model.Usuario;
 import sistema.reservas.service.UsuarioService;
+import sistema.reservas.view.CambiarClaveView;
 import sistema.reservas.view.LoginView;
 
+import javax.swing.*;
+import java.awt.*;
 import java.util.function.Consumer;
 
 public class UsuarioController {
@@ -19,6 +22,7 @@ public class UsuarioController {
         this.onLoginExitoso = onLoginExitoso;
 
         this.view.getBtnIngresar().addActionListener(e -> intentarLogin());
+        this.view.getBtnCambiar().addActionListener(e -> abrirCambiarClave());
     }
 
     private void intentarLogin() {
@@ -34,5 +38,44 @@ public class UsuarioController {
 
         view.mostrarMensaje(" ");
         onLoginExitoso.accept(usuario);
+    }
+
+    private void abrirCambiarClave() {
+        String username = view.getUsuario();
+        if (username == null || username.isBlank()) {
+            view.mostrarMensaje("Ingrese su usuario antes de cambiar la clave.");
+            return;
+        }
+
+        Usuario usuario = usuarioService.login(username, new String(view.getPassword()));
+        if (usuario == null) {
+            view.mostrarMensaje("Ingrese su usuario y clave actual antes de cambiarla.");
+            return;
+        }
+
+        Frame owner = (Frame) SwingUtilities.getWindowAncestor(view);
+        CambiarClaveView dialog = new CambiarClaveView(owner);
+
+        dialog.getBtnConfirmar().addActionListener(e -> {
+            String claveActual = new String(dialog.getClaveActual());
+            String claveNueva = new String(dialog.getClaveNueva());
+            String claveConfirmar = new String(dialog.getClaveNuevaConfirmar());
+
+            if (!claveNueva.equals(claveConfirmar)) {
+                dialog.mostrarMensaje("Las claves nuevas no coinciden.");
+                return;
+            }
+
+            try {
+                usuarioService.cambiarClave(usuario, claveActual, claveNueva);
+                dialog.mostrarMensaje(" ");
+                JOptionPane.showMessageDialog(dialog, "Clave actualizada correctamente.");
+                dialog.dispose();
+            } catch (IllegalArgumentException ex) {
+                dialog.mostrarMensaje(ex.getMessage());
+            }
+        });
+
+        dialog.setVisible(true);
     }
 }

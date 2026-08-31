@@ -47,4 +47,3 @@ public abstract class Usuario {
         this.password = password;
     }
 }
-}
