@@ -216,7 +216,7 @@ public class ReservaService {
     }
 
     private void asignarRecursosDisponibles(Reserva reserva, int idReservaExcluida) {
-        List<Reserva> reservasDelDia = reservaDAO.listarPorFecha(reserva.getFecha().toString());
+        /*List<Reserva> reservasDelDia = reservaDAO.listarPorFecha(reserva.getFecha().toString());
 
         List<Recurso> recursosAsignados = new ArrayList<>();
 
@@ -236,6 +236,32 @@ public class ReservaService {
             if (!recursoAsignado) {
                 throw new IllegalArgumentException("No hay recursos disponibles para la categoría: " + categoria.getNombre());
             }
+        } */
+
+        List<Reserva> reservasDelDia = reservaDAO.listarPorFecha(reserva.getFecha().toString());
+
+        List<Recurso> nuevosRecursos = new ArrayList<>();
+
+        for (CategoriaRecurso categoria : reserva.getCategoriasSolicitadas()) {
+
+            List<Recurso> recursos = recursoDAO.listarPorCategoria(categoria.getId());
+
+            boolean recursoEncontrado = false;
+
+            for (Recurso recurso : recursos) {
+                if (recursoDisponible(recurso, reserva, reservasDelDia, idReservaExcluida)) {
+                    nuevosRecursos.add(recurso);
+                    recursoEncontrado = true;
+                    break;
+                }
+            }
+            if (!recursoEncontrado) {
+                throw new IllegalArgumentException("No hay recursos disponibles para la categoría: " + categoria.getNombre());
+            }
+        }
+        reserva.limpiarRecursosAsignados();
+        for (Recurso recurso : nuevosRecursos) {
+            reserva.agregarRecurso(recurso);
         }
     }
 
@@ -270,6 +296,10 @@ public class ReservaService {
     }
 
     private boolean haySolapamiento(Reserva reserva1, Reserva reserva2) {
+        /*if (reserva1.getFecha() == null || reserva2.getFecha() == null) {
+            return false;
+        }*/
+
         if (!reserva1.getFecha().equals(reserva2.getFecha())) {
             return false;
         }
