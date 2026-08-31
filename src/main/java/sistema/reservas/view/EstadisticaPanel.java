@@ -3,14 +3,7 @@ package sistema.reservas.view;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * Pestaña de Estadísticas. Responsable: Integrante 3.
- *
- * Estructura prevista (a implementar en tu etapa):
- *  - Filtros: fecha desde / fecha hasta / tipo (recursos o actividades).
- *  - Área central: gráfico de barras (cantidad por categoría o por semana).
- * Por ahora solo se deja el esqueleto visual con placeholders.
- */
+
 public class EstadisticaPanel extends JPanel {
 
     private JTextField txtFechaDesde;
