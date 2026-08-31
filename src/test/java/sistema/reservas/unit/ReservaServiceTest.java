@@ -58,7 +58,8 @@ class ReservaServiceTest {
         recursoDAO.guardar(laptop2);
         recursoDAO.guardar(proyector1);
 
-        funcionario = new Funcionario(111, "Juan Perez", "111", "111");
+        funcionario = new Funcionario(111, "Juan Perez",
+                "111", "111","1");
     }
 
 
