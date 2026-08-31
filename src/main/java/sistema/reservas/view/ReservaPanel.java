@@ -25,6 +25,7 @@ public class ReservaPanel extends JPanel {
     public ReservaPanel() {
         super(new BorderLayout(10, 10));
         construirInterfaz();
+        configurarEventos();
     }
 
     private void construirInterfaz() {
@@ -200,6 +201,127 @@ public class ReservaPanel extends JPanel {
         panel.add(new JScrollPane(tablaReservas), BorderLayout.CENTER);
         return panel;
     }
+    private void configurarEventos() {
+        btnNueva.addActionListener(e -> limpiarFormulario());
+
+        btnLimpiar.addActionListener(e -> limpiarFormulario());
+
+        btnCancelar.addActionListener(e -> cancelarReservaVisual());
+
+        tablaReservas.getSelectionModel().addListSelectionListener(e -> {
+            if (e.getValueIsAdjusting()) {
+                return;
+            }
+            cargarFilaSeleccionada();
+        });
+
+        btnReservar.addActionListener(e -> {
+            if (!validarCampos()) {
+                return;
+            }
+            JOptionPane.showMessageDialog(this, "Los datos están listos para enviar al Controller.", "Reserva", JOptionPane.INFORMATION_MESSAGE);
+        });
+
+        btnEditar.addActionListener(e -> {
+            if (tablaReservas.getSelectedRow() < 0) {
+                mostrarMensaje("Seleccione una reserva.");
+                return;
+            }
+
+            if (!validarCampos()) {
+                return;
+            }
+
+            JOptionPane.showMessageDialog(this, "La reserva está lista para modificar.", "Reserva", JOptionPane.INFORMATION_MESSAGE);
+        });
+        btnUsarIA.addActionListener(e -> abrirEntradaIA());
+    }
+
+    private void abrirEntradaIA() {
+        JTextArea areaTexto = new JTextArea(6, 40);
+
+        areaTexto.setLineWrap(true);
+        areaTexto.setWrapStyleWord(true);
+
+        JScrollPane scroll = new JScrollPane(areaTexto);
+
+        int respuesta = JOptionPane.showConfirmDialog(this, scroll,"Describir reserva mediante IA", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+        if (respuesta == JOptionPane.OK_OPTION) {
+
+            String texto = areaTexto.getText().trim();
+            if (texto.isEmpty()) {
+                mostrarMensaje("Debe escribir una descripción.");
+                return;
+            }
+
+            /*
+             * Posteriormente:
+             *
+             * texto
+             *    ↓
+             * LLMService
+             *    ↓
+             * ReservaDTO
+             *    ↓
+             * llenar formulario
+             */
+            mostrarMensaje("No he hecho esta parte, perdonasai.");
+        }
+    }
+    private void cancelarReservaVisual() {
+
+        int fila = tablaReservas.getSelectedRow();
+
+        if (fila < 0) {
+            mostrarMensaje("Seleccione una reserva.");
+            return;
+        }
+
+        int respuesta = JOptionPane.showConfirmDialog(this, "¿Desea cancelar la reserva seleccionada?", "Confirmar cancelación", JOptionPane.YES_NO_OPTION);
+
+        if (respuesta == JOptionPane.YES_OPTION) {
+
+            JOptionPane.showMessageDialog(this, "La reserva está lista para ser cancelada mediante el Controller.", "Reserva", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+    public boolean validarCampos() {
+        if (txtId.getText().trim().isEmpty()) {
+            mostrarMensaje("Debe indicar el ID de la reserva.");
+            return false;
+        }
+
+        if (txtActividad.getText().trim().isEmpty()) {
+            mostrarMensaje("Debe indicar la actividad.");
+            return false;
+        }
+
+        if (txtFecha.getText().trim().isEmpty()) {
+            mostrarMensaje("Debe indicar la fecha.");
+            return false;
+        }
+
+        if (txtHoraInicio.getText().trim().isEmpty()) {
+            mostrarMensaje("Debe indicar la hora de inicio.");
+            return false;
+        }
+
+        if (txtHoraFin.getText().trim().isEmpty()) {
+
+            mostrarMensaje("Debe indicar la hora de finalización.");
+            return false;
+        }
+
+        if (listaCategorias.getSelectedValuesList().isEmpty()) {
+            mostrarMensaje("Debe seleccionar al menos una categoría.");
+            return false;
+        }
+        return true;
+    }
+
+    private void mostrarMensaje(String mensaje) {
+        JOptionPane.showMessageDialog(this, mensaje, "Validación", JOptionPane.WARNING_MESSAGE);
+    }
 
     public JTextField getTxtId() {return txtId;}
 
@@ -240,12 +362,14 @@ public class ReservaPanel extends JPanel {
         txtHoraInicio.setText("");
         txtHoraFin.setText("");
         listaCategorias.clearSelection();
+        tablaReservas.clearSelection();
     }
 
     public void agregarCategoria(String categoria) {
         if (categoria != null && !categoria.trim().isEmpty()) {
-            modeloCategorias.addElement(categoria);
+            modeloCategorias.addElement(categoria.trim());
         }
+
     }
 
     public void limpiarCategorias() {
@@ -270,5 +394,24 @@ public class ReservaPanel extends JPanel {
         javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel)
                 tablaReservas.getModel();
         modelo.setRowCount(0);
+    }
+
+    private void cargarFilaSeleccionada(){
+        int fila = tablaReservas.getSelectedRow();
+        if (fila < 0) {
+            return;
+        }
+
+        txtId.setText(String.valueOf(tablaReservas.getValueAt(fila, 0)));
+
+        lblFuncionario.setText(String.valueOf(tablaReservas.getValueAt(fila, 1)));
+
+        txtActividad.setText(String.valueOf(tablaReservas.getValueAt(fila, 2)));
+
+        txtFecha.setText(String.valueOf(tablaReservas.getValueAt(fila, 3)));
+
+        txtHoraInicio.setText(String.valueOf(tablaReservas.getValueAt(fila, 4)));
+
+        txtHoraFin.setText(String.valueOf(tablaReservas.getValueAt(fila, 5)));
     }
 }
