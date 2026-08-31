@@ -50,7 +50,8 @@ public class FuncionarioPanel extends TablaCrudPanel {
         panelForm.add(new JLabel("ID:"), gbc);
         gbc.gridx = 1;
         txtId = new JTextField(10);
-        txtId.setEditable(false);
+        // El ID de Funcionario NO es autogenerado (a diferencia de
+        // Categoria) - el enunciado pide que quien lo crea lo indique.
         panelForm.add(txtId, gbc);
 
         gbc.gridx = 0; gbc.gridy = 1;
