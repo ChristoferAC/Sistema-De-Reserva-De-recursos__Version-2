@@ -27,6 +27,12 @@ public class ReservaService {
         if (reservaDAO.buscarPorId(reserva.getId()) != null) {
             throw new IllegalArgumentException("Ya existe una reserva con el ID indicado.");
         }
+        List<CategoriaRecurso> categoriasSinDisponibilidad = obtenerCategoriasSinDisponibilidad(reserva,-1);
+
+        if (!categoriasSinDisponibilidad.isEmpty()) {
+
+            throw new IllegalArgumentException(construirMensajeDisponibilidad(categoriasSinDisponibilidad));
+        }
         asignarRecursosDisponibles(reserva, -1);
         reservaDAO.guardar(reserva);
     }
@@ -36,25 +42,73 @@ public class ReservaService {
     public List<Reserva> listarReservas() {return reservaDAO.listar();}
 
     public List<Reserva> listarReservasFuncionario(int idFuncionario) {
+        if (idFuncionario <= 0) {throw new IllegalArgumentException("El ID del funcionario debe ser válido.");
+        }
         return reservaDAO.listarPorFuncionario(idFuncionario);
     }
 
-    public List<CategoriaRecurso> obtenerCategoriasSinDisponibilidad(Reserva reserva) {
-        validarDatosDeDisponibilidad(reserva);
-        return obtenerCategoriasSinDisponibilidadExcluyendo(reserva, -1);
+    public List<CategoriaRecurso> obtenerCategoriasSinDisponibilidad(Reserva reserva, int idReservaExcluida) {
+        validarDatosDisponibilidad(reserva);
+
+        List<CategoriaRecurso> categoriasSinDisponibilidad = new ArrayList<>();
+
+        List<Reserva> reservasDelDia = reservaDAO.listarPorFecha(reserva.getFecha().toString());
+
+        for (CategoriaRecurso categoria : reserva.getCategoriasSolicitadas()) {
+            List<Recurso> recursos = recursoDAO.listarPorCategoria(categoria.getId());
+            boolean disponible = false;
+            for (Recurso recurso : recursos) {
+                if (recursoDisponible(recurso, reserva, reservasDelDia, idReservaExcluida)) {
+                    disponible = true;
+                    break;
+                }
+            }
+            if (!disponible) {
+                categoriasSinDisponibilidad.add(categoria);
+            }
+        }
+
+        return categoriasSinDisponibilidad;
     }
 
     public boolean hayDisponibilidad(Reserva reserva) {
-        return obtenerCategoriasSinDisponibilidad(reserva).isEmpty();
+        validarDatosDisponibilidad(reserva);
+
+        return obtenerCategoriasSinDisponibilidad(reserva, -1).isEmpty();
+    }
+
+    private void validarDatosDisponibilidad(Reserva reserva) {
+        if (reserva == null) {
+            throw new IllegalArgumentException("La reserva no puede ser nula.");
+        }
+        if (reserva.getFecha() == null) {
+            throw new IllegalArgumentException("La fecha es obligatoria.");
+        }
+        if (reserva.getHoraInicio() == null || reserva.getHoraFin() == null) {
+            throw new IllegalArgumentException("Las horas de inicio y finalización son obligatorias.");
+        }
+
+        if (!reserva.getHoraInicio().isBefore(reserva.getHoraFin())) {
+            throw new IllegalArgumentException("La hora de inicio debe ser anterior " + "a la hora de finalización.");
+        }
+        if (reserva.getCategoriasSolicitadas() == null || reserva.getCategoriasSolicitadas().isEmpty()) {
+            throw new IllegalArgumentException("Debe solicitar al menos una categoría.");
+        }
     }
 
     public void modificarReserva(Reserva reserva) {
         validarReserva(reserva);
         Reserva reservaExistente = reservaDAO.buscarPorId(reserva.getId());
+
         if (reservaExistente == null) {
             throw new IllegalArgumentException("La reserva no existe.");
         }
+        List<CategoriaRecurso> categoriasSinDisponibilidad = obtenerCategoriasSinDisponibilidad(reserva, reserva.getId());
+        if (!categoriasSinDisponibilidad.isEmpty()) {
+            throw new IllegalArgumentException(construirMensajeDisponibilidad(categoriasSinDisponibilidad));
+        }
         asignarRecursosDisponibles(reserva, reserva.getId());
+
         reservaDAO.actualizar(reserva);
     }
 
@@ -139,8 +193,7 @@ public class ReservaService {
         }
     }
 
-    private List<CategoriaRecurso>
-    obtenerCategoriasSinDisponibilidadExcluyendo(Reserva reserva, int idReservaExcluida) {
+    private List<CategoriaRecurso> obtenerCategoriasSinDisponibilidadExcluyendo(Reserva reserva, int idReservaExcluida) {
         validarDatosDeDisponibilidad(reserva);
         List<CategoriaRecurso> categoriasSinDisponibilidad = new ArrayList<>();
 
@@ -163,36 +216,27 @@ public class ReservaService {
     }
 
     private void asignarRecursosDisponibles(Reserva reserva, int idReservaExcluida) {
-        List<CategoriaRecurso> categoriasSinDisponibilidad = obtenerCategoriasSinDisponibilidadExcluyendo(reserva, idReservaExcluida);
-        if (!categoriasSinDisponibilidad.isEmpty()) {
-            throw new IllegalArgumentException(construirMensajeDisponibilidad(categoriasSinDisponibilidad));
-        }
-
         List<Reserva> reservasDelDia = reservaDAO.listarPorFecha(reserva.getFecha().toString());
 
-        List<Recurso> nuevosRecursos = new ArrayList<>();
+        List<Recurso> recursosAsignados = new ArrayList<>();
 
         for (CategoriaRecurso categoria : reserva.getCategoriasSolicitadas()) {
-
             List<Recurso> recursos = recursoDAO.listarPorCategoria(categoria.getId());
 
+            boolean recursoAsignado = false;
+
             for (Recurso recurso : recursos) {
+
                 if (recursoDisponible(recurso, reserva, reservasDelDia, idReservaExcluida)) {
-                    nuevosRecursos.add(recurso);
+                    recursosAsignados.add(recurso);
+                    recursoAsignado = true;
                     break;
                 }
             }
+            if (!recursoAsignado) {
+                throw new IllegalArgumentException("No hay recursos disponibles para la categoría: " + categoria.getNombre());
+            }
         }
-
-        reserva.limpiarRecursosAsignados();
-
-        for (Recurso recurso : nuevosRecursos) {
-            reserva.agregarRecurso(recurso);
-        }
-    }
-
-    private boolean recursoDisponible(Recurso recurso, Reserva reserva, List<Reserva> reservasDelDia) {
-        return recursoDisponible(recurso, reserva, reservasDelDia, -1);
     }
 
     private boolean recursoDisponible(Recurso recurso, Reserva reserva, List<Reserva> reservasDelDia, int idReservaExcluida) {
