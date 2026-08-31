@@ -21,6 +21,7 @@ public class RecursoPanel extends JPanel {
     public RecursoPanel() {
         super(new BorderLayout(10, 10));
         construirInterfaz();
+        configurarEventos();
     }
 
     private void construirInterfaz() {
@@ -111,23 +112,124 @@ public class RecursoPanel extends JPanel {
 
         return panel;
     }
+
     private JPanel crearPanelTabla() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createTitledBorder("Recursos registrados"));
         String[] columnas = {"ID", "Nombre", "Descripción", "Categoría"};
 
-        Object[][] datos = {};
-
-        tabla = new JTable(new javax.swing.table.DefaultTableModel(datos, columnas) {
-                    @Override public boolean isCellEditable(int row, int column) {
-                        return false;
-                    }
+        tabla = new JTable(new javax.swing.table.DefaultTableModel(new Object[][]{}, columnas) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
         });
 
         tabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        scrollTabla = new JScrollPane(tabla);
-        panel.add(scrollTabla, BorderLayout.CENTER);
+
+        panel.add(new JScrollPane(tabla), BorderLayout.CENTER);
+
         return panel;
+    }
+
+    private void configurarEventos() {
+
+        btnNuevo.addActionListener(e -> limpiarFormulario());
+
+        btnCancelar.addActionListener(e -> limpiarFormulario());
+
+        tabla.getSelectionModel().addListSelectionListener(e -> {
+            if (e.getValueIsAdjusting()) {
+                return;
+            }
+            int fila = tabla.getSelectedRow();
+            if (fila < 0) {
+                return;
+            }
+
+            txtId.setText(String.valueOf(tabla.getValueAt(fila, 0)));
+
+            txtNombre.setText(String.valueOf(tabla.getValueAt(fila, 1)));
+
+            txtDescripcion.setText(String.valueOf(tabla.getValueAt(fila, 2)));
+        });
+
+        btnGuardar.addActionListener(e -> {
+            if (!validarCampos()) {
+                return;
+            }
+
+            JOptionPane.showMessageDialog(this, "Datos listos para guardar.", "Recurso", JOptionPane.INFORMATION_MESSAGE);
+        });
+
+        btnEditar.addActionListener(e -> {
+
+            int fila = tabla.getSelectedRow();
+            if (fila < 0) {
+                mostrarMensaje("Seleccione un recurso de la tabla.");
+                return;
+            }
+
+            if (!validarCampos()) {
+                return;
+            }
+
+            JOptionPane.showMessageDialog(this, "Datos listos para modificar.", "Recurso", JOptionPane.INFORMATION_MESSAGE);
+        });
+
+        btnEliminar.addActionListener(e -> {
+            int fila = tabla.getSelectedRow();
+            if (fila < 0) {
+                mostrarMensaje("Seleccione un recurso de la tabla.");
+                return;
+            }
+
+            int respuesta = JOptionPane.showConfirmDialog(this, "¿Desea eliminar el recurso seleccionado?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+
+            if (respuesta == JOptionPane.YES_OPTION) {
+                JOptionPane.showMessageDialog(this, "Recurso listo para eliminar.", "Recurso", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+
+        btnBuscar.addActionListener(e -> {
+
+            String filtro = txtFiltroCategoria.getText().trim();
+
+            if (filtro.isEmpty()) { mostrarMensaje("Ingrese una categoría para filtrar.");
+                return;
+            }
+
+            JOptionPane.showMessageDialog(this, "Filtro aplicado: " + filtro, "Buscar", JOptionPane.INFORMATION_MESSAGE
+            );
+        });
+    }
+
+    private boolean validarCampos() {
+
+        if (txtId.getText().trim().isEmpty()) {
+            mostrarMensaje("Debe ingresar el ID del recurso.");
+            return false;
+        }
+
+        if (txtNombre.getText().trim().isEmpty()) {
+            mostrarMensaje("Debe ingresar el nombre del recurso.");
+            return false;
+        }
+
+        if (txtDescripcion.getText().trim().isEmpty()) {
+            mostrarMensaje("Debe ingresar la descripción del recurso.");
+            return false;
+        }
+
+        if (cmbCategoria.getSelectedItem() == null) {
+            mostrarMensaje("Debe seleccionar una categoría.");
+            return false;
+        }
+        return true;
+    }
+
+    private void mostrarMensaje(String mensaje) {
+        JOptionPane.showMessageDialog(this, mensaje, "Validación", JOptionPane.WARNING_MESSAGE);
     }
 
     public JTextField getTxtId() {return txtId;}
@@ -164,6 +266,7 @@ public class RecursoPanel extends JPanel {
         if (cmbCategoria.getItemCount() > 0) {
             cmbCategoria.setSelectedIndex(0);
         }
+        tabla.clearSelection();
     }
 
     public void limpiarTabla() {
@@ -174,9 +277,7 @@ public class RecursoPanel extends JPanel {
     public void agregarFilaTabla(String id, String nombre, String descripcion, String categoria) {
         javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) tabla.getModel();
 
-        modelo.addRow(
-                new Object[]{ id, nombre, descripcion, categoria}
-        );
+        modelo.addRow(new Object[]{ id, nombre, descripcion, categoria});
     }
 
     public int getFilaSeleccionada() {return tabla.getSelectedRow();}
