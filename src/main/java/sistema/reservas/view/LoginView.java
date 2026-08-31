@@ -8,6 +8,7 @@ public class LoginView extends JFrame {
     private JTextField txtUsuario;
     private JPasswordField txtPassword;
     private JButton btnIngresar;
+    private JButton btnCambiar;
     private JLabel lblMensaje;
 
     public LoginView() {
@@ -47,9 +48,16 @@ public class LoginView extends JFrame {
         lblMensaje.setForeground(Color.RED);
         add(lblMensaje, gbc);
 
+        // Fila de botones: un solo "Ingresar" (columna 0) y "Cambiar clave" (columna 1).
+        gbc.gridx = 0;
         gbc.gridy = 3;
+        gbc.gridwidth = 1;
         btnIngresar = new JButton("Ingresar");
         add(btnIngresar, gbc);
+
+        gbc.gridx = 1;
+        btnCambiar = new JButton("Cambiar clave");
+        add(btnCambiar, gbc);
     }
 
     public String getUsuario() {
@@ -62,6 +70,10 @@ public class LoginView extends JFrame {
 
     public JButton getBtnIngresar() {
         return btnIngresar;
+    }
+
+    public JButton getBtnCambiar() {
+        return btnCambiar;
     }
 
     /** Para que el controller muestre errores de login sin usar JOptionPane. */
