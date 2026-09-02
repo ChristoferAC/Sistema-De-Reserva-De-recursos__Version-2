@@ -1,4 +1,4 @@
-package sistema.reservas.view;
+package sistema.reservas.Usuario;
 
 import javax.swing.*;
 import java.awt.*;

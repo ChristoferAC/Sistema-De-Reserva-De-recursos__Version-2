@@ -1,4 +1,4 @@
-package sistema.reservas.view;
+package sistema.reservas.Estadistica;
 
 import javax.swing.*;
 import java.awt.*;
