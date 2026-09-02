@@ -6,15 +6,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
-/**
- * Pestaña de Calendarización de recursos. Responsable: Integrante 3.
- *
- * Vista de solo lectura: al elegir fecha + categoría se arma una matriz
- * (filas = hora, columnas = recurso) con los datos que calcula
- * CalendarizacionService. Esta clase NO contiene lógica de negocio ni
- * conoce Reserva/Service — solo expone sus componentes vía getters para
- * que CalendarizacionController los conecte.
- */
+
 public class CalendarizacionPanel extends JPanel {
 
     private JTextField txtFecha;

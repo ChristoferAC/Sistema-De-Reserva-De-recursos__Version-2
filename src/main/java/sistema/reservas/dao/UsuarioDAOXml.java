@@ -10,14 +10,7 @@ import sistema.reservas.persistence.XmlUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Implementación real de UsuarioDAO usando XML.
- * Archivo: data/usuarios.xml (ver /docs/CONTRATO_XML.md).
- *
- * Guarda administradores y funcionarios en el MISMO archivo, distinguidos
- * por el atributo tipo="ADMIN" / tipo="FUNCIONARIO". FuncionarioDAOXml
- * reutiliza esta clase por dentro para no duplicar la lógica de XML.
- */
+
 public class UsuarioDAOXml implements UsuarioDAO {
 
     private static final String RUTA_ARCHIVO = "data/usuarios.xml";
