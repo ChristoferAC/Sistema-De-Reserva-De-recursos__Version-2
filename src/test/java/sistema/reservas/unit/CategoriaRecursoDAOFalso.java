@@ -1,7 +1,7 @@
 package sistema.reservas.unit;
 
 import sistema.reservas.dao.CategoriaRecursoDAO;
-import sistema.reservas.model.CategoriaRecurso;
+import sistema.reservas.Categoria.CategoriaRecurso;
 
 import java.util.ArrayList;
 import java.util.List;

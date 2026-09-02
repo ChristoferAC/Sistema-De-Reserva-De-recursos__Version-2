@@ -1,7 +1,7 @@
 package sistema.reservas.unit;
 
 import sistema.reservas.dao.UsuarioDAO;
-import sistema.reservas.model.Usuario;
+import sistema.reservas.Usuario.Usuario;
 
 import java.util.ArrayList;
 import java.util.List;

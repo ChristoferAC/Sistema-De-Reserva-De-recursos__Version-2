@@ -1,19 +1,19 @@
 package sistema.reservas;
 
-import sistema.reservas.controller.CategoriaRecursoController;
-import sistema.reservas.controller.FuncionarioController;
-import sistema.reservas.controller.UsuarioController;
+import sistema.reservas.Categoria.CategoriaRecursoController;
+import sistema.reservas.Funcionario.FuncionarioController;
+import sistema.reservas.Usuario.UsuarioController;
 import sistema.reservas.dao.CategoriaRecursoDAO;
 import sistema.reservas.dao.CategoriaRecursoDAOXml;
 import sistema.reservas.dao.FuncionarioDAO;
 import sistema.reservas.dao.FuncionarioDAOXml;
 import sistema.reservas.dao.UsuarioDAO;
 import sistema.reservas.dao.UsuarioDAOXml;
-import sistema.reservas.model.Administrador;
-import sistema.reservas.model.Usuario;
-import sistema.reservas.service.CategoriaRecursoService;
-import sistema.reservas.service.FuncionarioService;
-import sistema.reservas.service.UsuarioService;
+import sistema.reservas.Administrador.Administrador;
+import sistema.reservas.Usuario.Usuario;
+import sistema.reservas.Categoria.CategoriaRecursoService;
+import sistema.reservas.Funcionario.FuncionarioService;
+import sistema.reservas.Usuario.UsuarioService;
 import sistema.reservas.view.LoginView;
 import sistema.reservas.view.MainWindow;
 

@@ -2,8 +2,8 @@ package sistema.reservas.unit;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import sistema.reservas.model.CategoriaRecurso;
-import sistema.reservas.service.CategoriaRecursoService;
+import sistema.reservas.Categoria.CategoriaRecurso;
+import sistema.reservas.Categoria.CategoriaRecursoService;
 
 import java.util.List;
 

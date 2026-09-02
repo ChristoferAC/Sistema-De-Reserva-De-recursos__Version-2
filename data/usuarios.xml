@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<usuarios>
+    <usuario tipo="ADMIN">
+        <id>1</id>
+        <nombre>Administrador</nombre>
+        <username>admin</username>
+        <password>admin</password>
+    </usuario>
+</usuarios>

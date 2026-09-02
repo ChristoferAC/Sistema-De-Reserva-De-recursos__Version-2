@@ -1,5 +1,5 @@
 package sistema.reservas.dao;
-import sistema.reservas.model.Recurso;
+import sistema.reservas.Recurso.Recurso;
 import java.util.List;
 
 public interface RecursoDAO {
