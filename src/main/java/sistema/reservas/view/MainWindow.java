@@ -1,6 +1,13 @@
 package sistema.reservas.view;
 
-import sistema.reservas.model.Usuario;
+import sistema.reservas.Actividad.ActividadPanel;
+import sistema.reservas.Calendarizacion.CalendarizacionPanel;
+import sistema.reservas.Categoria.CategoriaPanel;
+import sistema.reservas.Estadistica.EstadisticaPanel;
+import sistema.reservas.Funcionario.FuncionarioPanel;
+import sistema.reservas.Recurso.RecursoPanel;
+import sistema.reservas.Reserva.ReservaPanel;
+import sistema.reservas.Usuario.Usuario;
 
 import javax.swing.*;
 

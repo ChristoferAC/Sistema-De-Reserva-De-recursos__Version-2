@@ -3,7 +3,7 @@ package sistema.reservas.dao;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import sistema.reservas.model.CategoriaRecurso;
+import sistema.reservas.Categoria.CategoriaRecurso;
 import sistema.reservas.persistence.XmlUtil;
 
 import java.util.ArrayList;

@@ -2,9 +2,9 @@ package sistema.reservas.unit;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import sistema.reservas.model.Administrador;
-import sistema.reservas.model.Usuario;
-import sistema.reservas.service.UsuarioService;
+import sistema.reservas.Administrador.Administrador;
+import sistema.reservas.Usuario.Usuario;
+import sistema.reservas.Usuario.UsuarioService;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
