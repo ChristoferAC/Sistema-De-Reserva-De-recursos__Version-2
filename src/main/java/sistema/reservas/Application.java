@@ -1,21 +1,21 @@
 package sistema.reservas;
 
-import sistema.reservas.Categoria.CategoriaRecursoController;
-import sistema.reservas.Funcionario.FuncionarioController;
-import sistema.reservas.Usuario.UsuarioController;
+import sistema.reservas.Logic.Categoria.CategoriaRecursoController;
+import sistema.reservas.Logic.Funcionario.FuncionarioController;
+import sistema.reservas.Logic.Usuario.UsuarioController;
 import sistema.reservas.dao.CategoriaRecursoDAO;
 import sistema.reservas.dao.CategoriaRecursoDAOXml;
 import sistema.reservas.dao.FuncionarioDAO;
 import sistema.reservas.dao.FuncionarioDAOXml;
 import sistema.reservas.dao.UsuarioDAO;
 import sistema.reservas.dao.UsuarioDAOXml;
-import sistema.reservas.Administrador.Administrador;
-import sistema.reservas.Usuario.Usuario;
-import sistema.reservas.Categoria.CategoriaRecursoService;
-import sistema.reservas.Funcionario.FuncionarioService;
-import sistema.reservas.Usuario.UsuarioService;
-import sistema.reservas.view.LoginView;
-import sistema.reservas.view.MainWindow;
+import sistema.reservas.Logic.Administrador.Administrador;
+import sistema.reservas.Logic.Usuario.Usuario;
+import sistema.reservas.Logic.Categoria.CategoriaRecursoService;
+import sistema.reservas.Logic.Funcionario.FuncionarioService;
+import sistema.reservas.Logic.Usuario.UsuarioService;
+import sistema.reservas.Presentation.Login.LoginView;
+import sistema.reservas.Presentation.Login.MainWindow;
 
 import javax.swing.SwingUtilities;
 

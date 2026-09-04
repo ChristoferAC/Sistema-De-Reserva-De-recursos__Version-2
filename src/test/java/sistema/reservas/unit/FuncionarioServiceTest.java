@@ -2,8 +2,8 @@ package sistema.reservas.unit;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import sistema.reservas.Funcionario.Funcionario;
-import sistema.reservas.Funcionario.FuncionarioService;
+import sistema.reservas.Logic.Funcionario.Funcionario;
+import sistema.reservas.Logic.Funcionario.FuncionarioService;
 
 import java.util.List;
 

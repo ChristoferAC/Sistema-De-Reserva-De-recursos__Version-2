@@ -1,6 +1,6 @@
 package sistema.reservas.dao;
 
-import sistema.reservas.Usuario.Usuario;
+import sistema.reservas.Logic.Usuario.Usuario;
 import java.util.List;
 
 public interface UsuarioDAO {

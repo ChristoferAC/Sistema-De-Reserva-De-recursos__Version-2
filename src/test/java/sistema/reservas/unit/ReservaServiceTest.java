@@ -4,11 +4,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sistema.reservas.dao.RecursoDAO;
 import sistema.reservas.dao.ReservaDAO;
-import sistema.reservas.Categoria.CategoriaRecurso;
-import sistema.reservas.Funcionario.Funcionario;
-import sistema.reservas.Recurso.Recurso;
-import sistema.reservas.Reserva.Reserva;
-import sistema.reservas.Reserva.ReservaService;
+import sistema.reservas.Logic.Categoria.CategoriaRecurso;
+import sistema.reservas.Logic.Funcionario.Funcionario;
+import sistema.reservas.Logic.Recurso.Recurso;
+import sistema.reservas.Logic.Reserva.Reserva;
+import sistema.reservas.Logic.Reserva.ReservaService;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

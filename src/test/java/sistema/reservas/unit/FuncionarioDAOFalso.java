@@ -1,7 +1,7 @@
 package sistema.reservas.unit;
 
 import sistema.reservas.dao.FuncionarioDAO;
-import sistema.reservas.Funcionario.Funcionario;
+import sistema.reservas.Logic.Funcionario.Funcionario;
 
 import java.util.ArrayList;
 import java.util.List;

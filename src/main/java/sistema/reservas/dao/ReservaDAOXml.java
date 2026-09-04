@@ -2,11 +2,11 @@ package sistema.reservas.dao;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import sistema.reservas.Categoria.CategoriaRecurso;
-import sistema.reservas.Funcionario.Funcionario;
-import sistema.reservas.Recurso.Recurso;
-import sistema.reservas.Reserva.Reserva;
-import sistema.reservas.persistence.XmlUtil;
+import sistema.reservas.Logic.Categoria.CategoriaRecurso;
+import sistema.reservas.Logic.Funcionario.Funcionario;
+import sistema.reservas.Logic.Recurso.Recurso;
+import sistema.reservas.Logic.Reserva.Reserva;
+import sistema.reservas.Data.persistence.XmlUtil;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
