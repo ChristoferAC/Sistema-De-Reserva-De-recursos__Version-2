@@ -1,6 +1,6 @@
 package sistema.reservas.dao;
 
-import sistema.reservas.Logic.Funcionario.Funcionario;
+import sistema.reservas.Logic.Funcionario;
 import java.util.List;
 
 public interface FuncionarioDAO {

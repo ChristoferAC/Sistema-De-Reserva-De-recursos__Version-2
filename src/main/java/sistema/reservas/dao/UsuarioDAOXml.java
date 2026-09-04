@@ -2,9 +2,9 @@ package sistema.reservas.dao;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import sistema.reservas.Logic.Administrador.Administrador;
-import sistema.reservas.Logic.Funcionario.Funcionario;
-import sistema.reservas.Logic.Usuario.Usuario;
+import sistema.reservas.Logic.Administrador;
+import sistema.reservas.Logic.Funcionario;
+import sistema.reservas.Logic.Usuario;
 import sistema.reservas.Data.persistence.XmlUtil;
 
 import java.util.ArrayList;

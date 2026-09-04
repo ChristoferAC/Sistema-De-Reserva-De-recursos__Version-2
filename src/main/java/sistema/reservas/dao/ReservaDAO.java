@@ -1,5 +1,5 @@
 package sistema.reservas.dao;
-import sistema.reservas.Logic.Reserva.Reserva;
+import sistema.reservas.Logic.Reserva;
 import java.util.List;
 
 public interface ReservaDAO {

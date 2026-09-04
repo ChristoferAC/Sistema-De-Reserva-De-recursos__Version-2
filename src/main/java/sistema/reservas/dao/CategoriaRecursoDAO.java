@@ -1,6 +1,6 @@
 package sistema.reservas.dao;
 
-import sistema.reservas.Logic.Categoria.CategoriaRecurso;
+import sistema.reservas.Logic.CategoriaRecurso;
 import java.util.List;
 
 public interface CategoriaRecursoDAO {

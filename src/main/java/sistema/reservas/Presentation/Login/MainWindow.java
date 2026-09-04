@@ -1,13 +1,13 @@
 package sistema.reservas.Presentation.Login;
 
-import sistema.reservas.Logic.Actividad.ActividadPanel;
-import sistema.reservas.Logic.Calendarizacion.CalendarizacionPanel;
-import sistema.reservas.Logic.Categoria.CategoriaPanel;
-import sistema.reservas.Logic.Estadistica.EstadisticaPanel;
-import sistema.reservas.Logic.Funcionario.FuncionarioPanel;
-import sistema.reservas.Logic.Recurso.RecursoPanel;
-import sistema.reservas.Logic.Reserva.ReservaPanel;
-import sistema.reservas.Logic.Usuario.Usuario;
+import sistema.reservas.Presentation.Actividad.ActividadPanel;
+import sistema.reservas.Presentation.Calendarizacion.CalendarizacionPanel;
+import sistema.reservas.Presentation.Categoria.CategoriaPanel;
+import sistema.reservas.Presentation.Estadistica.EstadisticaPanel;
+import sistema.reservas.Presentation.Funcionario.FuncionarioPanel;
+import sistema.reservas.Presentation.Recurso.RecursoPanel;
+import sistema.reservas.Presentation.Reserva.ReservaPanel;
+import sistema.reservas.Logic.Usuario;
 
 import javax.swing.*;
 
