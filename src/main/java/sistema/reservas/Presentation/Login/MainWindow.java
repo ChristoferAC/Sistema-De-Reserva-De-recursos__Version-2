@@ -40,6 +40,7 @@ public class MainWindow extends JFrame {
         estadisticaPanel = new EstadisticaPanel();
 
         boolean esAdministrador = usuarioActual != null && "ADMIN".equals(usuarioActual.getRol());
+        boolean esFuncionario = usuarioActual != null && "FUNCIONARIO".equals(usuarioActual.getRol());
 
         tabbedPane = new JTabbedPane();
 
@@ -50,13 +51,14 @@ public class MainWindow extends JFrame {
             tabbedPane.addTab("Categorias", categoriaPanel);               // I1 - solo Administrador
         }
 
-        // TODO (Integrante 2): el enunciado tambien restringe por rol
-        // "Lista de recursos" (solo Administrador, funcionalidad 5) y
-        // "Reservas" (solo Funcionario, funcionalidad 2). Aplicar el mismo
-        // patron aqui cuando se conecte RecursoPanel/ReservaPanel.
-        tabbedPane.addTab("Recursos", recursoPanel);                   // I2
-        tabbedPane.addTab("Reservas", reservaPanel);                   // I2
-        tabbedPane.addTab("Calendarizacion", calendarizacionPanel);    // I3
+        if (esAdministrador) {          // I2 - solo Administrador.
+            tabbedPane.addTab("Recursos", recursoPanel.getPanel());
+        }
+        if (esFuncionario) {            //I2 - solo Funcionario
+            tabbedPane.addTab("Reservas", reservaPanel.getPanel());
+        }
+
+        tabbedPane.addTab("Calendarizacion", calendarizacionPanel);     // I3
         tabbedPane.addTab("Actividades", actividadPanel);              // I3
         tabbedPane.addTab("Estadisticas", estadisticaPanel);           // I3
 

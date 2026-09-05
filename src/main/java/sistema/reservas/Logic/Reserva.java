@@ -7,12 +7,19 @@ import java.util.List;
 
 
 public class Reserva {
+
+    public enum Estado {
+        ACTIVA,
+        CANCELADA
+    }
+
     private int id;
     private Funcionario funcionario;
     private String actividad;
     private LocalDate fecha;
     private LocalTime horaInicio;
     private LocalTime horaFin;
+    private Estado estado;
 
     private List<CategoriaRecurso> categoriasSolicitadas;
     private List<Recurso> recursosAsignados;
@@ -20,6 +27,7 @@ public class Reserva {
     public Reserva() {
         categoriasSolicitadas = new ArrayList<>();
         recursosAsignados = new ArrayList<>();
+        estado = Estado.ACTIVA;
     }
 
     public Reserva(int id, Funcionario funcionario, String actividad, LocalDate fecha, LocalTime horaInicio, LocalTime horaFin) {
@@ -29,6 +37,7 @@ public class Reserva {
         this.fecha = fecha;
         this.horaInicio = horaInicio;
         this.horaFin = horaFin;
+        this.estado = Estado.ACTIVA;
 
         this.categoriasSolicitadas = new ArrayList<>();
         this.recursosAsignados = new ArrayList<>();
@@ -61,6 +70,12 @@ public class Reserva {
     public List<CategoriaRecurso> getCategoriasSolicitadas() { return categoriasSolicitadas;}
 
     public List<Recurso> getRecursosAsignados() { return recursosAsignados;}
+
+    public Estado getEstado() { return estado; }
+
+    public void setEstado(Estado estado) { this.estado = estado; }
+
+    public boolean isActiva() { return estado == Estado.ACTIVA; }
 
     public void agregarCategoria(CategoriaRecurso categoria) {categoriasSolicitadas.add(categoria);}
 

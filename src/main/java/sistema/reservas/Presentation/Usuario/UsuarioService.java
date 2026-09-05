@@ -1,21 +1,20 @@
 package sistema.reservas.Presentation.Usuario;
 
 import sistema.reservas.Logic.Usuario;
-import sistema.reservas.dao.UsuarioDAO;
 
 public class UsuarioService {
-
+/*
     private final UsuarioDAO usuarioDAO;
 
     public UsuarioService(UsuarioDAO usuarioDAO) {
         this.usuarioDAO = usuarioDAO;
     }
-
+*/
     /**
      * Valida credenciales de login.
      * @return el Usuario si las credenciales son correctas, null si no.
      */
-    public Usuario login(String username, String password) {
+    public Usuario login(String username, String password) {/*
         if (username == null || username.isBlank() || password == null) {
             return null;
         }
@@ -34,6 +33,7 @@ public class UsuarioService {
             throw new IllegalArgumentException("La nueva clave no puede estar vacía.");
         }
         usuario.setPassword(claveNueva);
-        usuarioDAO.actualizar(usuario);
+        usuarioDAO.actualizar(usuario);*/
     }
+
 }

@@ -1,12 +1,11 @@
 package sistema.reservas.Presentation.Categoria;
 
 import sistema.reservas.Logic.CategoriaRecurso;
-import sistema.reservas.dao.CategoriaRecursoDAO;
 
 import java.util.List;
 
 public class CategoriaRecursoService {
-
+/*
     private final CategoriaRecursoDAO categoriaDAO;
 
     public CategoriaRecursoService(CategoriaRecursoDAO categoriaDAO) {
@@ -44,7 +43,7 @@ public class CategoriaRecursoService {
         }
         categoriaDAO.eliminar(id);
     }
-
+*/
     private void validar(CategoriaRecurso categoria) {
         if (categoria.getDescripcion() == null || categoria.getDescripcion().isBlank()) {
             throw new IllegalArgumentException("La descripción es obligatoria.");

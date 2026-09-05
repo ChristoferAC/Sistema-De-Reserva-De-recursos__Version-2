@@ -1,286 +1,286 @@
 package sistema.reservas.Presentation.Recurso;
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
 
-public class RecursoPanel extends JPanel {
+import sistema.reservas.Logic.CategoriaRecurso;
+import sistema.reservas.Logic.Recurso;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.List;
+
+public class RecursoPanel implements PropertyChangeListener{
+    private JPanel panel1;
+
     private JTextField txtId;
     private JTextField txtNombre;
     private JTextField txtDescripcion;
-    private JComboBox<String> cmbCategoria;
+    private JComboBox<String>  cmbCategoria;
     private JTextField txtFiltroCategoria;
+
     private JButton btnNuevo;
     private JButton btnGuardar;
     private JButton btnEditar;
     private JButton btnEliminar;
     private JButton btnCancelar;
     private JButton btnBuscar;
+
     private JTable tabla;
     private JScrollPane scrollTabla;
 
+    private final List<CategoriaRecurso> categoriasDisponibles = new ArrayList<>();
+
     public RecursoPanel() {
-        super(new BorderLayout(10, 10));
-        construirInterfaz();
-        configurarEventos();
-    }
 
-    private void construirInterfaz() {
-        setBorder(new EmptyBorder(10, 10, 10, 10));
-        JPanel panelPrincipal = new JPanel(new BorderLayout(10, 10));
-        panelPrincipal.add(crearPanelFormulario(), BorderLayout.NORTH);
-        panelPrincipal.add(crearPanelTabla(), BorderLayout.CENTER);
-        add(panelPrincipal, BorderLayout.CENTER);
-    }
-
-    private JPanel crearPanelFormulario() {
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBorder(BorderFactory.createTitledBorder("Datos del recurso"));
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1.0;
-        // ID
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 0;
-        panel.add(new JLabel("ID / Activo:"), gbc);
-        txtId = new JTextField(15);
-        gbc.gridx = 1;
-        gbc.weightx = 1.0;
-        panel.add(txtId, gbc);
-
-        // Nombre
-        gbc.gridx = 2;
-        gbc.weightx = 0;
-        panel.add(new JLabel("Nombre:"), gbc);
-        txtNombre = new JTextField(15);
-        gbc.gridx = 3;
-        gbc.weightx = 1.0;
-        panel.add(txtNombre, gbc);
-
-        // Descripción
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.weightx = 0;
-        panel.add(new JLabel("Descripción:"), gbc);
-        txtDescripcion = new JTextField(15);
-        gbc.gridx = 1;
-        gbc.weightx = 1.0;
-        panel.add(txtDescripcion, gbc);
-
-        // Categoría
-        gbc.gridx = 2;
-        gbc.weightx = 0;
-        panel.add(new JLabel("Categoría:"), gbc);
-        cmbCategoria = new JComboBox<>();
-        gbc.gridx = 3;
-        gbc.weightx = 1.0;
-        panel.add(cmbCategoria, gbc);
-
-        // Filtro
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.weightx = 0;
-        panel.add(new JLabel("Filtrar categoría:"), gbc);
-        txtFiltroCategoria = new JTextField(15);
-        gbc.gridx = 1;
-        gbc.weightx = 1.0;
-        panel.add(txtFiltroCategoria, gbc);
-        btnBuscar = new JButton("Buscar");
-        gbc.gridx = 2;
-        gbc.gridwidth = 2;
-        gbc.weightx = 0;
-        panel.add(btnBuscar, gbc);
-
-        // Botones
-        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        btnNuevo = new JButton("Nuevo");
-        btnGuardar = new JButton("Guardar");
-        btnEditar = new JButton("Editar");
-        btnEliminar = new JButton("Eliminar");
-        btnCancelar = new JButton("Cancelar");
-        panelBotones.add(btnNuevo);
-        panelBotones.add(btnGuardar);
-        panelBotones.add(btnEditar);
-        panelBotones.add(btnEliminar);
-        panelBotones.add(btnCancelar);
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.gridwidth = 4;
-        gbc.weightx = 1.0;
-        panel.add(panelBotones, gbc);
-
-        return panel;
-    }
-
-    private JPanel crearPanelTabla() {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(BorderFactory.createTitledBorder("Recursos registrados"));
-        String[] columnas = {"ID", "Nombre", "Descripción", "Categoría"};
-
-        tabla = new JTable(new javax.swing.table.DefaultTableModel(new Object[][]{}, columnas) {
+        btnNuevo.addActionListener(new ActionListener() {
             @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
+            public void actionPerformed(ActionEvent e) {
+                limpiar();
             }
         });
 
-        tabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        btnCancelar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                limpiar();
+            }
+        });
 
-        panel.add(new JScrollPane(tabla), BorderLayout.CENTER);
+        btnGuardar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (validate()) {
+                    Recurso recurso = take();
+                    try {
+                        controller.crear(recurso);
+                        JOptionPane.showMessageDialog(panel1, "RECURSO REGISTRADO", "", JOptionPane.INFORMATION_MESSAGE);
+                        limpiar();
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(panel1, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            }
+        });
 
-        return panel;
-    }
+        btnEditar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (validate()) {
+                    Recurso recurso = take();
+                    try {
+                        controller.modificar(recurso);
+                        JOptionPane.showMessageDialog(panel1, "RECURSO MODIFICADO", "", JOptionPane.INFORMATION_MESSAGE);
+                        limpiar();
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(panel1, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            }
+        });
 
-    private void configurarEventos() {
+        btnEliminar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int fila = tabla.getSelectedRow();
+                if (fila < 0) {
+                    JOptionPane.showMessageDialog(panel1, "Seleccione un recurso.", "Información", JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
 
-        btnNuevo.addActionListener(e -> limpiarFormulario());
+                int respuesta = JOptionPane.showConfirmDialog(panel1, "¿Desea eliminar el recurso seleccionado?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
 
-        btnCancelar.addActionListener(e -> limpiarFormulario());
+                if (respuesta != JOptionPane.YES_OPTION) {
+                    return;
+                }
+
+                try {
+                    String id = tabla.getValueAt(fila, 0).toString();
+                    controller.eliminar(id);
+                    JOptionPane.showMessageDialog(panel1, "RECURSO ELIMINADO", "", JOptionPane.INFORMATION_MESSAGE);
+                    limpiar();
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(panel1, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        btnBuscar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cargarRecursos();
+            }
+        });
 
         tabla.getSelectionModel().addListSelectionListener(e -> {
-            if (e.getValueIsAdjusting()) {
-                return;
+            if (!e.getValueIsAdjusting()) {
+                cargarRecursoSeleccionado();
             }
-            int fila = tabla.getSelectedRow();
-            if (fila < 0) {
-                return;
-            }
-
-            txtId.setText(String.valueOf(tabla.getValueAt(fila, 0)));
-
-            txtNombre.setText(String.valueOf(tabla.getValueAt(fila, 1)));
-
-            txtDescripcion.setText(String.valueOf(tabla.getValueAt(fila, 2)));
-        });
-
-        btnGuardar.addActionListener(e -> {
-            if (!validarCampos()) {
-                return;
-            }
-
-            JOptionPane.showMessageDialog(this, "Datos listos para guardar.", "Recurso", JOptionPane.INFORMATION_MESSAGE);
-        });
-
-        btnEditar.addActionListener(e -> {
-
-            int fila = tabla.getSelectedRow();
-            if (fila < 0) {
-                mostrarMensaje("Seleccione un recurso de la tabla.");
-                return;
-            }
-
-            if (!validarCampos()) {
-                return;
-            }
-
-            JOptionPane.showMessageDialog(this, "Datos listos para modificar.", "Recurso", JOptionPane.INFORMATION_MESSAGE);
-        });
-
-        btnEliminar.addActionListener(e -> {
-            int fila = tabla.getSelectedRow();
-            if (fila < 0) {
-                mostrarMensaje("Seleccione un recurso de la tabla.");
-                return;
-            }
-
-            int respuesta = JOptionPane.showConfirmDialog(this, "¿Desea eliminar el recurso seleccionado?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
-
-            if (respuesta == JOptionPane.YES_OPTION) {
-                JOptionPane.showMessageDialog(this, "Recurso listo para eliminar.", "Recurso", JOptionPane.INFORMATION_MESSAGE);
-            }
-        });
-
-        btnBuscar.addActionListener(e -> {
-
-            String filtro = txtFiltroCategoria.getText().trim();
-
-            if (filtro.isEmpty()) { mostrarMensaje("Ingrese una categoría para filtrar.");
-                return;
-            }
-
-            JOptionPane.showMessageDialog(this, "Filtro aplicado: " + filtro, "Buscar", JOptionPane.INFORMATION_MESSAGE
-            );
         });
     }
 
-    private boolean validarCampos() {
+    public JPanel getPanel() {
+        return panel1;
+    }
+
+    RecursoController controller;
+    RecursoService service;
+
+    public void setController(RecursoController controller) {
+        this.controller = controller;
+        cargarRecursos();
+    }
+
+    public void setService(RecursoService service) {
+        this.service = service;
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        cargarRecursos();
+        panel1.revalidate();
+        panel1.repaint();
+    }
+
+    public Recurso take() {
+        Recurso recurso = new Recurso(
+                txtId.getText().trim(),
+                txtNombre.getText().trim(),
+                txtDescripcion.getText().trim(),
+                obtenerCategoriaSeleccionada());
+        return recurso;
+    }
+
+    /** Resuelve el item seleccionado en el combo hacia el objeto real que representa. */
+    private CategoriaRecurso obtenerCategoriaSeleccionada() {
+        int indice = cmbCategoria.getSelectedIndex();
+        if (indice < 0 || indice >= categoriasDisponibles.size()) {
+            return null;
+        }
+        return categoriasDisponibles.get(indice);
+    }
+
+    private boolean validate() {
+        boolean valido = true;
 
         if (txtId.getText().trim().isEmpty()) {
-            mostrarMensaje("Debe ingresar el ID del recurso.");
-            return false;
+            valido = false;
+            txtId.setToolTipText("ID requerido");
+        } else {
+            txtId.setToolTipText(null);
         }
 
         if (txtNombre.getText().trim().isEmpty()) {
-            mostrarMensaje("Debe ingresar el nombre del recurso.");
-            return false;
+            valido = false;
+            txtNombre.setToolTipText("Nombre requerido");
+        } else {
+            txtNombre.setToolTipText(null);
         }
 
         if (txtDescripcion.getText().trim().isEmpty()) {
-            mostrarMensaje("Debe ingresar la descripción del recurso.");
-            return false;
+            valido = false;
+            txtDescripcion.setToolTipText("Descripción requerida");
+        } else {
+            txtDescripcion.setToolTipText(null);
         }
 
         if (cmbCategoria.getSelectedItem() == null) {
-            mostrarMensaje("Debe seleccionar una categoría.");
-            return false;
+            valido = false;
+            cmbCategoria.setToolTipText("Categoría requerida");
+        } else {
+            cmbCategoria.setToolTipText(null);
         }
-        return true;
+
+        return valido;
     }
 
-    private void mostrarMensaje(String mensaje) {
-        JOptionPane.showMessageDialog(this, mensaje, "Validación", JOptionPane.WARNING_MESSAGE);
+    private void cargarRecursos() {
+        if (controller == null) {
+            return;
+        }
+
+        try {
+            List<Recurso> recursos = controller.listar();
+
+            String filtro = txtFiltroCategoria.getText() == null
+                    ? "" : txtFiltroCategoria.getText().trim().toLowerCase();
+
+            String[] columnas = {"ID", "Nombre", "Descripción", "Categoría"};
+
+            DefaultTableModel modelo = new DefaultTableModel(columnas, 0) {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return false;
+                }
+            };
+
+            for (Recurso recurso : recursos) {
+                String categoria = recurso.getCategoria() != null
+                        ? recurso.getCategoria().getDescripcion() : "";
+
+                if (!filtro.isEmpty() && !categoria.toLowerCase().contains(filtro)) {
+                    continue;
+                }
+
+                modelo.addRow(new Object[]{
+                        recurso.getId(),
+                        recurso.getNombre(),
+                        recurso.getDescripcion(),
+                        categoria
+                });
+            }
+
+            tabla.setModel(modelo);
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(panel1, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
-    public JTextField getTxtId() {return txtId;}
+    private void cargarRecursoSeleccionado() {
+        int fila = tabla.getSelectedRow();
+        if (fila < 0) {
+            return;
+        }
 
-    public JTextField getTxtNombre() {return txtNombre;}
+        txtId.setText(String.valueOf(tabla.getValueAt(fila, 0)));
+        txtNombre.setText(String.valueOf(tabla.getValueAt(fila, 1)));
+        txtDescripcion.setText(String.valueOf(tabla.getValueAt(fila, 2)));
 
-    public JTextField getTxtDescripcion() {return txtDescripcion;}
+        String descripcionCategoria = String.valueOf(tabla.getValueAt(fila, 3));
+        for (int i = 0; i < categoriasDisponibles.size(); i++) {
+            if (categoriasDisponibles.get(i).getDescripcion().equals(descripcionCategoria)) {
+                cmbCategoria.setSelectedIndex(i);
+                break;
+            }
+        }
+    }
 
-    public JComboBox<String> getCmbCategoria() {return cmbCategoria;}
-
-    public JTextField getTxtFiltroCategoria() {return txtFiltroCategoria;}
-
-    public JButton getBtnNuevo() {return btnNuevo;}
-
-    public JButton getBtnGuardar() {return btnGuardar;}
-
-    public JButton getBtnEditar() {return btnEditar;}
-
-    public JButton getBtnEliminar() {return btnEliminar;}
-
-    public JButton getBtnCancelar() {return btnCancelar;}
-
-    public JButton getBtnBuscar() {return btnBuscar;}
-
-    public JTable getTabla() {return tabla;}
-
-    // UTILITIES
-
-    public void limpiarFormulario() {
+    public void limpiar() {
         txtId.setText("");
         txtNombre.setText("");
         txtDescripcion.setText("");
-
-        if (cmbCategoria.getItemCount() > 0) {
-            cmbCategoria.setSelectedIndex(0);
-        }
+        cmbCategoria.setSelectedItem(null);
         tabla.clearSelection();
     }
 
-    public void limpiarTabla() {
-        javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) tabla.getModel();
-        modelo.setRowCount(0);
+    /** Agrega una categoría real disponible; su descripción es lo que se muestra en el combo. */
+    public void agregarCategoria(CategoriaRecurso categoria) {
+        if (categoria == null || categoria.getDescripcion() == null || categoria.getDescripcion().trim().isEmpty()) {
+            return;
+        }
+        categoriasDisponibles.add(categoria);
+        cmbCategoria.addItem(categoria.getDescripcion());
     }
 
-    public void agregarFilaTabla(String id, String nombre, String descripcion, String categoria) {
-        javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) tabla.getModel();
-
-        modelo.addRow(new Object[]{ id, nombre, descripcion, categoria});
+    public void limpiarCategorias() {
+        categoriasDisponibles.clear();
+        cmbCategoria.removeAllItems();
     }
 
-    public int getFilaSeleccionada() {return tabla.getSelectedRow();}
-
-
+    public CategoriaRecurso getCategoriaSeleccionada() {
+        return obtenerCategoriaSeleccionada();
+    }
 }
