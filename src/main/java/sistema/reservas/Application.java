@@ -1,26 +1,20 @@
 package sistema.reservas;
 
-import sistema.reservas.Categoria.CategoriaRecursoController;
-import sistema.reservas.Funcionario.FuncionarioController;
-import sistema.reservas.Usuario.UsuarioController;
-import sistema.reservas.dao.CategoriaRecursoDAO;
-import sistema.reservas.dao.CategoriaRecursoDAOXml;
-import sistema.reservas.dao.FuncionarioDAO;
-import sistema.reservas.dao.FuncionarioDAOXml;
-import sistema.reservas.dao.UsuarioDAO;
-import sistema.reservas.dao.UsuarioDAOXml;
-import sistema.reservas.Administrador.Administrador;
-import sistema.reservas.Usuario.Usuario;
-import sistema.reservas.Categoria.CategoriaRecursoService;
-import sistema.reservas.Funcionario.FuncionarioService;
-import sistema.reservas.Usuario.UsuarioService;
-import sistema.reservas.view.LoginView;
-import sistema.reservas.view.MainWindow;
+import sistema.reservas.Presentation.Categoria.CategoriaRecursoController;
+import sistema.reservas.Presentation.Funcionario.FuncionarioController;
+import sistema.reservas.Presentation.Usuario.UsuarioController;
+import sistema.reservas.Logic.Administrador;
+import sistema.reservas.Logic.Usuario;
+import sistema.reservas.Presentation.Categoria.CategoriaRecursoService;
+import sistema.reservas.Presentation.Funcionario.FuncionarioService;
+import sistema.reservas.Presentation.Usuario.UsuarioService;
+import sistema.reservas.Presentation.Login.LoginView;
+import sistema.reservas.Presentation.Login.MainWindow;
 
 import javax.swing.SwingUtilities;
 
 public class Application {
-
+/*
     public static void main(String[] args) {
         SwingUtilities.invokeLater(Application::iniciarLogin);
     }
@@ -44,7 +38,9 @@ public class Application {
     private static void abrirVentanaPrincipal(Usuario usuarioLogueado) {
         MainWindow mainWindow = new MainWindow(usuarioLogueado);
 
-
+        // Funcionarios y Categorias solo existen como pestanas si el
+        // usuario es Administrador (ver MainWindow.java), asi que solo
+        // tiene sentido conectar sus Controllers en ese caso.
         if ("ADMIN".equals(usuarioLogueado.getRol())) {
             FuncionarioDAO funcionarioDAO = new FuncionarioDAOXml();
             FuncionarioService funcionarioService = new FuncionarioService(funcionarioDAO);
@@ -58,10 +54,15 @@ public class Application {
         mainWindow.setVisible(true);
     }
 
+    /**
+     * Si data/usuarios.xml todavia no tiene ningun usuario (primera vez
+     * que se corre el programa), crea un administrador por defecto para
+     * poder entrar la primera vez. Usuario: admin / Clave: admin.
 
     private static void sembrarAdministradorInicial(UsuarioDAO usuarioDAO) {
         if (usuarioDAO.listarTodos().isEmpty()) {
             usuarioDAO.guardar(new Administrador(1, "Administrador", "admin", "admin"));
         }
-    }
+    }*/
+
 }
