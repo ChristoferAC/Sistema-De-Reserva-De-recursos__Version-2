@@ -12,6 +12,7 @@
         <maven.compiler.source>26</maven.compiler.source>
         <maven.compiler.target>26</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <langchain4j.version>0.36.0</langchain4j.version>
     </properties>
 
     <dependencies>
@@ -22,6 +23,20 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- LangChain4j core -->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j</artifactId>
+            <version>${langchain4j.version}</version>
+        </dependency>
+
+        <!-- OpenAI integration -->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-open-ai</artifactId>
+            <version>${langchain4j.version}</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -30,21 +45,21 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.5.3</version>
-               </plugin>
+            </plugin>
 
-               <plugin>
-                 <groupId>org.apache.maven.plugins</groupId>
-                   <artifactId>maven-failsafe-plugin</artifactId>
-                   <version>3.5.3</version>
-                   <executions>
-                       <execution>
-                           <goals>
-                              <goal>integration-test</goal>
-                               <goal>verify</goal>
-                           </goals>
-                       </execution>
-                   </executions>
-               </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>3.5.3</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
