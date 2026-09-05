@@ -3,12 +3,6 @@ package sistema.reservas;
 import sistema.reservas.Presentation.Categoria.CategoriaRecursoController;
 import sistema.reservas.Presentation.Funcionario.FuncionarioController;
 import sistema.reservas.Presentation.Usuario.UsuarioController;
-import sistema.reservas.dao.CategoriaRecursoDAO;
-import sistema.reservas.dao.CategoriaRecursoDAOXml;
-import sistema.reservas.dao.FuncionarioDAO;
-import sistema.reservas.dao.FuncionarioDAOXml;
-import sistema.reservas.dao.UsuarioDAO;
-import sistema.reservas.dao.UsuarioDAOXml;
 import sistema.reservas.Logic.Administrador;
 import sistema.reservas.Logic.Usuario;
 import sistema.reservas.Presentation.Categoria.CategoriaRecursoService;
@@ -20,7 +14,7 @@ import sistema.reservas.Presentation.Login.MainWindow;
 import javax.swing.SwingUtilities;
 
 public class Application {
-
+/*
     public static void main(String[] args) {
         SwingUtilities.invokeLater(Application::iniciarLogin);
     }
@@ -64,10 +58,11 @@ public class Application {
      * Si data/usuarios.xml todavia no tiene ningun usuario (primera vez
      * que se corre el programa), crea un administrador por defecto para
      * poder entrar la primera vez. Usuario: admin / Clave: admin.
-     */
+
     private static void sembrarAdministradorInicial(UsuarioDAO usuarioDAO) {
         if (usuarioDAO.listarTodos().isEmpty()) {
             usuarioDAO.guardar(new Administrador(1, "Administrador", "admin", "admin"));
         }
-    }
+    }*/
+
 }
