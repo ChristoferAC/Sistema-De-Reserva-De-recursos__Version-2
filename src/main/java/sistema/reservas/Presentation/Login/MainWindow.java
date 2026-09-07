@@ -1,7 +1,5 @@
 package sistema.reservas.Presentation.Login;
 
-import sistema.reservas.Presentation.Actividad.ActividadPanel;
-import sistema.reservas.Presentation.Calendarizacion.CalendarizacionPanel;
 import sistema.reservas.Presentation.Categoria.CategoriaPanel;
 import sistema.reservas.Presentation.Estadistica.EstadisticaPanel;
 import sistema.reservas.Presentation.Funcionario.FuncionarioPanel;

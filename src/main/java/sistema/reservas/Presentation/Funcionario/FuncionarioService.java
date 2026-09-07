@@ -1,7 +1,6 @@
 package sistema.reservas.Presentation.Funcionario;
 
 import sistema.reservas.Logic.Funcionario;
-import sistema.reservas.dao.FuncionarioDAO;
 
 import java.util.List;
 

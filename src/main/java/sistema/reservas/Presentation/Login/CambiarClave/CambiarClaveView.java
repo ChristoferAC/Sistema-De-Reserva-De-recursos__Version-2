@@ -1,4 +1,4 @@
-package sistema.reservas.Presentation.CambiarClave;
+package sistema.reservas.Presentation.Login.CambiarClave;
 
 import javax.swing.*;
 import java.awt.*;

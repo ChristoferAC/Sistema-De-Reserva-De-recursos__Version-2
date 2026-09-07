@@ -1,7 +1,7 @@
 package sistema.reservas.Presentation.Usuario;
 
 import sistema.reservas.Logic.Usuario;
-import sistema.reservas.Presentation.CambiarClave.CambiarClaveView;
+import sistema.reservas.Presentation.Login.CambiarClave.CambiarClaveView;
 import sistema.reservas.Presentation.Login.LoginView;
 
 import javax.swing.*;

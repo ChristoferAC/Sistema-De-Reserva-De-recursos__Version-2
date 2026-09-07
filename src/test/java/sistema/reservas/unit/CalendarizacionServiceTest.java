@@ -8,7 +8,7 @@ import sistema.reservas.Logic.Funcionario;
 import sistema.reservas.Logic.Recurso;
 import sistema.reservas.Logic.Reserva;
 import sistema.reservas.Presentation.Calendarizacion.CalendarizacionService;
-import sistema.reservas.Presentation.Calendarizacion.MatrizCalendarizacion;
+import sistema.reservas.Presentation.Calendarizacion.ModelCalendario;
 import sistema.reservas.Presentation.Recurso.RecursoService;
 import sistema.reservas.Presentation.Reserva.ReservaService;
 
@@ -41,7 +41,7 @@ class CalendarizacionServiceTest {
         RecursoService recursoService = new RecursoService(recursoDAOFake);
         CalendarizacionService calendarizacionService = new CalendarizacionService(reservaService, recursoService);
 
-        MatrizCalendarizacion matriz = calendarizacionService.generarMatriz(
+        ModelCalendario matriz = calendarizacionService.generarMatriz(
                 LocalDate.of(2026, 8, 5), categoriaLaptop);
 
         int filaNueveAM = matriz.getHoras().indexOf(LocalTime.of(9, 0));

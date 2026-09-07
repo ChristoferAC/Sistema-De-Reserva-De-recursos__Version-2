@@ -16,13 +16,13 @@ import java.util.List;
  * Es un objeto de solo lectura (no se persiste); el Controller lo usa
  * para llenar el JTable de CalendarizacionPanel.
  */
-public class MatrizCalendarizacion {
+public class ModelCalendario {
 
     private final List<LocalTime> horas;
     private final List<Recurso> recursos;
     private final String[][] celdas;
 
-    public MatrizCalendarizacion(List<LocalTime> horas, List<Recurso> recursos, String[][] celdas) {
+    public ModelCalendario(List<LocalTime> horas, List<Recurso> recursos, String[][] celdas) {
         this.horas = Collections.unmodifiableList(horas);
         this.recursos = Collections.unmodifiableList(recursos);
         this.celdas = celdas;
