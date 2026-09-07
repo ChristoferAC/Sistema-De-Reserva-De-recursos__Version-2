@@ -16,6 +16,8 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import sistema.reservas.Data.llm.ReservaExtraccion;
+
 public class ReservaPanel implements PropertyChangeListener {
 
     private JPanel panel1;
@@ -122,22 +124,24 @@ public class ReservaPanel implements PropertyChangeListener {
         btnUsarIA.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String texto = JOptionPane.showInputDialog(panel1,
-                        "Describa la reserva:", "Usar IA", JOptionPane.PLAIN_MESSAGE);
-
-                if (texto == null) {
-                    return;
-                }
-
-                texto = texto.trim();
-                if (texto.isEmpty()) {
-                    JOptionPane.showMessageDialog(panel1,
-                            "Debe escribir una descripción.", "Información", JOptionPane.INFORMATION_MESSAGE);
-                    return;
-                }
-
-                // La integración con IA se conecta aquí posteriormente.
+            String texto = JOptionPane.showInputDialog(panel1, "Describa la reserva:", "Usar IA", JOptionPane.PLAIN_MESSAGE);
+            if (texto == null) {
+                return;
             }
+
+            texto = texto.trim();
+            if (texto.isEmpty()) {
+                JOptionPane.showMessageDialog(panel1,"Debe escribir una descripción.", "Información", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
+            try {
+                ReservaExtraccion datos = controller.extraerConIA(texto);
+                aplicarDatosDeIA(datos);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(panel1, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
         });
 
         tablaReservas.getSelectionModel().addListSelectionListener(e -> {
@@ -384,5 +388,49 @@ public class ReservaPanel implements PropertyChangeListener {
 
     public CategoriaRecurso getCategoriaSeleccionada() {
         return obtenerCategoriaSeleccionada();
+    }
+
+    private void aplicarDatosDeIA(ReservaExtraccion datos) {
+        if (datos.getActividad() != null) {
+            txtActividad.setText(datos.getActividad());
+        }
+        if (datos.getFecha() != null) {
+            txtFecha.setText(datos.getFecha());
+        }
+        if (datos.getHoraInicio() != null) {
+            txtHoraInicio.setText(datos.getHoraInicio());
+        }
+        if (datos.getHoraFinal() != null) {
+            txtHoraFin.setText(datos.getHoraFinal());
+        }
+
+        List<String> noReconocidas = new ArrayList<>();
+        String primeraCoincidencia = null;
+        if (datos.getCategoriasRecurso() != null) {
+            for (String nombreCategoria : datos.getCategoriasRecurso()) {
+                boolean encontrada = false;
+                for (CategoriaRecurso categoria : categoriasDisponibles) {
+                    if (categoria.getDescripcion().equalsIgnoreCase(nombreCategoria)) {
+                        if (primeraCoincidencia == null) {
+                            primeraCoincidencia = categoria.getDescripcion();
+                        }
+                        encontrada = true;
+                        break;
+                    }
+                }
+                if (!encontrada) {
+                    noReconocidas.add(nombreCategoria);
+                }
+            }
+        }
+        if (primeraCoincidencia != null) {
+            listaCategorias.setSelectedItem(primeraCoincidencia);
+        }
+        String mensaje = "Datos generados por IA cargados en el formulario. "
+                + "Revíselos y corríjalos si es necesario antes de registrar la reserva.";
+        if (!noReconocidas.isEmpty()) {
+            mensaje += "\nCategorías no reconocidas: " + String.join(", ", noReconocidas);
+        }
+        JOptionPane.showMessageDialog(panel1, mensaje, "Usar IA", JOptionPane.INFORMATION_MESSAGE);
     }
 }
