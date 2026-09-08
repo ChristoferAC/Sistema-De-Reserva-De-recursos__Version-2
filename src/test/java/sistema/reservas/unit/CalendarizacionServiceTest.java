@@ -3,14 +3,14 @@ package sistema.reservas.unit;
 import org.junit.jupiter.api.Test;
 import sistema.reservas.dao.RecursoDAO;
 import sistema.reservas.dao.ReservaDAO;
-import sistema.reservas.model.CategoriaRecurso;
-import sistema.reservas.model.Funcionario;
-import sistema.reservas.model.Recurso;
-import sistema.reservas.model.Reserva;
-import sistema.reservas.service.CalendarizacionService;
-import sistema.reservas.service.MatrizCalendarizacion;
-import sistema.reservas.service.RecursoService;
-import sistema.reservas.service.ReservaService;
+import sistema.reservas.Logic.CategoriaRecurso;
+import sistema.reservas.Logic.Funcionario;
+import sistema.reservas.Logic.Recurso;
+import sistema.reservas.Logic.Reserva;
+import sistema.reservas.Presentation.Calendarizacion.CalendarizacionService;
+import sistema.reservas.Presentation.Calendarizacion.ModelCalendario;
+import sistema.reservas.Presentation.Recurso.RecursoService;
+import sistema.reservas.Presentation.Reserva.ReservaService;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -28,7 +28,7 @@ class CalendarizacionServiceTest {
         Recurso laptop2 = new Recurso("45238", "Laptop #45238", "Laptop windows 11", categoriaLaptop);
         List<Recurso> recursos = List.of(laptop1, laptop2);
 
-        Funcionario juan = new Funcionario(111, "Juan Perez", "111", "111");
+        Funcionario juan = new Funcionario(111, "Juan Perez", "111", "111", "0000-0000");
         Reserva reserva = new Reserva(1, juan, "Sesion de Junta Directiva",
                 LocalDate.of(2026, 8, 5), LocalTime.of(9, 0), LocalTime.of(11, 0));
         reserva.agregarRecurso(laptop1);
@@ -41,7 +41,7 @@ class CalendarizacionServiceTest {
         RecursoService recursoService = new RecursoService(recursoDAOFake);
         CalendarizacionService calendarizacionService = new CalendarizacionService(reservaService, recursoService);
 
-        MatrizCalendarizacion matriz = calendarizacionService.generarMatriz(
+        ModelCalendario matriz = calendarizacionService.generarMatriz(
                 LocalDate.of(2026, 8, 5), categoriaLaptop);
 
         int filaNueveAM = matriz.getHoras().indexOf(LocalTime.of(9, 0));
