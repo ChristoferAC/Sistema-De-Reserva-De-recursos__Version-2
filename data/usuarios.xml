@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<usuarios>
+            
+    
+    <usuario tipo="ADMIN">
+                        
+        
+        <id>1</id>
+                        
+        
+        <nombre>Administrador</nombre>
+                        
+        
+        <username>admin</username>
+                        
+        
+        <password>admin</password>
+                    
+    
+    </usuario>
+        
+    
+
+    <usuario tipo="FUNCIONARIO">
+        <id>123123123</id>
+        <nombre>123123123</nombre>
+        <username>123123123</username>
+        <password>1234</password>
+        <telefono>1223123123</telefono>
+    </usuario>
+</usuarios>
