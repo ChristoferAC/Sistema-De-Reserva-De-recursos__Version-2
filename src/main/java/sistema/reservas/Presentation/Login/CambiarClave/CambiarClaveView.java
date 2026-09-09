@@ -1,4 +1,4 @@
-package sistema.reservas.Presentation.Login.CambiarClave;
+package sistema.reservas.Presentation.CambiarClave;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,7 +12,7 @@ public class CambiarClaveView extends JDialog {
     private JButton btnCancelar;
     private JLabel lblMensaje;
 
-    public CambiarClaveView(Frame owner) {
+    public CambiarClaveView(Dialog owner) {
         super(owner, "Cambiar Clave", true);
         construirInterfaz();
     }
