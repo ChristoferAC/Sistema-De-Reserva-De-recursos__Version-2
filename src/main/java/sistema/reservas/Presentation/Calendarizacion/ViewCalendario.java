@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class ViewCalendario {
+    private JPanel panel1;
     private JTextField txtFecha;
     private JComboBox comboCategoria;
     private JButton btnCargar;
@@ -29,7 +30,7 @@ public class ViewCalendario {
      * @noinspection ALL
      */
     private void $$$setupUI$$$() {
-        final JPanel panel1 = new JPanel();
+        panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(3, 3, new Insets(0, 0, 0, 0), -1, -1));
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(2, 4, new Insets(0, 0, 0, 0), -1, -1));
@@ -58,12 +59,34 @@ public class ViewCalendario {
         panel1.add(spacer1, new GridConstraints(1, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
     }
 
-    //public ViewCalendario(){
-    // super(new BorderLayout(5, 5));
-    //construirInterfaz();
-//}
+    /**
+     * @noinspection ALL
+     */
+    public JComponent $$$getRootComponent$$$() {
+        return panel1;
+    }
 
-//public construirInterfaz(){}
+    public JPanel getPanel1() {
+        return panel1;
+    }
 
+    public JTextField getTxtFecha() {
+        return txtFecha;
+    }
+
+    public JComboBox getComboCategoria() {
+        return comboCategoria;
+    }
+
+    public JButton getBtnCargar() {
+        return btnCargar;
+    }
+
+    public JButton getBtnImprimir() {
+        return btnImprimir;
+    }
+
+    public JTable getTabla() {
+        return tabla;
+    }
 }
-
