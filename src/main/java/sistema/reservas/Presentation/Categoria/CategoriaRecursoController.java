@@ -4,34 +4,37 @@ import sistema.reservas.Logic.CategoriaRecurso;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.util.List;
 
 public class CategoriaRecursoController {
 
     private final CategoriaPanel view;
+    private final CategoriaModel model;
     private final CategoriaRecursoService categoriaService;
 
-    public CategoriaRecursoController(CategoriaPanel view, CategoriaRecursoService categoriaService) {
+    public CategoriaRecursoController(CategoriaPanel view, CategoriaModel model) {
         this.view = view;
-        this.categoriaService = categoriaService;
+        this.model = model;
+        this.categoriaService = new CategoriaRecursoService();
+
+        view.setModel(model);
 
         this.view.getBtnBuscar().addActionListener(e -> buscar());
         this.view.getBtnGuardar().addActionListener(e -> guardar());
         this.view.getBtnBorrar().addActionListener(e -> borrar());
-        this.view.getBtnLimpiar().addActionListener(e -> view.limpiarFormulario());
+        this.view.getBtnLimpiar().addActionListener(e -> limpiar());
         this.view.getTabla().getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) cargarSeleccion();
         });
 
-        cargarTabla(categoriaService.listarTodas());
+        model.setCategorias(categoriaService.listarTodas());
     }
 
     private void buscar() {
         String descripcion = view.getTxtBuscarDescripcion().getText().trim();
         if (descripcion.isEmpty()) {
-            cargarTabla(categoriaService.listarTodas());
+            model.setCategorias(categoriaService.listarTodas());
         } else {
-            cargarTabla(categoriaService.buscarPorDescripcion(descripcion));
+            model.setCategorias(categoriaService.buscarPorDescripcion(descripcion));
         }
     }
 
@@ -42,63 +45,58 @@ public class CategoriaRecursoController {
 
             if (idTexto.isEmpty()) {
                 CategoriaRecurso nueva = new CategoriaRecurso(0, "", descripcion);
-                // id 0: lo asigna el DAO al guardar (autogenerado)
+                // id 0: lo asigna el Service al guardar (autogenerado)
                 categoriaService.crear(nueva);
             } else {
                 int id = Integer.parseInt(idTexto);
                 CategoriaRecurso existente = categoriaService.buscarPorId(id);
                 if (existente == null) {
-                    JOptionPane.showMessageDialog(view, "No existe esa categoría.");
+                    JOptionPane.showMessageDialog(view.getPanel1(), "No existe esa categoría.");
                     return;
                 }
                 existente.setDescripcion(descripcion);
                 categoriaService.actualizar(existente);
             }
 
-            view.limpiarFormulario();
-            cargarTabla(categoriaService.listarTodas());
+            model.setCurrent(null);
+            model.setCategorias(categoriaService.listarTodas());
 
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(view, "El ID debe ser numérico.");
+            JOptionPane.showMessageDialog(view.getPanel1(), "El ID debe ser numérico.");
         } catch (IllegalArgumentException ex) {
-            JOptionPane.showMessageDialog(view, ex.getMessage());
+            JOptionPane.showMessageDialog(view.getPanel1(), ex.getMessage());
         }
     }
 
     private void borrar() {
         String idTexto = view.getTxtId().getText().trim();
         if (idTexto.isEmpty()) {
-            JOptionPane.showMessageDialog(view, "Seleccione una categoría para borrar.");
+            JOptionPane.showMessageDialog(view.getPanel1(), "Seleccione una categoría para borrar.");
             return;
         }
         try {
             int id = Integer.parseInt(idTexto);
             categoriaService.eliminar(id);
-            view.limpiarFormulario();
-            cargarTabla(categoriaService.listarTodas());
+            model.setCurrent(null);
+            model.setCategorias(categoriaService.listarTodas());
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(view, "El ID debe ser numérico.");
+            JOptionPane.showMessageDialog(view.getPanel1(), "El ID debe ser numérico.");
         } catch (IllegalArgumentException ex) {
-            JOptionPane.showMessageDialog(view, ex.getMessage());
+            JOptionPane.showMessageDialog(view.getPanel1(), ex.getMessage());
         }
+    }
+
+    private void limpiar() {
+        model.setCurrent(null);
     }
 
     private void cargarSeleccion() {
         int fila = view.getTabla().getSelectedRow();
         if (fila < 0) return;
 
-        DefaultTableModel model = view.getTableModel();
-        int id = Integer.parseInt(model.getValueAt(fila, 0).toString());
-        String descripcion = model.getValueAt(fila, 1).toString();
+        DefaultTableModel tableModel = view.getTableModel();
+        int id = Integer.parseInt(tableModel.getValueAt(fila, 0).toString());
 
-        view.cargarFormulario(id, descripcion);
-    }
-
-    private void cargarTabla(List<CategoriaRecurso> categorias) {
-        DefaultTableModel model = view.getTableModel();
-        model.setRowCount(0);
-        for (CategoriaRecurso c : categorias) {
-            model.addRow(new Object[]{c.getId(), c.getDescripcion()});
-        }
+        model.setCurrent(categoriaService.buscarPorId(id));
     }
 }

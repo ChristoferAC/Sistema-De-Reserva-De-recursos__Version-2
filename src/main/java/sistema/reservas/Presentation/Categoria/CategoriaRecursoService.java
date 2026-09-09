@@ -1,49 +1,94 @@
 package sistema.reservas.Presentation.Categoria;
 
+import sistema.reservas.Data.persistence.CategoriaXmlPersister;
+import sistema.reservas.Data.persistence.CategoriasData;
 import sistema.reservas.Logic.CategoriaRecurso;
 
 import java.util.List;
 
+/**
+ * Las categorias se guardan en data/categorias.xml, leido/escrito con
+ * JAXB via CategoriaXmlPersister. Se cargan una sola vez y se guardan
+ * de nuevo cada vez que algo cambia.
+ */
 public class CategoriaRecursoService {
-/*
-    private final CategoriaRecursoDAO categoriaDAO;
 
-    public CategoriaRecursoService(CategoriaRecursoDAO categoriaDAO) {
-        this.categoriaDAO = categoriaDAO;
+    private static final CategoriaXmlPersister persister = new CategoriaXmlPersister();
+    private static CategoriasData data;
+    private static int siguienteId = 1;
+
+    private static CategoriasData data() {
+        if (data == null) {
+            try {
+                data = persister.load();
+            } catch (Exception e) {
+                throw new RuntimeException("No se pudo cargar data/categorias.xml", e);
+            }
+            for (CategoriaRecurso c : data.getCategorias()) {
+                if (c.getId() >= siguienteId) {
+                    siguienteId = c.getId() + 1;
+                }
+            }
+        }
+        return data;
+    }
+
+    private static void guardar() {
+        try {
+            persister.store(data);
+        } catch (Exception e) {
+            throw new RuntimeException("No se pudo guardar data/categorias.xml", e);
+        }
     }
 
     public CategoriaRecurso buscarPorId(int id) {
-        return categoriaDAO.buscarPorId(id);
+        for (CategoriaRecurso c : data().getCategorias()) {
+            if (c.getId() == id) {
+                return c;
+            }
+        }
+        return null;
     }
 
     public List<CategoriaRecurso> buscarPorDescripcion(String descripcion) {
-        return categoriaDAO.buscarPorDescripcion(descripcion);
+        List<CategoriaRecurso> resultado = new java.util.ArrayList<>();
+        for (CategoriaRecurso c : data().getCategorias()) {
+            if (c.getDescripcion().toLowerCase().contains(descripcion.toLowerCase())) {
+                resultado.add(c);
+            }
+        }
+        return resultado;
     }
 
     public List<CategoriaRecurso> listarTodas() {
-        return categoriaDAO.listarTodos();
+        return data().getCategorias();
     }
 
     public void crear(CategoriaRecurso categoria) {
         validar(categoria);
-        categoriaDAO.guardar(categoria); // el id lo asigna el DAO al persistir (autogenerado)
+        // El id lo asigna este Service (antes lo iba a asignar el DAO al persistir).
+        categoria.setId(siguienteId++);
+        data().getCategorias().add(categoria);
+        guardar();
     }
 
     public void actualizar(CategoriaRecurso categoria) {
         validar(categoria);
-        if (categoriaDAO.buscarPorId(categoria.getId()) == null) {
+        if (buscarPorId(categoria.getId()) == null) {
             throw new IllegalArgumentException("No existe una categoría con ese ID.");
         }
-        categoriaDAO.actualizar(categoria);
+        guardar();
     }
 
     public void eliminar(int id) {
-        if (categoriaDAO.buscarPorId(id) == null) {
+        CategoriaRecurso existente = buscarPorId(id);
+        if (existente == null) {
             throw new IllegalArgumentException("No existe una categoría con ese ID.");
         }
-        categoriaDAO.eliminar(id);
+        data().getCategorias().remove(existente);
+        guardar();
     }
-*/
+
     private void validar(CategoriaRecurso categoria) {
         if (categoria.getDescripcion() == null || categoria.getDescripcion().isBlank()) {
             throw new IllegalArgumentException("La descripción es obligatoria.");

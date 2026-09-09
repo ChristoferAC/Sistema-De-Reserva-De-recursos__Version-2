@@ -1,14 +1,22 @@
 package sistema.reservas.Logic;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+
+@XmlAccessorType(XmlAccessType.FIELD)
 public class CategoriaRecurso {
     private int id;
     private String nombre;
     private String descripcion;
 
-    public CategoriaRecurso(int id,String nombre,String descripcion){
-        this.id=id;
-        this.nombre= nombre;
-        this.descripcion= descripcion;
+    /** JAXB necesita un constructor vacio para poder des-serializar. */
+    public CategoriaRecurso() {
+    }
+
+    public CategoriaRecurso(int id, String nombre, String descripcion) {
+        this.id = id;
+        this.nombre = nombre;
+        this.descripcion = descripcion;
     }
 
     public int getId() {
@@ -34,5 +42,4 @@ public class CategoriaRecurso {
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
-
 }
