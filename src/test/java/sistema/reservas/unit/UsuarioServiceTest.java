@@ -1,73 +1,84 @@
 package sistema.reservas.unit;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import sistema.reservas.Logic.Administrador;
 import sistema.reservas.Logic.Usuario;
-import sistema.reservas.Presentation.Usuario.UsuarioService;
+import sistema.reservas.Presentation.Login.UsuarioService;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class UsuarioServiceTest {
 
-    private UsuarioDAOFalso usuarioDAO;
     private UsuarioService usuarioService;
+
+    @BeforeAll
+    static void respaldarDatosReales() {
+        XmlTestDataSupport.respaldar();
+    }
+
+    @AfterAll
+    static void restaurarDatosReales() {
+        XmlTestDataSupport.restaurar();
+    }
 
     @BeforeEach
     void setUp() {
-        usuarioDAO = new UsuarioDAOFalso();
-        usuarioService = new UsuarioService(usuarioDAO);
-        usuarioDAO.guardar(new Administrador(1, "Administrador", "admin", "admin123"));
+        XmlTestDataSupport.limpiar();
+        UsuarioService.resetParaPruebas();
+        usuarioService = new UsuarioService();
+    }
+
+    @AfterEach
+    void tearDown() {
+        XmlTestDataSupport.limpiar();
+        UsuarioService.resetParaPruebas();
     }
 
     @Test
-    void loginConCredencialesCorrectasDevuelveElUsuario() {
-        Usuario usuario = usuarioService.login("admin", "admin123");
+    void primeraVezSiembraUnAdministradorPorDefecto() throws Exception {
+        Usuario usuario = usuarioService.login("admin", "admin");
 
         assertNotNull(usuario);
-        assertEquals(1, usuario.getId());
+        assertEquals("ADMIN", usuario.getRol());
     }
 
     @Test
-    void loginConClaveIncorrectaDevuelveNull() {
-        assertNull(usuarioService.login("admin", "claveIncorrecta"));
+    void loginConClaveIncorrectaLanzaExcepcion() {
+        assertThrows(Exception.class, () -> usuarioService.login("admin", "claveIncorrecta"));
     }
 
     @Test
-    void loginConUsuarioInexistenteDevuelveNull() {
-        assertNull(usuarioService.login("noExiste", "cualquierClave"));
+    void loginConUsuarioInexistenteLanzaExcepcion() {
+        assertThrows(Exception.class, () -> usuarioService.login("noExiste", "cualquierClave"));
     }
 
     @Test
-    void loginConUsuarioVacioDevuelveNull() {
-        assertNull(usuarioService.login("", "admin123"));
+    void cambiarClaveConClaveActualCorrectaActualizaLaClave() throws Exception {
+        Usuario admin = usuarioService.login("admin", "admin");
+
+        usuarioService.cambiarClave(admin, "admin", "nuevaClave");
+
+        assertNotNull(usuarioService.login("admin", "nuevaClave"));
     }
 
     @Test
-    void cambiarClaveConClaveActualCorrectaActualizaLaClave() {
-        Usuario usuario = usuarioDAO.buscarPorId(1);
+    void cambiarClaveConClaveActualIncorrectaLanzaExcepcion() throws Exception {
+        Usuario admin = usuarioService.login("admin", "admin");
 
-        usuarioService.cambiarClave(usuario, "admin123", "nuevaClave");
-
-        assertEquals("nuevaClave", usuarioDAO.buscarPorId(1).getPassword());
+        assertThrows(Exception.class,
+                () -> usuarioService.cambiarClave(admin, "claveEquivocada", "nuevaClave"));
     }
 
     @Test
-    void cambiarClaveConClaveActualIncorrectaLanzaExcepcion() {
-        Usuario usuario = usuarioDAO.buscarPorId(1);
+    void cambiarClaveConClaveNuevaVaciaLanzaExcepcion() throws Exception {
+        Usuario admin = usuarioService.login("admin", "admin");
 
-        assertThrows(IllegalArgumentException.class,
-                () -> usuarioService.cambiarClave(usuario, "claveEquivocada", "nuevaClave"));
-    }
-
-    @Test
-    void cambiarClaveConClaveNuevaVaciaLanzaExcepcion() {
-        Usuario usuario = usuarioDAO.buscarPorId(1);
-
-        assertThrows(IllegalArgumentException.class,
-                () -> usuarioService.cambiarClave(usuario, "admin123", " "));
+        assertThrows(Exception.class,
+                () -> usuarioService.cambiarClave(admin, "admin", " "));
     }
 }
