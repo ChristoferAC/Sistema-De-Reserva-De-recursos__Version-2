@@ -17,6 +17,13 @@ public class CategoriaRecursoService {
     private static CategoriasData data;
     private static int siguienteId = 1;
 
+    /** Usado solo en pruebas: limpia la cache en memoria para que el siguiente
+     *  acceso vuelva a leer el XML desde disco. */
+    public static void resetParaPruebas() {
+        data = null;
+        siguienteId = 1;
+    }
+
     private static CategoriasData data() {
         if (data == null) {
             try {

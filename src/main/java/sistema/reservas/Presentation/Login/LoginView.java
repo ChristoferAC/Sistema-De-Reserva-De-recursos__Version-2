@@ -22,7 +22,7 @@ public class LoginView extends JDialog implements PropertyChangeListener {
     private boolean authenticated = false;
 
     // MVC
-    private sistema.reservas.Presentation.Login.UsuarioController controller;
+    private UsuarioController controller;
     private LoginModel model;
 
     public LoginView() {
@@ -57,7 +57,7 @@ public class LoginView extends JDialog implements PropertyChangeListener {
 
     // --- MVC: enlace con Controller y Model ---
 
-    public void setController(sistema.reservas.Presentation.Login.UsuarioController controller) {
+    public void setController(UsuarioController controller) {
         this.controller = controller;
     }
 
