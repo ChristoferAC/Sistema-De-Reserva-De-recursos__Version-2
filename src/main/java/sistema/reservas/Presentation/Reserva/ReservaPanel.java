@@ -124,24 +124,24 @@ public class ReservaPanel implements PropertyChangeListener {
         btnUsarIA.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            String texto = JOptionPane.showInputDialog(panel1, "Describa la reserva:", "Usar IA", JOptionPane.PLAIN_MESSAGE);
-            if (texto == null) {
-                return;
-            }
+                String texto = JOptionPane.showInputDialog(panel1, "Describa la reserva:", "Usar IA", JOptionPane.PLAIN_MESSAGE);
+                if (texto == null) {
+                    return;
+                }
 
-            texto = texto.trim();
-            if (texto.isEmpty()) {
-                JOptionPane.showMessageDialog(panel1,"Debe escribir una descripción.", "Información", JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }
+                texto = texto.trim();
+                if (texto.isEmpty()) {
+                    JOptionPane.showMessageDialog(panel1,"Debe escribir una descripción.", "Información", JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
 
-            try {
-                ReservaExtraccion datos = controller.extraerConIA(texto);
-                aplicarDatosDeIA(datos);
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(panel1, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                try {
+                    ReservaExtraccion datos = controller.extraerConIA(texto);
+                    aplicarDatosDeIA(datos);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(panel1, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
-        }
         });
 
         tablaReservas.getSelectionModel().addListSelectionListener(e -> {
@@ -433,4 +433,4 @@ public class ReservaPanel implements PropertyChangeListener {
         }
         JOptionPane.showMessageDialog(panel1, mensaje, "Usar IA", JOptionPane.INFORMATION_MESSAGE);
     }
-
+}
