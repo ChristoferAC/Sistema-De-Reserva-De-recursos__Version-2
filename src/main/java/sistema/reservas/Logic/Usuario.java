@@ -1,10 +1,25 @@
 package sistema.reservas.Logic;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlSeeAlso;
+
+/**
+ * @XmlSeeAlso le dice a JAXB cuales son las subclases concretas que
+ * puede encontrarse al serializar/des-serializar una lista de Usuario
+ * (ya que Usuario es abstracta, JAXB necesita saber esto de antemano).
+ */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlSeeAlso({Administrador.class, Funcionario.class})
 public abstract class Usuario {
     private int id;
     private String nombre;
     private String username;
     private String password;
+
+    /** JAXB necesita un constructor vacio para poder des-serializar. */
+    protected Usuario() {
+    }
 
     public Usuario(int id, String nombre, String username, String password) {
         this.id = id;

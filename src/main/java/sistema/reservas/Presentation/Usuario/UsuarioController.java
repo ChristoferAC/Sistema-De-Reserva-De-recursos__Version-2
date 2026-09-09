@@ -1,42 +1,38 @@
-package sistema.reservas.Presentation.Usuario;
+package sistema.reservas.Presentation.Login;
 
+import sistema.reservas.Logic.Sesion;
 import sistema.reservas.Logic.Usuario;
-import sistema.reservas.Presentation.Login.CambiarClave.CambiarClaveView;
-import sistema.reservas.Presentation.Login.LoginView;
+import sistema.reservas.Presentation.CambiarClave.CambiarClaveView;
 
 import javax.swing.*;
-import java.awt.*;
-import java.util.function.Consumer;
 
 public class UsuarioController {
 
     private final LoginView view;
+    private final LoginModel model;
     private final UsuarioService usuarioService;
-    private final Consumer<Usuario> onLoginExitoso;
 
-    public UsuarioController(LoginView view, UsuarioService usuarioService,
-                             Consumer<Usuario> onLoginExitoso) {
+    public UsuarioController(LoginView view, LoginModel model) {
         this.view = view;
-        this.usuarioService = usuarioService;
-        this.onLoginExitoso = onLoginExitoso;
+        this.model = model;
+        this.usuarioService = new UsuarioService();
 
-        this.view.getBtnIngresar().addActionListener(e -> intentarLogin());
-        this.view.getBtnCambiar().addActionListener(e -> abrirCambiarClave());
+        view.setController(this);
+        view.setModel(model);
+
+        view.getBtnCambiar().addActionListener(e -> abrirCambiarClave());
     }
 
-    private void intentarLogin() {
-        String username = view.getUsuario();
-        String password = new String(view.getPassword());
-
+    /**
+     * Valida el usuario y clave contra el UsuarioService y, si son
+     * correctos, guarda el usuario en la Sesion.
+     * @return el Usuario logueado.
+     * @throws Exception si el usuario o la clave son incorrectos.
+     */
+    public Usuario login(String username, String password) throws Exception {
         Usuario usuario = usuarioService.login(username, password);
-
-        if (usuario == null) {
-            view.mostrarMensaje("Usuario o clave incorrectos.");
-            return;
-        }
-
-        view.mostrarMensaje(" ");
-        onLoginExitoso.accept(usuario);
+        Sesion.setUsuario(usuario);
+        return usuario;
     }
 
     private void abrirCambiarClave() {
@@ -46,14 +42,18 @@ public class UsuarioController {
             return;
         }
 
-        Usuario usuario = usuarioService.login(username, new String(view.getPassword()));
-        if (usuario == null) {
+        Usuario usuario;
+        try {
+            usuario = usuarioService.login(username, new String(view.getPassword()));
+        } catch (Exception ex) {
             view.mostrarMensaje("Ingrese su usuario y clave actual antes de cambiarla.");
             return;
         }
 
-        Frame owner = (Frame) SwingUtilities.getWindowAncestor(view);
-        CambiarClaveView dialog = new CambiarClaveView(owner);
+        // view ahora es un JDialog (antes era JFrame), por eso se pasa
+        // directamente como dueño en vez de buscarlo con
+        // SwingUtilities.getWindowAncestor(...).
+        CambiarClaveView dialog = new CambiarClaveView(view);
 
         dialog.getBtnConfirmar().addActionListener(e -> {
             String claveActual = new String(dialog.getClaveActual());
@@ -70,7 +70,7 @@ public class UsuarioController {
                 dialog.mostrarMensaje(" ");
                 JOptionPane.showMessageDialog(dialog, "Clave actualizada correctamente.");
                 dialog.dispose();
-            } catch (IllegalArgumentException ex) {
+            } catch (Exception ex) {
                 dialog.mostrarMensaje(ex.getMessage());
             }
         });
