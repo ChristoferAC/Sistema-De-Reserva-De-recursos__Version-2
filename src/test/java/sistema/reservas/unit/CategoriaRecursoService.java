@@ -1,4 +1,4 @@
-package sistema.reservas.unit;
+package sistema.reservas.Presentation.Categoria;
 
 import sistema.reservas.Data.persistence.CategoriaXmlPersister;
 import sistema.reservas.Data.persistence.CategoriasData;
@@ -16,6 +16,13 @@ public class CategoriaRecursoService {
     private static final CategoriaXmlPersister persister = new CategoriaXmlPersister();
     private static CategoriasData data;
     private static int siguienteId = 1;
+
+    /** Usado solo en pruebas: limpia la cache en memoria para que el siguiente
+     *  acceso vuelva a leer el XML desde disco. */
+    public static void resetParaPruebas() {
+        data = null;
+        siguienteId = 1;
+    }
 
     private static CategoriasData data() {
         if (data == null) {
@@ -93,15 +100,5 @@ public class CategoriaRecursoService {
         if (categoria.getDescripcion() == null || categoria.getDescripcion().isBlank()) {
             throw new IllegalArgumentException("La descripción es obligatoria.");
         }
-    }
-
-    /**
-     * Limpia el cache en memoria para forzar una relectura del archivo
-     * en la siguiente operacion. Solo para pruebas unitarias (JUnit) —
-     * la aplicacion real nunca necesita llamar esto.
-     */
-    public static void resetParaPruebas() {
-        data = null;
-        siguienteId = 1;
     }
 }

@@ -2,8 +2,8 @@ package sistema.reservas.Presentation.Login;
 
 import sistema.reservas.Presentation.Actividad.ViewActividad;
 import sistema.reservas.Presentation.Calendarizacion.ViewCalendario;
-import sistema.reservas.Presentation.Categoria.CategoriaPanel;
 import sistema.reservas.Presentation.Estadistica.EstadisticaPanel;
+import sistema.reservas.Presentation.Categoria.CategoriaPanel;
 import sistema.reservas.Presentation.Funcionario.FuncionarioPanel;
 import sistema.reservas.Presentation.Recurso.RecursoPanel;
 import sistema.reservas.Presentation.Reserva.ReservaPanel;

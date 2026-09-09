@@ -93,4 +93,13 @@ public class UsuarioService {
         data().getUsuarios().remove(usuario);
         guardar();
     }
+
+    /**
+     * Limpia el cache en memoria para forzar una relectura del archivo
+     * en la siguiente operacion. Solo para pruebas unitarias (JUnit) —
+     * la aplicacion real nunca necesita llamar esto.
+     */
+    public static void resetParaPruebas() {
+        data = null;
+    }
 }
