@@ -15,6 +15,12 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import dev.langchain4j.model.openai.OpenAiChatModel;
+import dev.langchain4j.service.AiServices;
+import sistema.reservas.Data.llm.ReservaExtraccion;
+import sistema.reservas.Data.llm.ReservaExtractorService;
+import java.util.stream.Collectors;
+
 public class ReservaService {
 
     private static final String RUTA_RESERVAS = "data/reservas.xml";
@@ -547,5 +553,62 @@ public class ReservaService {
         } catch (Exception e) {
             throw new IllegalArgumentException(mensaje + ".");
         }
+    }
+
+    public ReservaExtraccion extraerReserva(String frase) {
+        if (frase == null || frase.trim().isEmpty()) {
+            throw new IllegalArgumentException("Debe describir la reserva en una frase.");
+        }
+        OpenAiChatModel aiModel = OpenAiChatModel.builder()
+                .baseUrl("http://langchain4j.dev/demo/openai/v1") // LangChain4j free proxy
+                .apiKey("demo")                                   // Free demo key
+                .modelName("gpt-4o-mini")                          // Restricted model
+                .build();
+        ReservaExtractorService aiService = AiServices.create(ReservaExtractorService.class, aiModel);
+        String listaCategorias = formatearCategorias(
+                listarTodasLasCategorias().stream().map(CategoriaRecurso::getDescripcion).collect(Collectors.toList()));
+        try {
+            return aiService.extraer(frase, listaCategorias, LocalDate.now().toString());
+        } catch (Exception e) {
+            throw new RuntimeException("No se pudo interpretar la reserva con IA: " + e.getMessage(), e);
+        }
+    }
+
+    private String formatearCategorias(List<String> descripciones) {
+        if (descripciones == null || descripciones.isEmpty()) {
+            return "(no hay categorías registradas)";
+        }
+        StringBuilder sb = new StringBuilder();
+        for (String descripcion : descripciones) {
+            sb.append("- ").append(descripcion).append("\n");
+        }
+        return sb.toString();
+    }
+
+    /** Lee todas las categorías desde data/categorias.xml (mismo esquema que buscarCategoriaPorId). */
+    private List<CategoriaRecurso> listarTodasLasCategorias() {
+        Document doc = XmlUtil.cargarOCrear(RUTA_CATEGORIAS, RAIZ_CATEGORIAS);
+        Element raiz = doc.getDocumentElement();
+        List<CategoriaRecurso> resultado = new ArrayList<>();
+
+        for (Element item : XmlUtil.hijos(raiz, ITEM_CATEGORIA)) {
+            String textoId = XmlUtil.textoDe(item, "id");
+            if (textoId == null || textoId.trim().isEmpty()) {
+                continue;
+            }
+            int id;
+            try {
+                id = Integer.parseInt(textoId.trim());
+            } catch (NumberFormatException e) {
+                continue;
+            }
+            String nombre = XmlUtil.textoDe(item, "nombre");
+            String descripcion = XmlUtil.textoDe(item, "descripcion");
+            if (nombre == null || nombre.trim().isEmpty()) {
+                nombre = descripcion;
+            }
+            resultado.add(new CategoriaRecurso(id, nombre, descripcion));
+        }
+        return resultado;
     }
 }

@@ -433,4 +433,4 @@ public class ReservaPanel implements PropertyChangeListener {
         }
         JOptionPane.showMessageDialog(panel1, mensaje, "Usar IA", JOptionPane.INFORMATION_MESSAGE);
     }
-}
+
