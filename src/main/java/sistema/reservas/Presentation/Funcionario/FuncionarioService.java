@@ -1,53 +1,75 @@
 package sistema.reservas.Presentation.Funcionario;
 
 import sistema.reservas.Logic.Funcionario;
-import sistema.reservas.dao.FuncionarioDAO;
+import sistema.reservas.Logic.Usuario;
+import sistema.reservas.Presentation.Login.UsuarioService;
 
+import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Los Funcionarios son un tipo de Usuario, asi que viven en la misma
+ * lista/archivo que los Administradores (data/usuarios.xml) - este
+ * Service simplemente filtra esa lista por los que son Funcionario,
+ * y delega en UsuarioService para persistir cualquier cambio.
+ */
 public class FuncionarioService {
 
-    private final FuncionarioDAO funcionarioDAO;
-
-    public FuncionarioService(FuncionarioDAO funcionarioDAO) {
-        this.funcionarioDAO = funcionarioDAO;
-    }
-
     public Funcionario buscarPorId(int id) {
-        return funcionarioDAO.buscarPorId(id);
+        for (Usuario u : UsuarioService.listarTodos()) {
+            if (u instanceof Funcionario && u.getId() == id) {
+                return (Funcionario) u;
+            }
+        }
+        return null;
     }
 
     public List<Funcionario> buscarPorNombre(String nombre) {
-        return funcionarioDAO.buscarPorNombre(nombre);
+        List<Funcionario> resultado = new ArrayList<>();
+        for (Usuario u : UsuarioService.listarTodos()) {
+            if (u instanceof Funcionario && u.getNombre().toLowerCase().contains(nombre.toLowerCase())) {
+                resultado.add((Funcionario) u);
+            }
+        }
+        return resultado;
     }
 
     public List<Funcionario> listarTodos() {
-        return funcionarioDAO.listarTodos();
+        List<Funcionario> resultado = new ArrayList<>();
+        for (Usuario u : UsuarioService.listarTodos()) {
+            if (u instanceof Funcionario) {
+                resultado.add((Funcionario) u);
+            }
+        }
+        return resultado;
     }
 
     public void crear(Funcionario funcionario) {
         validar(funcionario);
-        if (funcionarioDAO.buscarPorId(funcionario.getId()) != null) {
+        if (buscarPorId(funcionario.getId()) != null) {
             throw new IllegalArgumentException("Ya existe un funcionario con ese ID.");
         }
-        // Regla del enunciado: la clave inicial del usuario queda igual al id
+        // Regla del enunciado: la clave inicial del usuario queda igual al id.
         funcionario.setPassword(String.valueOf(funcionario.getId()));
-        funcionarioDAO.guardar(funcionario);
+        UsuarioService.registrar(funcionario);
     }
 
     public void actualizar(Funcionario funcionario) {
         validar(funcionario);
-        if (funcionarioDAO.buscarPorId(funcionario.getId()) == null) {
+        if (buscarPorId(funcionario.getId()) == null) {
             throw new IllegalArgumentException("No existe un funcionario con ese ID.");
         }
-        funcionarioDAO.actualizar(funcionario);
+        // El Controller ya modifico los campos directamente sobre la
+        // misma instancia que esta en la lista; solo falta guardar.
+        UsuarioService.guardarCambios();
     }
 
     public void eliminar(int id) {
-        if (funcionarioDAO.buscarPorId(id) == null) {
+        Funcionario existente = buscarPorId(id);
+        if (existente == null) {
             throw new IllegalArgumentException("No existe un funcionario con ese ID.");
         }
-        funcionarioDAO.eliminar(id);
+        UsuarioService.eliminar(existente);
     }
 
     private void validar(Funcionario funcionario) {

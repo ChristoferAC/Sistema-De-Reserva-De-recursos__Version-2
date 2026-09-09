@@ -1,5 +1,8 @@
 package sistema.reservas.unit;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sistema.reservas.Logic.CategoriaRecurso;
@@ -12,13 +15,29 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class CategoriaRecursoServiceTest {
 
-    private CategoriaRecursoDAOFalso categoriaDAO;
     private CategoriaRecursoService categoriaService;
+
+    @BeforeAll
+    static void respaldarDatosReales() {
+        XmlTestDataSupport.respaldar();
+    }
+
+    @AfterAll
+    static void restaurarDatosReales() {
+        XmlTestDataSupport.restaurar();
+    }
 
     @BeforeEach
     void setUp() {
-        categoriaDAO = new CategoriaRecursoDAOFalso();
-        categoriaService = new CategoriaRecursoService(categoriaDAO);
+        XmlTestDataSupport.limpiar();
+        CategoriaRecursoService.resetParaPruebas();
+        categoriaService = new CategoriaRecursoService();
+    }
+
+    @AfterEach
+    void tearDown() {
+        XmlTestDataSupport.limpiar();
+        CategoriaRecursoService.resetParaPruebas();
     }
 
     @Test
@@ -68,5 +87,17 @@ class CategoriaRecursoServiceTest {
         List<CategoriaRecurso> resultado = categoriaService.buscarPorDescripcion("sala");
 
         assertEquals(2, resultado.size());
+    }
+
+    @Test
+    void categoriaPersisteRealmenteEnElArchivoXml() {
+        categoriaService.crear(new CategoriaRecurso(0, "", "Sala de Juntas"));
+
+        // Simula "reiniciar la aplicacion": se limpia el cache en memoria
+        // y se vuelve a leer desde el archivo data/categorias.xml.
+        CategoriaRecursoService.resetParaPruebas();
+        CategoriaRecursoService otraInstancia = new CategoriaRecursoService();
+
+        assertEquals(1, otraInstancia.listarTodas().size());
     }
 }

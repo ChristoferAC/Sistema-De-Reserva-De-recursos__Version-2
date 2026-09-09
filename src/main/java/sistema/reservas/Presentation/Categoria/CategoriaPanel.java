@@ -1,100 +1,215 @@
 package sistema.reservas.Presentation.Categoria;
 
-import sistema.reservas.Presentation.Login.TablaCrudPanel;
+import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
+
+import sistema.reservas.Logic.CategoriaRecurso;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.List;
 
-public class CategoriaPanel extends TablaCrudPanel {
+public class CategoriaPanel implements PropertyChangeListener {
 
+    private JPanel panel1;
     private JTextField txtBuscarDescripcion;
     private JButton btnBuscar;
     private JButton btnImprimir;
-
     private JTextField txtId;
     private JTextField txtDescripcion;
-
     private JButton btnGuardar;
     private JButton btnBorrar;
     private JButton btnLimpiar;
+    private JScrollPane scrollPane1;
+    private JTable tabla;
+
+    private DefaultTableModel tableModel;
+
+    // MVC
+    private CategoriaModel model;
 
     public CategoriaPanel() {
-        super(new String[]{"ID", "Descripcion"});
-        construirExtras();
-    }
+        // La tabla se crea aqui a mano (no depende del generador
+        // automatico del .form) para evitar el bug donde IntelliJ
+        // regeneraba $$$setupUI$$$() sin incluirla.
+        tabla = new JTable();
+        scrollPane1.setViewportView(tabla);
 
-    private void construirExtras() {
-        JPanel panelBusqueda = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panelBusqueda.setBorder(BorderFactory.createTitledBorder("Busqueda"));
-        panelBusqueda.add(new JLabel("Descripcion:"));
-        txtBuscarDescripcion = new JTextField(15);
-        panelBusqueda.add(txtBuscarDescripcion);
-        btnBuscar = new JButton("Buscar");
-        panelBusqueda.add(btnBuscar);
-        btnImprimir = new JButton("Imprimir");
-        panelBusqueda.add(btnImprimir);
-
-        JPanel panelForm = new JPanel(new GridBagLayout());
-        panelForm.setBorder(BorderFactory.createTitledBorder("Categoria"));
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(4, 4, 4, 4);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-
-        gbc.gridx = 0; gbc.gridy = 0;
-        panelForm.add(new JLabel("ID:"), gbc);
-        gbc.gridx = 1;
-        txtId = new JTextField(10);
+        tableModel = new DefaultTableModel(new String[]{"ID", "Descripcion"}, 0) {
+            @Override
+            public boolean isCellEditable(int row, int col) {
+                // La edicion real se hace por formulario (boton "Guardar"),
+                // no directamente en la celda de la tabla.
+                return false;
+            }
+        };
+        tabla.setModel(tableModel);
+        tabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         txtId.setEditable(false);
-        panelForm.add(txtId, gbc);
-
-        gbc.gridx = 0; gbc.gridy = 1;
-        panelForm.add(new JLabel("Descripcion:"), gbc);
-        gbc.gridx = 1;
-        txtDescripcion = new JTextField(25);
-        panelForm.add(txtDescripcion, gbc);
-
-        JPanel panelBotonesForm = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        btnGuardar = new JButton("Guardar");
-        btnBorrar = new JButton("Borrar");
-        btnLimpiar = new JButton("Limpiar");
-        panelBotonesForm.add(btnGuardar);
-        panelBotonesForm.add(btnBorrar);
-        panelBotonesForm.add(btnLimpiar);
-
-        gbc.gridx = 0; gbc.gridy = 2; gbc.gridwidth = 2;
-        panelForm.add(panelBotonesForm, gbc);
-
-        JPanel panelNorte = new JPanel();
-        panelNorte.setLayout(new BoxLayout(panelNorte, BoxLayout.Y_AXIS));
-        panelNorte.add(panelBusqueda);
-        panelNorte.add(panelForm);
-
-        add(panelNorte, BorderLayout.NORTH);
-
-        btnNuevo.setVisible(false);
-        btnEditar.setVisible(false);
-        btnEliminar.setVisible(false);
-        btnActualizar.setVisible(false);
     }
 
-    public JTextField getTxtBuscarDescripcion() { return txtBuscarDescripcion; }
-    public JButton getBtnBuscar() { return btnBuscar; }
-    public JButton getBtnImprimir() { return btnImprimir; }
+    public JPanel getPanel1() {
+        return panel1;
+    }
 
-    public JTextField getTxtId() { return txtId; }
-    public JTextField getTxtDescripcion() { return txtDescripcion; }
+    // --- MVC: enlace con el Model ---
 
-    public JButton getBtnGuardar() { return btnGuardar; }
-    public JButton getBtnBorrar() { return btnBorrar; }
-    public JButton getBtnLimpiar() { return btnLimpiar; }
+    public void setModel(CategoriaModel model) {
+        this.model = model;
+        model.addPropertyChangeListener(this);
+    }
 
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        switch (evt.getPropertyName()) {
+            case CategoriaModel.CATEGORIAS:
+                actualizarTabla(model.getCategorias());
+                break;
+            case CategoriaModel.CURRENT:
+                CategoriaRecurso actual = model.getCurrent();
+                if (actual == null) {
+                    limpiarFormulario();
+                } else {
+                    cargarFormulario(actual.getId(), actual.getDescripcion());
+                }
+                break;
+        }
+    }
+
+    private void actualizarTabla(List<CategoriaRecurso> categorias) {
+        tableModel.setRowCount(0);
+        for (CategoriaRecurso c : categorias) {
+            tableModel.addRow(new Object[]{c.getId(), c.getDescripcion()});
+        }
+    }
+
+    // --- Getters usados por el Controller ---
+
+    public JTextField getTxtBuscarDescripcion() {
+        return txtBuscarDescripcion;
+    }
+
+    public JButton getBtnBuscar() {
+        return btnBuscar;
+    }
+
+    public JButton getBtnImprimir() {
+        return btnImprimir;
+    }
+
+    public JTextField getTxtId() {
+        return txtId;
+    }
+
+    public JTextField getTxtDescripcion() {
+        return txtDescripcion;
+    }
+
+    public JButton getBtnGuardar() {
+        return btnGuardar;
+    }
+
+    public JButton getBtnBorrar() {
+        return btnBorrar;
+    }
+
+    public JButton getBtnLimpiar() {
+        return btnLimpiar;
+    }
+
+    public JTable getTabla() {
+        return tabla;
+    }
+
+    public DefaultTableModel getTableModel() {
+        return tableModel;
+    }
+
+    /**
+     * Limpia el formulario para cargar una nueva categoria.
+     */
     public void limpiarFormulario() {
         txtId.setText("");
         txtDescripcion.setText("");
     }
 
+    /**
+     * Carga los datos de una categoria seleccionada en el formulario.
+     */
     public void cargarFormulario(int id, String descripcion) {
         txtId.setText(String.valueOf(id));
         txtDescripcion.setText(descripcion);
     }
+
+    {
+// GUI initializer generated by IntelliJ IDEA GUI Designer
+// >>> IMPORTANT!! <<<
+// DO NOT EDIT OR ADD ANY CODE HERE!
+        $$$setupUI$$$();
+    }
+
+    /**
+     * Method generated by IntelliJ IDEA GUI Designer
+     * >>> IMPORTANT!! <<<
+     * DO NOT edit this method OR call it in your code!
+     *
+     * @noinspection ALL
+     */
+    private void $$$setupUI$$$() {
+        panel1 = new JPanel();
+        panel1.setLayout(new GridLayoutManager(3, 1, new Insets(5, 5, 5, 5), -1, -1));
+        final JPanel panel2 = new JPanel();
+        panel2.setLayout(new GridLayoutManager(1, 4, new Insets(0, 0, 0, 0), -1, -1));
+        panel1.add(panel2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        final JLabel label1 = new JLabel();
+        label1.setText("Descripcion:");
+        panel2.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        txtBuscarDescripcion = new JTextField();
+        panel2.add(txtBuscarDescripcion, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        btnBuscar = new JButton();
+        btnBuscar.setText("Buscar");
+        panel2.add(btnBuscar, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        btnImprimir = new JButton();
+        btnImprimir.setText("Imprimir");
+        panel2.add(btnImprimir, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JPanel panel3 = new JPanel();
+        panel3.setLayout(new GridLayoutManager(3, 2, new Insets(0, 0, 0, 0), -1, -1));
+        panel1.add(panel3, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        final JLabel label2 = new JLabel();
+        label2.setText("ID:");
+        panel3.add(label2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        txtId = new JTextField();
+        txtId.setEditable(false);
+        panel3.add(txtId, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(100, -1), null, 0, false));
+        final JLabel label3 = new JLabel();
+        label3.setText("Descripcion:");
+        panel3.add(label3, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        txtDescripcion = new JTextField();
+        panel3.add(txtDescripcion, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(250, -1), null, 0, false));
+        final JPanel panel4 = new JPanel();
+        panel4.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
+        panel3.add(panel4, new GridConstraints(2, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        btnGuardar = new JButton();
+        btnGuardar.setText("Guardar");
+        panel4.add(btnGuardar, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        btnBorrar = new JButton();
+        btnBorrar.setText("Borrar");
+        panel4.add(btnBorrar, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        btnLimpiar = new JButton();
+        btnLimpiar.setText("Limpiar");
+        panel4.add(btnLimpiar, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        scrollPane1 = new JScrollPane();
+        panel1.add(scrollPane1, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+    }
+
+    /**
+     * @noinspection ALL
+     */
+    public JComponent $$$getRootComponent$$$() {
+        return panel1;
+    }
+
 }

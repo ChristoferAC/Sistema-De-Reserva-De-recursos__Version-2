@@ -1,5 +1,6 @@
-package sistema.reservas.Presentation.Calendarizacion;
+package sistema.reservas.Presentation.Calendarizacion.Services;
 
+import sistema.reservas.Presentation.Calendarizacion.ModelCalendario;
 import sistema.reservas.Presentation.Recurso.RecursoService;
 import sistema.reservas.Presentation.Reserva.ReservaService;
 import sistema.reservas.Logic.CategoriaRecurso;
@@ -24,7 +25,7 @@ import java.util.List;
  * RecursoService (Integrante 2) para saber qué recursos pertenecen a la
  * categoría consultada.
  */
-public class CalendarizacionService {
+public class ServiceCalendario {
 
     // Decisión de diseño: rango de horario laboral que cubre la matriz.
     // El enunciado no especifica el rango exacto; se deja centralizado
@@ -35,7 +36,7 @@ public class CalendarizacionService {
     private final ReservaService reservaService;
     private final RecursoService recursoService;
 
-    public CalendarizacionService(ReservaService reservaService, RecursoService recursoService) {
+    public ServiceCalendario(ReservaService reservaService, RecursoService recursoService) {
         this.reservaService = reservaService;
         this.recursoService = recursoService;
     }
