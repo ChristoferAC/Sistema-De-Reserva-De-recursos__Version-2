@@ -1,5 +1,7 @@
 package sistema.reservas.Presentation.Login;
 
+import sistema.reservas.Presentation.Actividad.ViewActividad;
+import sistema.reservas.Presentation.Calendarizacion.ViewCalendario;
 import sistema.reservas.Presentation.Categoria.CategoriaPanel;
 import sistema.reservas.Presentation.Estadistica.EstadisticaPanel;
 import sistema.reservas.Presentation.Funcionario.FuncionarioPanel;
@@ -17,8 +19,8 @@ public class MainWindow extends JFrame {
     public final CategoriaPanel categoriaPanel;
     public final RecursoPanel recursoPanel;
     public final ReservaPanel reservaPanel;
-    public final CalendarizacionPanel calendarizacionPanel;
-    public final ActividadPanel actividadPanel;
+    public final ViewCalendario calendarizacionPanel;
+    public final ViewActividad actividadPanel;
     public final EstadisticaPanel estadisticaPanel;
 
     /** Mantiene compatibilidad si algo todavia crea MainWindow sin usuario. */
@@ -33,8 +35,8 @@ public class MainWindow extends JFrame {
         categoriaPanel = new CategoriaPanel();
         recursoPanel = new RecursoPanel();
         reservaPanel = new ReservaPanel();
-        calendarizacionPanel = new CalendarizacionPanel();
-        actividadPanel = new ActividadPanel();
+        calendarizacionPanel = new ViewCalendario();
+        actividadPanel = new ViewActividad();
         estadisticaPanel = new EstadisticaPanel();
 
         boolean esAdministrador = usuarioActual != null && "ADMIN".equals(usuarioActual.getRol());
@@ -45,8 +47,8 @@ public class MainWindow extends JFrame {
         // Segun el enunciado: Funcionarios y Categorias solo las puede
         // usar un Administrador. Si no lo es, esas pestanas ni se crean.
         if (esAdministrador) {
-            tabbedPane.addTab("Funcionarios", funcionarioPanel);           // I1 - solo Administrador
-            tabbedPane.addTab("Categorias", categoriaPanel);               // I1 - solo Administrador
+            tabbedPane.addTab("Funcionarios", funcionarioPanel.getPanel1()); // I1 - solo Administrador
+            tabbedPane.addTab("Categorias", categoriaPanel.getPanel1());   // I1 - solo Administrador
         }
 
         if (esAdministrador) {          // I2 - solo Administrador.
@@ -56,8 +58,10 @@ public class MainWindow extends JFrame {
             tabbedPane.addTab("Reservas", reservaPanel.getPanel());
         }
 
-        tabbedPane.addTab("Calendarizacion", calendarizacionPanel);     // I3
-        tabbedPane.addTab("Actividades", actividadPanel);              // I3
+        // ViewActividad/ViewCalendario exponen getPanel1() (no getPanel()),
+        // que es como IntelliJ nombro el panel raiz del formulario.
+        tabbedPane.addTab("Calendarizacion", calendarizacionPanel.getPanel1());     // I3
+        tabbedPane.addTab("Actividades", actividadPanel.getPanel1());              // I3
         tabbedPane.addTab("Estadisticas", estadisticaPanel);           // I3
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

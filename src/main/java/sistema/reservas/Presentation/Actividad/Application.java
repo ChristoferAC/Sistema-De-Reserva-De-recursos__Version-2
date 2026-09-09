@@ -1,38 +1,56 @@
 package sistema.reservas.Presentation.Actividad;
 
-import sistema.reservas.Presentation.Actividad.Services.ServiceActividad;
-import sistema.reservas.Presentation.Reserva.ReservaService;
+import sistema.reservas.Logic.Sesion;
+import sistema.reservas.Presentation.Categoria.CategoriaRecursoController;
+import sistema.reservas.Presentation.Categoria.CategoriaModel;
+import sistema.reservas.Presentation.Funcionario.FuncionarioController;
+import sistema.reservas.Presentation.Funcionario.FuncionarioModel;
+import sistema.reservas.Presentation.Login.LoginModel;
+import sistema.reservas.Presentation.Login.LoginView;
+import sistema.reservas.Presentation.Login.MainWindow;
+import sistema.reservas.Presentation.Login.UsuarioController;
 
 import javax.swing.*;
 
-/**
- * Clase de prueba (NO es un JUnit test, ni va en el entregable final).
- * Solo sirve para verificar que ActividadService, ActividadController,
- * ModelActividad y ViewActividad compilan y se conectan bien entre sí,
- * sin depender de Application.java ni de los módulos rotos de
- * Usuario/Funcionario/Categoría.
- *
- * Usa ReservaService() real (lee/crea data/reservas.xml tal cual lo
- * haría la app completa). Si no hay reservas guardadas todavía, la
- * tabla va a salir vacía al presionar "Cargar" — eso es esperado,
- * significa que compiló y corrió sin errores.
- */
 public class Application {
 
     public static void main(String[] args) {
-        ReservaService reservaService = new ReservaService();
-        ServiceActividad service = new ServiceActividad(reservaService);
+        try {
+            UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+        } catch (Exception ex) {
+            // Si el look and feel no esta disponible, se sigue con el por defecto.
+        }
 
-        ViewActividad view = new ViewActividad();
-        new ControllerActividad(view, service);
+        doLogin();
 
-        JFrame ventana = new JFrame("Prueba - Actividades");
-        ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        ventana.setContentPane(view.getPanel1());
-        ventana.setSize(700, 500);
-        ventana.setLocationRelativeTo(null);
-        ventana.setVisible(true);
+        if (Sesion.isLoggedIn()) {
+            doRun();
+        }
+    }
 
-        System.out.println("Compiló y arrancó sin errores.");
+    private static void doLogin() {
+        LoginView view = new LoginView();
+        LoginModel model = new LoginModel();
+        new UsuarioController(view, model);
+
+        // Como LoginView es un JDialog modal, esta linea bloquea la
+        // aplicacion hasta que el usuario haga login exitoso (dispose())
+        // o cierre la ventana (lo cual termina el programa, ver
+        // setDefaultCloseOperation en LoginView).
+        view.setVisible(true);
+    }
+
+    private static void doRun() {
+        MainWindow mainWindow = new MainWindow(Sesion.getUsuario());
+
+        // Funcionarios y Categorias solo existen como pestanas si el
+        // usuario es Administrador (ver MainWindow.java), asi que solo
+        // tiene sentido conectar sus Controllers en ese caso.
+        if ("ADMIN".equals(Sesion.getUsuario().getRol())) {
+            new FuncionarioController(mainWindow.funcionarioPanel, new FuncionarioModel());
+            new CategoriaRecursoController(mainWindow.categoriaPanel, new CategoriaModel());
+        }
+
+        mainWindow.setVisible(true);
     }
 }
