@@ -8,7 +8,7 @@ import sistema.reservas.Presentation.Funcionario.FuncionarioModel;
 import sistema.reservas.Presentation.Login.LoginModel;
 import sistema.reservas.Presentation.Login.LoginView;
 import sistema.reservas.Presentation.Login.MainWindow;
-import sistema.reservas.Presentation.Login.UsuarioController;
+import sistema.reservas.Presentation.Usuario.UsuarioController;
 
 import javax.swing.*;
 
