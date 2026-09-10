@@ -2,7 +2,7 @@ package sistema.reservas.Presentation.Funcionario;
 
 import sistema.reservas.Logic.Funcionario;
 import sistema.reservas.Logic.Usuario;
-import sistema.reservas.Presentation.Login.UsuarioService;
+import sistema.reservas.Presentation.Usuario.UsuarioService;
 
 import java.util.ArrayList;
 import java.util.List;
