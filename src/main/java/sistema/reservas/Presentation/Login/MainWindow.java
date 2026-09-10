@@ -2,7 +2,7 @@ package sistema.reservas.Presentation.Login;
 
 import sistema.reservas.Presentation.Actividad.ViewActividad;
 import sistema.reservas.Presentation.Calendarizacion.ViewCalendario;
-import sistema.reservas.Presentation.Estadistica.EstadisticaPanel;
+import sistema.reservas.Presentation.Estadistica.ViewEstadistica;
 import sistema.reservas.Presentation.Categoria.CategoriaPanel;
 import sistema.reservas.Presentation.Funcionario.FuncionarioPanel;
 import sistema.reservas.Presentation.Recurso.RecursoPanel;
@@ -19,9 +19,9 @@ public class MainWindow extends JFrame {
     public final CategoriaPanel categoriaPanel;
     public final RecursoPanel recursoPanel;
     public final ReservaPanel reservaPanel;
-    public final ViewCalendario calendarizacionPanel;
+    public final ViewCalendario calendarioPanel;
     public final ViewActividad actividadPanel;
-    public final EstadisticaPanel estadisticaPanel;
+    public final ViewEstadistica estadisticaPanel;
 
     /** Mantiene compatibilidad si algo todavia crea MainWindow sin usuario. */
     public MainWindow() {
@@ -35,9 +35,9 @@ public class MainWindow extends JFrame {
         categoriaPanel = new CategoriaPanel();
         recursoPanel = new RecursoPanel();
         reservaPanel = new ReservaPanel();
-        calendarizacionPanel = new ViewCalendario();
+        calendarioPanel = new ViewCalendario();
         actividadPanel = new ViewActividad();
-        estadisticaPanel = new EstadisticaPanel();
+        estadisticaPanel = new ViewEstadistica();
 
         boolean esAdministrador = usuarioActual != null && "ADMIN".equals(usuarioActual.getRol());
         boolean esFuncionario = usuarioActual != null && "FUNCIONARIO".equals(usuarioActual.getRol());
@@ -60,9 +60,9 @@ public class MainWindow extends JFrame {
 
         // ViewActividad/ViewCalendario exponen getPanel1() (no getPanel()),
         // que es como IntelliJ nombro el panel raiz del formulario.
-        tabbedPane.addTab("Calendarizacion", calendarizacionPanel.getPanel1());     // I3
+        tabbedPane.addTab("Calendarizacion", calendarioPanel.getPanel1());     // I3
         tabbedPane.addTab("Actividades", actividadPanel.getPanel1());              // I3
-        tabbedPane.addTab("Estadisticas", estadisticaPanel);           // I3
+        tabbedPane.addTab("Estadisticas", estadisticaPanel.getEstadistica());           // I3
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(950, 620);
