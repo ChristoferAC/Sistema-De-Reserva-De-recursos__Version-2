@@ -1,4 +1,4 @@
-package sistema.reservas.Presentation.Actividad;
+package sistema.reservas.Presentation;
 
 import sistema.reservas.Logic.Sesion;
 import sistema.reservas.Presentation.Categoria.CategoriaRecursoController;
