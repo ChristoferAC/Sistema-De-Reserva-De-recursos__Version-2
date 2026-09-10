@@ -62,7 +62,7 @@ public class MainWindow extends JFrame {
         // que es como IntelliJ nombro el panel raiz del formulario.
         tabbedPane.addTab("Calendarizacion", calendarioPanel.getPanel1());     // I3
         tabbedPane.addTab("Actividades", actividadPanel.getPanel1());              // I3
-        tabbedPane.addTab("Estadisticas", estadisticaPanel.);           // I3
+        tabbedPane.addTab("Estadisticas", estadisticaPanel.getEstadistica());           // I3
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(950, 620);

@@ -1,4 +1,4 @@
-package sistema.reservas.Presentation.Estadistica.Services;
+package sistema.reservas.Presentation.Estadistica.Service;
 
 import sistema.reservas.Logic.CategoriaRecurso;
 import sistema.reservas.Logic.Reserva;
