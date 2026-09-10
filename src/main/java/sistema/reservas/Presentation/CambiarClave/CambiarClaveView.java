@@ -7,7 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class CambiarClaveView extends JDialog {
-
+    /// funciona?
     private JPanel contentPane;
     private JPasswordField txtClaveActual;
     private JPasswordField txtClaveNueva;
