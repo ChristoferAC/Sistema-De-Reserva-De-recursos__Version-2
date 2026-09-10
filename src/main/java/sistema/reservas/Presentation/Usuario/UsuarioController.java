@@ -3,8 +3,8 @@ package sistema.reservas.Presentation.Usuario;
 import sistema.reservas.Logic.Sesion;
 import sistema.reservas.Logic.Usuario;
 import sistema.reservas.Presentation.CambiarClave.CambiarClaveView;
-import sistema.reservas.Presentation.Login.LoginView;
 import sistema.reservas.Presentation.Login.LoginModel;
+import sistema.reservas.Presentation.Login.LoginView;
 
 import javax.swing.*;
 
