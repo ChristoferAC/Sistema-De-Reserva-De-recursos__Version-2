@@ -16,6 +16,13 @@
     </properties>
 
     <dependencies>
+        <!-- Runtime del GUI Designer de IntelliJ (com.intellij.uiDesigner.core.*) -->
+        <dependency>
+            <groupId>com.intellij</groupId>
+            <artifactId>forms_rt</artifactId>
+            <version>7.0.3</version>
+        </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
