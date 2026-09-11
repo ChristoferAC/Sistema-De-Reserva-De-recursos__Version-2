@@ -26,21 +26,34 @@ public final class XmlTestDataSupport {
 
     private static final String[] RUTAS = {RUTA_USUARIOS, RUTA_CATEGORIAS, RUTA_RECURSOS, RUTA_RESERVAS};
 
-    private XmlTestDataSupport() {
-    }
+    private static final Object LOCK = new Object();
+    private static int referencias = 0;
+    private static boolean shutdownHookRegistrado = false;
+
+    private XmlTestDataSupport() {}
 
     /** Respalda (renombra a .bak) los archivos de datos reales, si existen. */
     public static void respaldar() {
-        for (String ruta : RUTAS) {
-            moverSiExiste(ruta, ruta + ".bak");
+        synchronized (LOCK) {
+            if (referencias == 0) {
+                for (String ruta : RUTAS) {
+                    moverSiExiste(ruta, ruta + ".bak");
+                }
+                registrarShutdownHookSiHaceFalta();
+            }
+            referencias++;
         }
     }
 
     /** Borra los archivos de prueba y restaura el respaldo original. */
     public static void restaurar() {
-        for (String ruta : RUTAS) {
-            new File(ruta).delete();
-            moverSiExiste(ruta + ".bak", ruta);
+        synchronized (LOCK) {
+            if (referencias > 0) {
+                referencias--;
+            }
+            if (referencias == 0) {
+                restaurarAhora();
+            }
         }
     }
 
@@ -78,6 +91,27 @@ public final class XmlTestDataSupport {
         raiz.appendChild(item);
 
         XmlUtil.guardar(doc, RUTA_USUARIOS);
+    }
+
+    private static void restaurarAhora() {
+        for (String ruta : RUTAS) {
+            new File(ruta).delete();
+            moverSiExiste(ruta + ".bak", ruta);
+        }
+    }
+
+    private static void registrarShutdownHookSiHaceFalta() {
+        if (shutdownHookRegistrado) {
+            return;
+        }
+        shutdownHookRegistrado = true;
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            synchronized (LOCK) {
+                if (referencias > 0) {
+                    restaurarAhora();
+                }
+            }
+        }));
     }
 
     private static void moverSiExiste(String origen, String destino) {
