@@ -9,6 +9,9 @@ import sistema.reservas.Logic.Funcionario;
 import sistema.reservas.Logic.Reserva;
 import sistema.reservas.Logic.Recurso;
 import sistema.reservas.Presentation.Recurso.RecursoService;
+import sistema.reservas.Data.persistence.CategoriaXmlPersister;
+import sistema.reservas.Data.persistence.UsuarioXmlPersister;
+import sistema.reservas.Logic.Usuario;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -23,9 +26,9 @@ import java.util.stream.Collectors;
 
 public class ReservaService {
 
-    private static final String RUTA_RESERVAS = "data/reservas.xml";
-    private static final String RUTA_USUARIOS = "data/usuarios.xml";
-    private static final String RUTA_CATEGORIAS = "data/categorias.xml";
+    private static final String RUTA_RESERVAS = XmlUtil.CARPETA_DATOS + "/reservas.xml";
+    private static final String RUTA_USUARIOS = XmlUtil.CARPETA_DATOS + "/usuarios.xml";
+    private static final String RUTA_CATEGORIAS = XmlUtil.CARPETA_DATOS + "/categorias.xml";
 
     private static final String RAIZ_RESERVAS = "reservas";
     private static final String RAIZ_USUARIOS = "usuarios";
@@ -449,66 +452,31 @@ public class ReservaService {
     }
 
     private Funcionario buscarFuncionarioPorId(int id) {
-        Document doc = XmlUtil.cargarOCrear(RUTA_USUARIOS, RAIZ_USUARIOS);
-
-        Element raiz = doc.getDocumentElement();
-
-        for (Element item : XmlUtil.hijos(raiz, ITEM_USUARIO)) {
-
-            String tipo = item.getAttribute("tipo");
-
-            String textoId = XmlUtil.textoDe(item, "id");
-
-            if (!"FUNCIONARIO".equals(tipo) || textoId == null || textoId.trim().isEmpty()) {
-                continue;
+        try {
+            List<Usuario> usuarios = new UsuarioXmlPersister().load().getUsuarios();
+            if (usuarios == null) {
+                return null;
             }
-            try {
-                if (Integer.parseInt(textoId.trim()) != id) {
-                    continue;
+            for (Usuario usuario : usuarios) {
+                if (usuario instanceof Funcionario && usuario.getId() == id) {
+                    return (Funcionario) usuario;
                 }
-            } catch (NumberFormatException e) {
-                continue;
             }
-
-            return new Funcionario(id, XmlUtil.textoDe(item, "nombre"), XmlUtil.textoDe(item, "username"), XmlUtil.textoDe(item, "password"), XmlUtil.textoDe(item, "telefono"));
+            return null;
+        } catch (Exception e) {
+            throw new RuntimeException("No se pudieron leer los usuarios: " + e.getMessage(), e);
         }
-
-        return null;
+    }
+    public List<Recurso> listarRecursos() {
+        return recursoService.listarRecursos();
     }
 
     private CategoriaRecurso buscarCategoriaPorId(int id) {
-
-        Document doc = XmlUtil.cargarOCrear(RUTA_CATEGORIAS, RAIZ_CATEGORIAS);
-
-        Element raiz = doc.getDocumentElement();
-
-        for (Element item : XmlUtil.hijos(raiz, ITEM_CATEGORIA)) {
-
-            String textoId = XmlUtil.textoDe(item, "id");
-
-            if (textoId == null || textoId.trim().isEmpty()) {
-                continue;
+        for (CategoriaRecurso categoria : listarTodasLasCategorias()) {
+            if (categoria.getId() == id) {
+                return categoria;
             }
-
-            try {
-                if (Integer.parseInt(textoId.trim()) != id) {
-                    continue;
-                }
-            } catch (NumberFormatException e) {
-                continue;
-            }
-
-            String nombre = XmlUtil.textoDe(item, "nombre");
-            String descripcion = XmlUtil.textoDe(item, "descripcion");
-
-            if (nombre == null || nombre.trim().isEmpty()) {
-
-                nombre = descripcion;
-            }
-
-            return new CategoriaRecurso(id, nombre, descripcion);
         }
-
         return null;
     }
 
@@ -587,28 +555,11 @@ public class ReservaService {
 
     /** Lee todas las categorías desde data/categorias.xml (mismo esquema que buscarCategoriaPorId). */
     private List<CategoriaRecurso> listarTodasLasCategorias() {
-        Document doc = XmlUtil.cargarOCrear(RUTA_CATEGORIAS, RAIZ_CATEGORIAS);
-        Element raiz = doc.getDocumentElement();
-        List<CategoriaRecurso> resultado = new ArrayList<>();
-
-        for (Element item : XmlUtil.hijos(raiz, ITEM_CATEGORIA)) {
-            String textoId = XmlUtil.textoDe(item, "id");
-            if (textoId == null || textoId.trim().isEmpty()) {
-                continue;
-            }
-            int id;
-            try {
-                id = Integer.parseInt(textoId.trim());
-            } catch (NumberFormatException e) {
-                continue;
-            }
-            String nombre = XmlUtil.textoDe(item, "nombre");
-            String descripcion = XmlUtil.textoDe(item, "descripcion");
-            if (nombre == null || nombre.trim().isEmpty()) {
-                nombre = descripcion;
-            }
-            resultado.add(new CategoriaRecurso(id, nombre, descripcion));
+        try {
+            List<CategoriaRecurso> categorias = new CategoriaXmlPersister().load().getCategorias();
+            return categorias != null ? categorias : new ArrayList<>();
+        } catch (Exception e) {
+            throw new RuntimeException("No se pudieron leer las categorías: " + e.getMessage(), e);
         }
-        return resultado;
     }
 }

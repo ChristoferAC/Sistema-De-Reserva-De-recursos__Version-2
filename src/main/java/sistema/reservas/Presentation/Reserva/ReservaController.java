@@ -2,6 +2,7 @@ package sistema.reservas.Presentation.Reserva;
 
 import sistema.reservas.Data.llm.ReservaExtraccion;
 import sistema.reservas.Logic.Reserva;
+import sistema.reservas.Logic.Recurso;
 
 import java.util.List;
 
@@ -36,7 +37,9 @@ public class ReservaController {
         reservaService.cancelarReserva(id);
     }
 
-    /** Flujo de IA: delega en el Service, que invoca el LLM vía LangChain4j. */
+    public List<Recurso> listarRecursos() {return reservaService.listarRecursos();}
+
+    /** Delega en el Service, que invoca el LLM vía LangChain4j. */
     public ReservaExtraccion extraerConIA(String frase) {
         return reservaService.extraerReserva(frase);
     }

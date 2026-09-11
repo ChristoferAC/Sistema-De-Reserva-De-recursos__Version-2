@@ -3,7 +3,6 @@ package sistema.reservas.Presentation.Reserva;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import sistema.reservas.Logic.CategoriaRecurso;
 import sistema.reservas.Logic.Funcionario;
 import sistema.reservas.Logic.Recurso;
 import sistema.reservas.Logic.Reserva;
@@ -32,7 +31,7 @@ public class ReservaPanel implements PropertyChangeListener {
     private JTextField txtFecha;
     private JTextField txtHoraInicio;
     private JTextField txtHoraFin;
-    private JComboBox<String> listaCategorias;
+    private JComboBox<String> listaRecursos;
     private JButton btnNueva;
     private JButton btnReservar;
     private JButton btnEditar;
@@ -44,9 +43,9 @@ public class ReservaPanel implements PropertyChangeListener {
     private Funcionario funcionarioActual;
 
     /**
-     * Objetos reales que respaldan las descripciones mostradas en listaCategorias (mismo orden).
+     * Objetos reales que respaldan las descripciones mostradas en listaRecursos (mismo orden).
      */
-    private final List<CategoriaRecurso> categoriasDisponibles = new ArrayList<>();
+    private final List<Recurso> recursosDisponibles = new ArrayList<>();
 
     public ReservaPanel() {
 
@@ -67,16 +66,22 @@ public class ReservaPanel implements PropertyChangeListener {
         btnReservar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                sincronizarRecursos();   // trae los recursos más recientes antes de validar
                 if (validate()) {
                     Reserva reserva = take();
                     try {
                         controller.crear(reserva);
                         JOptionPane.showMessageDialog(panel1,
                                 "RESERVA APLICADA", "", JOptionPane.INFORMATION_MESSAGE);
+                        cargarReservas();
                         limpiar();
                     } catch (Exception ex) {
                         JOptionPane.showMessageDialog(panel1, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                     }
+                } else {
+                    JOptionPane.showMessageDialog(panel1,
+                            "Revise los campos marcados (pase el mouse sobre ellos para ver el detalle).",
+                            "Datos inválidos", JOptionPane.WARNING_MESSAGE);
                 }
             }
         });
@@ -84,15 +89,21 @@ public class ReservaPanel implements PropertyChangeListener {
         btnEditar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                sincronizarRecursos();   // trae los recursos más recientes antes de validar
                 if (validate()) {
                     Reserva reserva = take();
                     try {
                         controller.modificar(reserva);
                         JOptionPane.showMessageDialog(panel1, "RESERVA MODIFICADA", "", JOptionPane.INFORMATION_MESSAGE);
+                        cargarReservas();
                         limpiar();
                     } catch (Exception ex) {
                         JOptionPane.showMessageDialog(panel1, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                     }
+                } else {
+                    JOptionPane.showMessageDialog(panel1,
+                            "Revise los campos marcados (pase el mouse sobre ellos para ver el detalle).",
+                            "Datos inválidos", JOptionPane.WARNING_MESSAGE);
                 }
             }
         });
@@ -120,6 +131,7 @@ public class ReservaPanel implements PropertyChangeListener {
                     controller.cancelar(id);
                     JOptionPane.showMessageDialog(panel1,
                             "RESERVA CANCELADA", "", JOptionPane.INFORMATION_MESSAGE);
+                    cargarReservas();
                     limpiar();
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(panel1, ex.getMessage(),
@@ -168,6 +180,7 @@ public class ReservaPanel implements PropertyChangeListener {
     public void setController(ReservaController controller) {
         this.controller = controller;
         cargarReservas();
+        sincronizarRecursos();
     }
 
     public void setService(ReservaService service) {
@@ -199,22 +212,44 @@ public class ReservaPanel implements PropertyChangeListener {
         reserva.setHoraInicio(LocalTime.parse(txtHoraInicio.getText().trim()));
         reserva.setHoraFin(LocalTime.parse(txtHoraFin.getText().trim()));
 
-        CategoriaRecurso categoriaSeleccionada = obtenerCategoriaSeleccionada();
-        if (categoriaSeleccionada != null) {
-            reserva.agregarCategoria(categoriaSeleccionada);
+        Recurso recursoSeleccionado = obtenerRecursoSeleccionado();
+        if (recursoSeleccionado != null && recursoSeleccionado.getCategoria() != null) {
+            reserva.agregarCategoria(recursoSeleccionado.getCategoria());
         }
         return reserva;
     }
 
-    /**
-     * Resuelve el item seleccionado en el combo hacia el objeto real que representa.
-     */
-    private CategoriaRecurso obtenerCategoriaSeleccionada() {
-        int indice = listaCategorias.getSelectedIndex();
-        if (indice < 0 || indice >= categoriasDisponibles.size()) {
+    private Recurso obtenerRecursoSeleccionado() {
+        int indice = listaRecursos.getSelectedIndex();
+        if (indice < 0 || indice >= recursosDisponibles.size()) {
             return null;
         }
-        return categoriasDisponibles.get(indice);
+        return recursosDisponibles.get(indice);
+    }
+
+    private void sincronizarRecursos() {
+        if (controller == null) {
+            return;
+        }
+
+        Recurso seleccionActual = obtenerRecursoSeleccionado();
+
+        recursosDisponibles.clear();
+        listaRecursos.removeAllItems();
+
+        for (Recurso recurso : controller.listarRecursos()) {
+            recursosDisponibles.add(recurso);
+            listaRecursos.addItem(descripcionRecurso(recurso));
+        }
+
+        if (seleccionActual != null) {
+            listaRecursos.setSelectedItem(descripcionRecurso(seleccionActual));
+        }
+    }
+
+    private String descripcionRecurso(Recurso recurso) {
+        String categoria = recurso.getCategoria() != null ? recurso.getCategoria().getDescripcion() : "";
+        return recurso.getNombre() + " (" + categoria + ")";
     }
 
     private boolean validate() {
@@ -279,11 +314,11 @@ public class ReservaPanel implements PropertyChangeListener {
             }
         }
 
-        if (listaCategorias.getSelectedItem() == null) {
+        if (obtenerRecursoSeleccionado() == null) {
             valido = false;
-            listaCategorias.setToolTipText("Categoría requerida");
+            listaRecursos.setToolTipText("Recurso requerido");
         } else {
-            listaCategorias.setToolTipText(null);
+            listaRecursos.setToolTipText(null);
         }
 
         if (funcionarioActual == null) {
@@ -303,7 +338,6 @@ public class ReservaPanel implements PropertyChangeListener {
 
         try {
             List<Reserva> reservas = controller.listar();
-
             String[] columnas = {"ID", "Funcionario", "Actividad", "Fecha", "Hora Inicio", "Hora Fin", "Recursos"};
 
             DefaultTableModel modelo = new DefaultTableModel(columnas, 0) {
@@ -314,9 +348,7 @@ public class ReservaPanel implements PropertyChangeListener {
             };
 
             for (Reserva reserva : reservas) {
-                String nombreFuncionario = reserva.getFuncionario() != null
-                        ? reserva.getFuncionario().getNombre() : "";
-
+                String nombreFuncionario = reserva.getFuncionario() != null ? reserva.getFuncionario().getNombre() : "";
                 modelo.addRow(new Object[]{
                         reserva.getId(),
                         nombreFuncionario,
@@ -377,28 +409,26 @@ public class ReservaPanel implements PropertyChangeListener {
         txtFecha.setText("");
         txtHoraInicio.setText("");
         txtHoraFin.setText("");
-        listaCategorias.setSelectedItem(null);
+        listaRecursos.setSelectedItem(null);
         tablaReservas.clearSelection();
     }
 
-    /**
-     * Agrega una categoría real disponible; su descripción es lo que se muestra en el combo.
-     */
-    public void agregarCategoria(CategoriaRecurso categoria) {
-        if (categoria == null || categoria.getDescripcion() == null || categoria.getDescripcion().trim().isEmpty()) {
+
+    public void agregarRecurso(Recurso recurso) {
+        if (recurso == null || recurso.getNombre() == null || recurso.getNombre().trim().isEmpty()) {
             return;
         }
-        categoriasDisponibles.add(categoria);
-        listaCategorias.addItem(categoria.getDescripcion());
+        recursosDisponibles.add(recurso);
+        listaRecursos.addItem(descripcionRecurso(recurso));
     }
 
-    public void limpiarCategorias() {
-        categoriasDisponibles.clear();
-        listaCategorias.removeAllItems();
+    public void limpiarRecursos() {
+        recursosDisponibles.clear();
+        listaRecursos.removeAllItems();
     }
 
-    public CategoriaRecurso getCategoriaSeleccionada() {
-        return obtenerCategoriaSeleccionada();
+    public Recurso getRecursoSeleccionado() {
+        return obtenerRecursoSeleccionado();
     }
 
     private void aplicarDatosDeIA(ReservaExtraccion datos) {
@@ -420,10 +450,12 @@ public class ReservaPanel implements PropertyChangeListener {
         if (datos.getCategoriasRecurso() != null) {
             for (String nombreCategoria : datos.getCategoriasRecurso()) {
                 boolean encontrada = false;
-                for (CategoriaRecurso categoria : categoriasDisponibles) {
-                    if (categoria.getDescripcion().equalsIgnoreCase(nombreCategoria)) {
+                for (Recurso recurso : recursosDisponibles) {
+                    if (recurso.getCategoria() != null
+                            && recurso.getCategoria().getDescripcion() != null
+                            && recurso.getCategoria().getDescripcion().equalsIgnoreCase(nombreCategoria)) {
                         if (primeraCoincidencia == null) {
-                            primeraCoincidencia = categoria.getDescripcion();
+                            primeraCoincidencia = descripcionRecurso(recurso);
                         }
                         encontrada = true;
                         break;
@@ -435,7 +467,7 @@ public class ReservaPanel implements PropertyChangeListener {
             }
         }
         if (primeraCoincidencia != null) {
-            listaCategorias.setSelectedItem(primeraCoincidencia);
+            listaRecursos.setSelectedItem(primeraCoincidencia);
         }
         String mensaje = "Datos generados por IA cargados en el formulario. "
                 + "Revíselos y corríjalos si es necesario antes de registrar la reserva.";
@@ -494,7 +526,7 @@ public class ReservaPanel implements PropertyChangeListener {
         label6.setText("Hora Inicio:");
         panel1.add(label6, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label7 = new JLabel();
-        label7.setText("Categorías:");
+        label7.setText("Recursos");
         panel1.add(label7, new GridConstraints(3, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         txtActividad = new JTextField();
         panel1.add(txtActividad, new GridConstraints(1, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
@@ -523,8 +555,8 @@ public class ReservaPanel implements PropertyChangeListener {
         btnUsarIA = new JButton();
         btnUsarIA.setText("Usar IA");
         panel2.add(btnUsarIA, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        listaCategorias = new JComboBox();
-        panel1.add(listaCategorias, new GridConstraints(3, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        listaRecursos = new JComboBox();
+        panel1.add(listaRecursos, new GridConstraints(3, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JScrollPane scrollPane1 = new JScrollPane();
         panel1.add(scrollPane1, new GridConstraints(5, 0, 1, 4, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         scrollPane1.setBorder(BorderFactory.createTitledBorder(null, "Reservas", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
@@ -538,4 +570,5 @@ public class ReservaPanel implements PropertyChangeListener {
     public JComponent $$$getRootComponent$$$() {
         return panel1;
     }
+
 }

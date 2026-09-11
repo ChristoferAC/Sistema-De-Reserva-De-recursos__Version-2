@@ -1,5 +1,6 @@
 package sistema.reservas.Presentation.Recurso;
 import sistema.reservas.Logic.Recurso;
+import sistema.reservas.Logic.CategoriaRecurso;
 
 import java.util.List;
 
@@ -13,6 +14,8 @@ public class RecursoController {
     public void crear(Recurso recurso) {
         recursoService.crearRecurso(recurso);
     }
+
+    public List<CategoriaRecurso> listarCategorias() {return recursoService.listarCategorias();}
 
     public Recurso buscar(String id) {
         return recursoService.buscarRecurso(id);

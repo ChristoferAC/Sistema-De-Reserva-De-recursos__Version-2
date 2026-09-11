@@ -36,9 +36,7 @@ public class RecursoPanel implements PropertyChangeListener {
     private JTable tabla;
     private JScrollPane scrollTabla;
 
-    /**
-     * Objetos reales que respaldan las descripciones mostradas en cmbCategoria (mismo orden).
-     */
+
     private final List<CategoriaRecurso> categoriasDisponibles = new ArrayList<>();
 
     public RecursoPanel() {
@@ -60,17 +58,22 @@ public class RecursoPanel implements PropertyChangeListener {
         btnGuardar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                sincronizarCategorias();   // trae las categorías más recientes antes de validar
                 if (validate()) {
                     Recurso recurso = take();
                     try {
                         controller.crear(recurso);
-                        JOptionPane.showMessageDialog(panel1,
-                                "RECURSO REGISTRADO", "", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(panel1, "RECURSO REGISTRADO", "", JOptionPane.INFORMATION_MESSAGE);
+                        cargarRecursos();   // refresca la tabla con el recurso recien creado
                         limpiar();
                     } catch (Exception ex) {
                         JOptionPane.showMessageDialog(panel1, ex.getMessage(),
                                 "Error", JOptionPane.ERROR_MESSAGE);
                     }
+                } else {
+                    JOptionPane.showMessageDialog(panel1,
+                            "Revise los campos marcados (pase el mouse sobre ellos para ver el detalle).",
+                            "Datos inválidos", JOptionPane.WARNING_MESSAGE);
                 }
             }
         });
@@ -78,17 +81,23 @@ public class RecursoPanel implements PropertyChangeListener {
         btnEditar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                sincronizarCategorias();   // trae las categorías más recientes antes de validar
                 if (validate()) {
                     Recurso recurso = take();
                     try {
                         controller.modificar(recurso);
                         JOptionPane.showMessageDialog(panel1,
                                 "RECURSO MODIFICADO", "", JOptionPane.INFORMATION_MESSAGE);
+                        cargarRecursos();   // refresca la tabla con el cambio
                         limpiar();
                     } catch (Exception ex) {
                         JOptionPane.showMessageDialog(panel1, ex.getMessage(),
                                 "Error", JOptionPane.ERROR_MESSAGE);
                     }
+                } else {
+                    JOptionPane.showMessageDialog(panel1,
+                            "Revise los campos marcados (pase el mouse sobre ellos para ver el detalle).",
+                            "Datos inválidos", JOptionPane.WARNING_MESSAGE);
                 }
             }
         });
@@ -116,6 +125,7 @@ public class RecursoPanel implements PropertyChangeListener {
                     controller.eliminar(id);
                     JOptionPane.showMessageDialog(panel1,
                             "RECURSO ELIMINADO", "", JOptionPane.INFORMATION_MESSAGE);
+                    cargarRecursos();   // refresca la tabla tras eliminar
                     limpiar();
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(panel1, ex.getMessage(),
@@ -148,6 +158,7 @@ public class RecursoPanel implements PropertyChangeListener {
     public void setController(RecursoController controller) {
         this.controller = controller;
         cargarRecursos();
+        sincronizarCategorias();
     }
 
     public void setService(RecursoService service) {
@@ -162,23 +173,40 @@ public class RecursoPanel implements PropertyChangeListener {
     }
 
     public Recurso take() {
-        Recurso recurso = new Recurso(
+        return new Recurso(
                 txtId.getText().trim(),
                 txtNombre.getText().trim(),
                 txtDescripcion.getText().trim(),
                 obtenerCategoriaSeleccionada());
-        return recurso;
     }
 
-    /**
-     * Resuelve el item seleccionado en el combo hacia el objeto real que representa.
-     */
+
     private CategoriaRecurso obtenerCategoriaSeleccionada() {
         int indice = cmbCategoria.getSelectedIndex();
         if (indice < 0 || indice >= categoriasDisponibles.size()) {
             return null;
         }
         return categoriasDisponibles.get(indice);
+    }
+
+    private void sincronizarCategorias() {
+        if (controller == null) {
+            return;
+        }
+
+        String seleccionActual = (String) cmbCategoria.getSelectedItem();
+
+        categoriasDisponibles.clear();
+        cmbCategoria.removeAllItems();
+
+        for (CategoriaRecurso categoria : controller.listarCategorias()) {
+            categoriasDisponibles.add(categoria);
+            cmbCategoria.addItem(categoria.getDescripcion());
+        }
+
+        if (seleccionActual != null) {
+            cmbCategoria.setSelectedItem(seleccionActual);
+        }
     }
 
     private boolean validate() {
@@ -205,7 +233,7 @@ public class RecursoPanel implements PropertyChangeListener {
             txtDescripcion.setToolTipText(null);
         }
 
-        if (cmbCategoria.getSelectedItem() == null) {
+        if (obtenerCategoriaSeleccionada() == null) {
             valido = false;
             cmbCategoria.setToolTipText("Categoría requerida");
         } else {
@@ -267,14 +295,7 @@ public class RecursoPanel implements PropertyChangeListener {
         txtId.setText(String.valueOf(tabla.getValueAt(fila, 0)));
         txtNombre.setText(String.valueOf(tabla.getValueAt(fila, 1)));
         txtDescripcion.setText(String.valueOf(tabla.getValueAt(fila, 2)));
-
-        String descripcionCategoria = String.valueOf(tabla.getValueAt(fila, 3));
-        for (int i = 0; i < categoriasDisponibles.size(); i++) {
-            if (categoriasDisponibles.get(i).getDescripcion().equals(descripcionCategoria)) {
-                cmbCategoria.setSelectedIndex(i);
-                break;
-            }
-        }
+        cmbCategoria.setSelectedItem(String.valueOf(tabla.getValueAt(fila, 3)));
     }
 
     public void limpiar() {
@@ -364,8 +385,6 @@ public class RecursoPanel implements PropertyChangeListener {
         panel3.add(label4, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         txtDescripcion = new JTextField();
         panel3.add(txtDescripcion, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        cmbCategoria = new JComboBox();
-        panel3.add(cmbCategoria, new GridConstraints(1, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label5 = new JLabel();
         label5.setText("Filtar Categoria");
         panel3.add(label5, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -374,6 +393,8 @@ public class RecursoPanel implements PropertyChangeListener {
         btnBuscar = new JButton();
         btnBuscar.setText("Buscar");
         panel3.add(btnBuscar, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        cmbCategoria = new JComboBox();
+        panel3.add(cmbCategoria, new GridConstraints(2, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         scrollTabla = new JScrollPane();
         scrollTabla.setEnabled(true);
         panel1.add(scrollTabla, new GridConstraints(2, 0, 1, 4, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
@@ -388,4 +409,5 @@ public class RecursoPanel implements PropertyChangeListener {
     public JComponent $$$getRootComponent$$$() {
         return panel1;
     }
+
 }

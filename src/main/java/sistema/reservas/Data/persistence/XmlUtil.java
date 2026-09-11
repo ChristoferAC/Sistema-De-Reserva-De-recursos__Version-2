@@ -105,4 +105,12 @@ public final class XmlUtil {
         }
         return nodos.item(0).getTextContent();
     }
+
+    public static final String CARPETA_DATOS = resolverCarpetaDatos();
+
+    private static String resolverCarpetaDatos() {
+        String ruta = new File(System.getProperty("user.dir"), "data").getAbsolutePath();
+        System.out.println("[XmlUtil] Los archivos XML de datos se guardan en: " + ruta);
+        return ruta;
+    }
 }

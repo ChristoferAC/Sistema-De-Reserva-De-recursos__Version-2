@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recursos>
+    <recurso>
+        <id>1111</id>
+        <nombre>Laptop</nombre>
+        <descripcion>Laptop Dell 19"</descripcion>
+        <idCategoria>1</idCategoria>
+    </recurso>
+</recursos>

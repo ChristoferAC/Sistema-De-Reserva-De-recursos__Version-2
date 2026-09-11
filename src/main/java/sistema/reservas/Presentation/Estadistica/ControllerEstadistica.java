@@ -5,7 +5,7 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.category.DefaultCategoryDataset;
 
-import sistema.reservas.Presentation.Estadistica.Services.ServiceEstadistica;
+import sistema.reservas.Presentation.Estadistica.Service.ServiceEstadistica;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;

@@ -6,14 +6,15 @@ import org.w3c.dom.Element;
 import sistema.reservas.Data.persistence.XmlUtil;
 import sistema.reservas.Logic.CategoriaRecurso;
 import sistema.reservas.Logic.Recurso;
+import sistema.reservas.Data.persistence.CategoriaXmlPersister;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class RecursoService {
 
-    private static final String RUTA_RECURSOS = "data/recursos.xml";
-    private static final String RUTA_CATEGORIAS = "data/categorias.xml";
+    private static final String RUTA_RECURSOS = XmlUtil.CARPETA_DATOS + "/recursos.xml";
+    private static final String RUTA_CATEGORIAS = XmlUtil.CARPETA_DATOS + "/categorias.xml";
 
     private static final String RAIZ_RECURSOS = "recursos";
     private static final String RAIZ_CATEGORIAS = "categorias";
@@ -168,34 +169,20 @@ public class RecursoService {
         return new Recurso(id, nombre, descripcion, categoria);
     }
 
+    public List<CategoriaRecurso> listarCategorias() {
+        try {
+            List<CategoriaRecurso> categorias = new CategoriaXmlPersister().load().getCategorias();
+            return categorias != null ? categorias : new ArrayList<>();
+        } catch (Exception e) {
+            throw new RuntimeException("No se pudieron leer las categorías: " + e.getMessage(), e);
+        }
+    }
+
     private CategoriaRecurso buscarCategoriaPorId(int id) {
-        Document doc = XmlUtil.cargarOCrear(RUTA_CATEGORIAS, RAIZ_CATEGORIAS);
-
-        Element raiz = doc.getDocumentElement();
-
-        for (Element item : XmlUtil.hijos(raiz, ITEM_CATEGORIA)) {
-            String textoId = XmlUtil.textoDe(item, "id");
-
-            if (textoId == null || textoId.trim().isEmpty()) {
-                continue;
+        for (CategoriaRecurso categoria : listarCategorias()) {
+            if (categoria.getId() == id) {
+                return categoria;
             }
-
-            try {
-                if (Integer.parseInt(textoId.trim()) != id) {
-                    continue;
-                }
-            } catch (NumberFormatException e) {
-                continue;
-            }
-
-            String nombre = XmlUtil.textoDe(item, "nombre");
-            String descripcion = XmlUtil.textoDe(item, "descripcion");
-
-            if (nombre == null || nombre.trim().isEmpty()) {
-                nombre = descripcion;
-            }
-
-            return new CategoriaRecurso(id, nombre, descripcion);
         }
         return null;
     }

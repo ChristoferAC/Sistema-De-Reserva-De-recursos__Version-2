@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<reservas>
+    <reserva>
+        <id>1111</id>
+        <idFuncionario>1234</idFuncionario>
+        <actividad>reservar laptop</actividad>
+        <fecha>2026-09-10</fecha>
+        <horaInicio>10:00</horaInicio>
+        <horaFin>11:00</horaFin>
+        <estado>ACTIVA</estado>
+        <categoriasSolicitadas>
+            <categoria>
+                <id>1</id>
+            </categoria>
+        </categoriasSolicitadas>
+        <recursosAsignados>
+            <recurso>
+                <id>1111</id>
+            </recurso>
+        </recursosAsignados>
+    </reserva>
+</reservas>
