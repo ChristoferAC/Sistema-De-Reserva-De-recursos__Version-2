@@ -5,6 +5,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 public class ViewCalendario {
@@ -59,6 +60,18 @@ public class ViewCalendario {
         panel2.add(spacer1, new GridConstraints(1, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
     }
 
+    private DefaultTableModel tableModel;
+
+    public ViewCalendario() {
+        tableModel = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        tabla.setModel(tableModel);
+    }
+
     public JPanel getPanel1() {
         return panel1;
     }
@@ -81,5 +94,9 @@ public class ViewCalendario {
 
     public JTable getTabla() {
         return tabla;
+    }
+
+    public DefaultTableModel getTableModel() {
+        return tableModel;
     }
 }
