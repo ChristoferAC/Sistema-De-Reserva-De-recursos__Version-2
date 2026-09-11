@@ -39,8 +39,11 @@ public class Application {
 
         if (Sesion.isLoggedIn()) {
             doRun();
+            System.out.println("Buscando datos en: " + new java.io.File("data").getAbsolutePath());
         }
     }
+
+
 
     private static void doLogin() {
         LoginView view = new LoginView();
