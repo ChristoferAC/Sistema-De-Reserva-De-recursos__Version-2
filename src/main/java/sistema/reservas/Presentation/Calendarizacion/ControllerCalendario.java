@@ -46,8 +46,21 @@ public class ControllerCalendario {
         JComboBox combo = view.getComboCategoria();
         combo.removeAllItems();
         for (CategoriaRecurso categoria : categorias) {
-            combo.addItem(categoria.getNombre());
+            combo.addItem(textoCategoria(categoria));
         }
+    }
+
+    /**
+     * En este proyecto las categorías se crean solo con descripción
+     * (el campo "nombre" queda vacío) — ver data/categorias.xml. Se usa
+     * getDescripcion() como respaldo para que el combo no aparezca en blanco.
+     */
+    private String textoCategoria(CategoriaRecurso categoria) {
+        String nombre = categoria.getNombre();
+        if (nombre != null && !nombre.isBlank()) {
+            return nombre;
+        }
+        return categoria.getDescripcion();
     }
 
     private void onCargar() {

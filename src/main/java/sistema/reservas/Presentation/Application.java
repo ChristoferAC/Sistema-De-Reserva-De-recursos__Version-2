@@ -3,8 +3,15 @@ package sistema.reservas.Presentation;
 import sistema.reservas.Logic.CategoriaRecurso;
 import sistema.reservas.Logic.Funcionario;
 import sistema.reservas.Logic.Sesion;
-import sistema.reservas.Presentation.Categoria.CategoriaRecursoController;
+
+import sistema.reservas.Presentation.Actividad.ControllerActividad;
+import sistema.reservas.Presentation.Actividad.Services.ServiceActividad;
+import sistema.reservas.Presentation.Calendarizacion.ControllerCalendario;
+import sistema.reservas.Presentation.Calendarizacion.Services.ServiceCalendario;
 import sistema.reservas.Presentation.Categoria.CategoriaModel;
+import sistema.reservas.Presentation.Categoria.CategoriaRecursoController;
+import sistema.reservas.Presentation.Estadistica.ControllerEstadistica;
+import sistema.reservas.Presentation.Estadistica.Service.ServiceEstadistica;
 import sistema.reservas.Presentation.Funcionario.FuncionarioController;
 import sistema.reservas.Presentation.Funcionario.FuncionarioModel;
 import sistema.reservas.Presentation.Login.LoginModel;
@@ -40,30 +47,24 @@ public class Application {
         LoginModel model = new LoginModel();
         new UsuarioController(view, model);
 
-        // Como LoginView es un JDialog modal, esta linea bloquea la
-        // aplicacion hasta que el usuario haga login exitoso (dispose())
-        // o cierre la ventana (lo cual termina el programa, ver
-        // setDefaultCloseOperation en LoginView).
         view.setVisible(true);
     }
 
     private static void doRun() {
         MainWindow mainWindow = new MainWindow(Sesion.getUsuario());
 
-        // Recurso/Reserva comparten el catalogo de categorias, asi que el
-        // RecursoService (dueno de listarCategorias()) se crea una sola
-        // vez sin importar el rol del usuario logueado.
+        // Recurso y Reserva son el nucleo de datos del que tambien
+        // dependen Actividades, Calendarizacion y Estadisticas
+        // (Integrante 3), asi que se crean una sola vez, sin importar
+        // el rol del usuario logueado (esas 3 pestanas se ven siempre).
         RecursoService recursoService = new RecursoService();
+        ReservaService reservaService = new ReservaService(recursoService);
         List<CategoriaRecurso> categorias = recursoService.listarCategorias();
 
-        // Funcionarios y Categorias solo existen como pestanas si el
-        // usuario es Administrador (ver MainWindow.java), asi que solo
-        // tiene sentido conectar sus Controllers en ese caso.
         if ("ADMIN".equals(Sesion.getUsuario().getRol())) {
             new FuncionarioController(mainWindow.funcionarioPanel, new FuncionarioModel());
             new CategoriaRecursoController(mainWindow.categoriaPanel, new CategoriaModel());
 
-            // Recursos (funcionalidad 5) solo la usa un Administrador.
             for (CategoriaRecurso categoria : categorias) {
                 mainWindow.recursoPanel.agregarCategoria(categoria);
             }
@@ -71,14 +72,21 @@ public class Application {
             mainWindow.recursoPanel.setController(recursoController);
         }
 
-        // Reservas (funcionalidad 2) solo la usa un Funcionario.
         if ("FUNCIONARIO".equals(Sesion.getUsuario().getRol())) {
             mainWindow.reservaPanel.setFuncionario((Funcionario) Sesion.getUsuario());
 
-            ReservaService reservaService = new ReservaService(recursoService);
             ReservaController reservaController = new ReservaController(reservaService);
             mainWindow.reservaPanel.setController(reservaController);
         }
+
+        new ControllerActividad(mainWindow.actividadPanel, new ServiceActividad(reservaService));
+
+        new ControllerCalendario(
+                mainWindow.calendarioPanel,
+                new ServiceCalendario(reservaService, recursoService),
+                recursoService::listarCategorias);
+
+        new ControllerEstadistica(mainWindow.estadisticaPanel, new ServiceEstadistica(reservaService));
 
         mainWindow.setVisible(true);
     }

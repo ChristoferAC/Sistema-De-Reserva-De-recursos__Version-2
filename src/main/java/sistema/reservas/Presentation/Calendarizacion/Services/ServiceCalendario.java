@@ -54,7 +54,7 @@ public class ServiceCalendario {
 
         List<Reserva> reservasDelDia = new ArrayList<>();
         for (Reserva reserva : reservaService.listarReservas()) {
-            if (fecha.equals(reserva.getFecha())) {
+            if (reserva.isActiva() && fecha.equals(reserva.getFecha())) {
                 reservasDelDia.add(reserva);
             }
         }
