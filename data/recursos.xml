@@ -6,4 +6,40 @@
         <descripcion>Laptop Dell 19"</descripcion>
         <idCategoria>1</idCategoria>
     </recurso>
+    <recurso>
+        <id>1112</id>
+        <nombre>Proyector</nombre>
+        <descripcion>Proyector con con cables Respectivos</descripcion>
+        <idCategoria>1</idCategoria>
+    </recurso>
+     <recurso>
+        <id>2221</id>
+        <nombre>Salon Grande</nombre>
+        <descripcion>Salon Grande para Eventos</descripcion>
+        <idCategoria>2</idCategoria>
+    </recurso>
+    <recurso>
+        <id>2222</id>
+        <nombre>Salon Mediano</nombre>
+        <descripcion>Salon Mediano Para Eventos</descripcion>
+        <idCategoria>2</idCategoria>
+    </recurso>
+    <recurso>
+        <id>2223</id>
+        <nombre>Salon Pequeño</nombre>
+        <descripcion>Salon Pequeño para Eventos</descripcion>
+        <idCategoria>2</idCategoria>
+    </recurso>
+    <recurso>
+        <id>3331</id>
+        <nombre>Sillas</nombre>
+        <descripcion>Sillas Plegables</descripcion>
+        <idCategoria>3</idCategoria>
+    </recurso>
+    <recurso>
+        <id>3332</id>
+        <nombre>Mesas</nombre>
+        <descripcion>Mesa Plegables</descripcion>
+        <idCategoria>3</idCategoria>
+    </recurso>
 </recursos>
