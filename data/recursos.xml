@@ -17,6 +17,7 @@
         <nombre>Salon Grande</nombre>
         <descripcion>Salon Grande para Eventos</descripcion>
         <idCategoria>2</idCategoria>
+
     </recurso>
     <recurso>
         <id>2222</id>
