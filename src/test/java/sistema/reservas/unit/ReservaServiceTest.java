@@ -9,8 +9,8 @@ import sistema.reservas.Logic.CategoriaRecurso;
 import sistema.reservas.Logic.Funcionario;
 import sistema.reservas.Logic.Recurso;
 import sistema.reservas.Logic.Reserva;
-import sistema.reservas.Presentation.Recurso.RecursoService;
-import sistema.reservas.Presentation.Reserva.ReservaService;
+import sistema.reservas.Presentation.Recurso.Services.RecursoService;
+import sistema.reservas.Presentation.Reserva.Services.ReservaService;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

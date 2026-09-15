@@ -7,7 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sistema.reservas.Logic.CategoriaRecurso;
 import sistema.reservas.Logic.Recurso;
-import sistema.reservas.Presentation.Recurso.RecursoService;
+import sistema.reservas.Presentation.Recurso.Services.RecursoService;
 
 import java.util.List;
 

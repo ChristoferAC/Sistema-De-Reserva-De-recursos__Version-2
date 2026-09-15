@@ -18,9 +18,9 @@ import sistema.reservas.Presentation.Login.LoginModel;
 import sistema.reservas.Presentation.Login.LoginView;
 import sistema.reservas.Presentation.Login.MainWindow;
 import sistema.reservas.Presentation.Recurso.RecursoController;
-import sistema.reservas.Presentation.Recurso.RecursoService;
+import sistema.reservas.Presentation.Recurso.Services.RecursoService;
 import sistema.reservas.Presentation.Reserva.ReservaController;
-import sistema.reservas.Presentation.Reserva.ReservaService;
+import sistema.reservas.Presentation.Reserva.Services.ReservaService;
 import sistema.reservas.Presentation.Usuario.UsuarioController;
 
 import javax.swing.*;

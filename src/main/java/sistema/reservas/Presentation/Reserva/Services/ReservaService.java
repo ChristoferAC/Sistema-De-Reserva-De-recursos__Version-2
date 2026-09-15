@@ -1,5 +1,5 @@
 // ReservaService.java
-package sistema.reservas.Presentation.Reserva;
+package sistema.reservas.Presentation.Reserva.Services;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -8,7 +8,7 @@ import sistema.reservas.Logic.CategoriaRecurso;
 import sistema.reservas.Logic.Funcionario;
 import sistema.reservas.Logic.Reserva;
 import sistema.reservas.Logic.Recurso;
-import sistema.reservas.Presentation.Recurso.RecursoService;
+import sistema.reservas.Presentation.Recurso.Services.RecursoService;
 import sistema.reservas.Data.persistence.CategoriaXmlPersister;
 import sistema.reservas.Data.persistence.UsuarioXmlPersister;
 import sistema.reservas.Logic.Usuario;

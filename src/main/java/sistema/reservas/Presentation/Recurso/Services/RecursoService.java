@@ -1,5 +1,5 @@
 // RecursoService.java
-package sistema.reservas.Presentation.Recurso;
+package sistema.reservas.Presentation.Recurso.Services;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

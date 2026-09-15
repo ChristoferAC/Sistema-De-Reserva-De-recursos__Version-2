@@ -5,6 +5,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import sistema.reservas.Logic.CategoriaRecurso;
 import sistema.reservas.Logic.Recurso;
+import sistema.reservas.Presentation.Recurso.Services.RecursoService;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
