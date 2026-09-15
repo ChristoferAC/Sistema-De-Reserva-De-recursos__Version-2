@@ -1,4 +1,4 @@
-package sistema.reservas.Presentation.Categoria;
+package sistema.reservas.unit;
 
 import sistema.reservas.Data.persistence.CategoriaXmlPersister;
 import sistema.reservas.Data.persistence.CategoriasData;

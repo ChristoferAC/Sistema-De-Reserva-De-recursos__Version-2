@@ -125,13 +125,11 @@ class ReservaServiceTest {
 
     @Test
     void cancelarReserva_liberaElRecursoParaOtraReserva() {
-        // Solo hay 2 laptops; ambas ocupadas en la misma fecha/hora.
         reservaService.crearReserva(nuevaReserva(1, LocalDate.of(2026, 9, 10)));
         reservaService.crearReserva(nuevaReserva(2, LocalDate.of(2026, 9, 10)));
 
         reservaService.cancelarReserva(1);
 
-        // Ahora sí debería haber disponibilidad para una tercera reserva.
         assertDoesNotThrow(() -> reservaService.crearReserva(nuevaReserva(3, LocalDate.of(2026, 9, 10))));
     }
 
@@ -150,11 +148,10 @@ class ReservaServiceTest {
 
     @Test
     void cancelarReserva_rechazaReservaPasada() {
-        Reserva reserva = new Reserva(1, funcionario, "Reunión", LocalDate.now().minusDays(1), LocalTime.of(9, 0), LocalTime.of(10, 0));
-        reserva.agregarRecurso(new Recurso("238715", "Laptop #238715", "desc", categoriaLaptop));
-        // Se inserta directo (crearReserva no permite crear en el pasado
-        // por disponibilidad al azar); esto simula una reserva ya vieja.
-        reservaService.crearReserva(nuevaReserva(2, LocalDate.now().plusDays(1)));
+        Reserva reservaPasada = new Reserva(1, funcionario, "Reunión", LocalDate.now().minusDays(1), LocalTime.of(9, 0), LocalTime.of(10, 0));
+        reservaPasada.agregarCategoria(categoriaLaptop);
+
+        reservaService.crearReserva(reservaPasada);
 
         assertThrows(IllegalArgumentException.class, () -> reservaService.cancelarReserva(1));
     }

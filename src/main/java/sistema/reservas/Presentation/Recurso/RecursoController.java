@@ -36,7 +36,7 @@ public class RecursoController {
     }
 
     private void guardar() {
-        model.setCategorias(recursoService.listarCategorias()); // por si se creó una categoría nueva en esta sesión
+        model.setCategorias(recursoService.listarCategorias());
         if (!validate()) {
             JOptionPane.showMessageDialog(view.getPanel(),
                     "Revise los campos marcados (pase el mouse sobre ellos para ver el detalle).",
