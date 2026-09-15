@@ -18,8 +18,10 @@ import sistema.reservas.Presentation.Login.LoginModel;
 import sistema.reservas.Presentation.Login.LoginView;
 import sistema.reservas.Presentation.Login.MainWindow;
 import sistema.reservas.Presentation.Recurso.RecursoController;
+import sistema.reservas.Presentation.Recurso.RecursoModel;
 import sistema.reservas.Presentation.Recurso.Services.RecursoService;
 import sistema.reservas.Presentation.Reserva.ReservaController;
+import sistema.reservas.Presentation.Reserva.ReservaModel;
 import sistema.reservas.Presentation.Reserva.Services.ReservaService;
 import sistema.reservas.Presentation.Usuario.UsuarioController;
 
@@ -67,19 +69,12 @@ public class Application {
         if ("ADMIN".equals(Sesion.getUsuario().getRol())) {
             new FuncionarioController(mainWindow.funcionarioPanel, new FuncionarioModel());
             new CategoriaRecursoController(mainWindow.categoriaPanel, new CategoriaModel());
-
-            for (CategoriaRecurso categoria : categorias) {
-                mainWindow.recursoPanel.agregarCategoria(categoria);
-            }
-            RecursoController recursoController = new RecursoController(recursoService);
-            mainWindow.recursoPanel.setController(recursoController);
+            new RecursoController(mainWindow.recursoPanel, new RecursoModel(), recursoService);
         }
 
         if ("FUNCIONARIO".equals(Sesion.getUsuario().getRol())) {
             mainWindow.reservaPanel.setFuncionario((Funcionario) Sesion.getUsuario());
-
-            ReservaController reservaController = new ReservaController(reservaService);
-            mainWindow.reservaPanel.setController(reservaController);
+            new ReservaController(mainWindow.reservaPanel, new ReservaModel(), reservaService);
         }
 
         new ControllerActividad(mainWindow.actividadPanel, new ServiceActividad(reservaService));
