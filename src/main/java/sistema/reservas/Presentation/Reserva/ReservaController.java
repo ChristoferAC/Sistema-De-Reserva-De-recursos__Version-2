@@ -3,7 +3,7 @@ package sistema.reservas.Presentation.Reserva;
 import sistema.reservas.Data.llm.ReservaExtraccion;
 import sistema.reservas.Logic.Recurso;
 import sistema.reservas.Logic.Reserva;
-import sistema.reservas.Presentation.Reserva.Services.ReservaService;
+import sistema.reservas.Logic.Services.ReservaService;
 
 import javax.swing.*;
 import java.time.LocalDate;

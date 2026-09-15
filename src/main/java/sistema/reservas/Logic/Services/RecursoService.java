@@ -1,4 +1,4 @@
-package sistema.reservas.Presentation.Recurso.Services;
+package sistema.reservas.Logic.Services;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

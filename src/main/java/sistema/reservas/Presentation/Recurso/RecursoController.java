@@ -2,7 +2,7 @@ package sistema.reservas.Presentation.Recurso;
 
 import sistema.reservas.Logic.CategoriaRecurso;
 import sistema.reservas.Logic.Recurso;
-import sistema.reservas.Presentation.Recurso.Services.RecursoService;
+import sistema.reservas.Logic.Services.RecursoService;
 
 import javax.swing.*;
 import java.util.ArrayList;

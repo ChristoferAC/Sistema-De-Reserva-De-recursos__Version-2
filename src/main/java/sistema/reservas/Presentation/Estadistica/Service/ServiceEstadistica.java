@@ -3,7 +3,7 @@ package sistema.reservas.Presentation.Estadistica.Service;
 import sistema.reservas.Logic.CategoriaRecurso;
 import sistema.reservas.Logic.Reserva;
 import sistema.reservas.Presentation.Estadistica.ModelEstadistica;
-import sistema.reservas.Presentation.Reserva.Services.ReservaService;
+import sistema.reservas.Logic.Services.ReservaService;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
