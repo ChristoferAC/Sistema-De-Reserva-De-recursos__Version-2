@@ -1,7 +1,7 @@
 package sistema.reservas.Presentation.Actividad.Services;
 
 import sistema.reservas.Presentation.Actividad.ModelActividad;
-import sistema.reservas.Presentation.Reserva.ReservaService;
+import sistema.reservas.Logic.Services.ReservaService;
 import sistema.reservas.Logic.Reserva;
 
 import java.time.DayOfWeek;

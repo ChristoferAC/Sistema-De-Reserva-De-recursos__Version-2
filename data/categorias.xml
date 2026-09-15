@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<categoriasData>
+    <categorias>
+        <categoria>
+            <id>1</id>
+            <nombre></nombre>
+            <descripcion>Elementos Electronicos</descripcion>
+        </categoria>
+        <categoria>
+            <id>2</id>
+            <nombre></nombre>
+            <descripcion>Salon Comun</descripcion>
+        </categoria>
+        <categoria>
+            <id>3</id>
+            <nombre></nombre>
+            <descripcion>Elementos Varios</descripcion>
+
+        </categoria>
+    </categorias>
+</categoriasData>

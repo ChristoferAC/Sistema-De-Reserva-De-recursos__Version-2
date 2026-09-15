@@ -1,22 +1,21 @@
 package sistema.reservas.unit;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import sistema.reservas.Data.persistence.CategoriaXmlPersister;
+import sistema.reservas.Data.persistence.CategoriasData;
+import sistema.reservas.Data.persistence.UsuarioXmlPersister;
+import sistema.reservas.Data.persistence.UsuariosData;
 import sistema.reservas.Data.persistence.XmlUtil;
+import sistema.reservas.Logic.CategoriaRecurso;
+import sistema.reservas.Logic.Funcionario;
+import sistema.reservas.Logic.Usuario;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 
-/**
- * Soporte para las pruebas de RecursoService/ReservaService, que ahora
- * persisten directamente en archivos XML reales (ya no reciben un DAO
- * inyectable). Respalda los archivos de datos reales antes de correr y
- * los restaura después, para no perder información del proyecto ni
- * dejar basura de las pruebas.
- */
 public final class XmlTestDataSupport {
 
     public static final String RUTA_USUARIOS = "data/usuarios.xml";
@@ -26,21 +25,34 @@ public final class XmlTestDataSupport {
 
     private static final String[] RUTAS = {RUTA_USUARIOS, RUTA_CATEGORIAS, RUTA_RECURSOS, RUTA_RESERVAS};
 
-    private XmlTestDataSupport() {
-    }
+    private static final Object LOCK = new Object();
+    private static int referencias = 0;
+    private static boolean shutdownHookRegistrado = false;
+
+    private XmlTestDataSupport() {}
 
     /** Respalda (renombra a .bak) los archivos de datos reales, si existen. */
     public static void respaldar() {
-        for (String ruta : RUTAS) {
-            moverSiExiste(ruta, ruta + ".bak");
+        synchronized (LOCK) {
+            if (referencias == 0) {
+                for (String ruta : RUTAS) {
+                    moverSiExiste(ruta, ruta + ".bak");
+                }
+                registrarShutdownHookSiHaceFalta();
+            }
+            referencias++;
         }
     }
 
     /** Borra los archivos de prueba y restaura el respaldo original. */
     public static void restaurar() {
-        for (String ruta : RUTAS) {
-            new File(ruta).delete();
-            moverSiExiste(ruta + ".bak", ruta);
+        synchronized (LOCK) {
+            if (referencias > 0) {
+                referencias--;
+            }
+            if (referencias == 0) {
+                restaurarAhora();
+            }
         }
     }
 
@@ -51,33 +63,66 @@ public final class XmlTestDataSupport {
         }
     }
 
+    /**
+     * Agrega una categoría de prueba usando el mismo persistidor JAXB
+     * (CategoriaXmlPersister) que usa RecursoService/ReservaService
+     * para leerla de vuelta.
+     */
     public static void seedCategoria(int id, String nombre, String descripcion) {
-        Document doc = XmlUtil.cargarOCrear(RUTA_CATEGORIAS, "categorias");
-        Element raiz = doc.getDocumentElement();
+        try {
+            CategoriaXmlPersister persister = new CategoriaXmlPersister();
+            CategoriasData data = persister.load();
 
-        Element item = doc.createElement("categoria");
-        XmlUtil.agregarTexto(doc, item, "id", String.valueOf(id));
-        XmlUtil.agregarTexto(doc, item, "nombre", nombre);
-        XmlUtil.agregarTexto(doc, item, "descripcion", descripcion);
-        raiz.appendChild(item);
+            List<CategoriaRecurso> categorias = data.getCategorias();
+            categorias.add(new CategoriaRecurso(id, nombre, descripcion));
+            data.setCategorias(categorias);
 
-        XmlUtil.guardar(doc, RUTA_CATEGORIAS);
+            persister.store(data);
+        } catch (Exception e) {
+            throw new RuntimeException("No se pudo sembrar la categoría de prueba.", e);
+        }
     }
 
+    /**
+     * Agrega un funcionario de prueba usando el mismo persistidor JAXB
+     * (UsuarioXmlPersister) que usa ReservaService para leerlo de
+     * vuelta (incluye el xsi:type que JAXB necesita para distinguir
+     * Funcionario de Administrador).
+     */
     public static void seedFuncionario(int id, String nombre, String username, String password, String telefono) {
-        Document doc = XmlUtil.cargarOCrear(RUTA_USUARIOS, "usuarios");
-        Element raiz = doc.getDocumentElement();
+        try {
+            UsuarioXmlPersister persister = new UsuarioXmlPersister();
+            UsuariosData data = persister.load();
 
-        Element item = doc.createElement("usuario");
-        item.setAttribute("tipo", "FUNCIONARIO");
-        XmlUtil.agregarTexto(doc, item, "id", String.valueOf(id));
-        XmlUtil.agregarTexto(doc, item, "nombre", nombre);
-        XmlUtil.agregarTexto(doc, item, "username", username);
-        XmlUtil.agregarTexto(doc, item, "password", password);
-        XmlUtil.agregarTexto(doc, item, "telefono", telefono);
-        raiz.appendChild(item);
+            List<Usuario> usuarios = data.getUsuarios();
+            usuarios.add(new Funcionario(id, nombre, username, password, telefono));
+            data.setUsuarios(usuarios);
 
-        XmlUtil.guardar(doc, RUTA_USUARIOS);
+            persister.store(data);
+        } catch (Exception e) {
+            throw new RuntimeException("No se pudo sembrar el funcionario de prueba.", e);
+        }
+    }
+
+    private static void restaurarAhora() {
+        for (String ruta : RUTAS) {
+            new File(ruta).delete();
+            moverSiExiste(ruta + ".bak", ruta);
+        }
+    }
+
+    private static void registrarShutdownHookSiHaceFalta() {
+        if (shutdownHookRegistrado) {
+            return;
+        }
+        shutdownHookRegistrado = true;
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            synchronized (LOCK) {
+                if (referencias > 0) {
+                    restaurarAhora();
+                }
+            }
+        }));
     }
 
     private static void moverSiExiste(String origen, String destino) {

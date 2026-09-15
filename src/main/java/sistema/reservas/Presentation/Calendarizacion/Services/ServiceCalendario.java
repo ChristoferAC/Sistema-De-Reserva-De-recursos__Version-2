@@ -1,8 +1,8 @@
 package sistema.reservas.Presentation.Calendarizacion.Services;
 
 import sistema.reservas.Presentation.Calendarizacion.ModelCalendario;
-import sistema.reservas.Presentation.Recurso.RecursoService;
-import sistema.reservas.Presentation.Reserva.ReservaService;
+import sistema.reservas.Logic.Services.RecursoService;
+import sistema.reservas.Logic.Services.ReservaService;
 import sistema.reservas.Logic.CategoriaRecurso;
 import sistema.reservas.Logic.Recurso;
 import sistema.reservas.Logic.Reserva;
@@ -54,7 +54,7 @@ public class ServiceCalendario {
 
         List<Reserva> reservasDelDia = new ArrayList<>();
         for (Reserva reserva : reservaService.listarReservas()) {
-            if (fecha.equals(reserva.getFecha())) {
+            if (reserva.isActiva() && fecha.equals(reserva.getFecha())) {
                 reservasDelDia.add(reserva);
             }
         }

@@ -28,5 +28,12 @@
             <password>popias</password>
             <telefono>222222</telefono>
         </usuario>
+        <usuario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="funcionario">
+            <id>2303</id>
+            <nombre>Kevin Rivera</nombre>
+            <username>vinke23</username>
+            <password>2303</password>
+            <telefono>70574037</telefono>
+        </usuario>
     </usuarios>
 </usuariosData>
