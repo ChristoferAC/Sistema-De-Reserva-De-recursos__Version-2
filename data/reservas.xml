@@ -1,21 +1,60 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <reservas>
+        
     <reserva>
+                
         <id>1111</id>
+                
         <idFuncionario>1234</idFuncionario>
+                
         <actividad>reservar laptop</actividad>
+                
         <fecha>2026-09-10</fecha>
+                
         <horaInicio>10:00</horaInicio>
+                
         <horaFin>11:00</horaFin>
+                
+        <estado>ACTIVA</estado>
+                
+        <categoriasSolicitadas>
+                        
+            <categoria>
+                                
+                <id>1</id>
+                            
+            </categoria>
+                    
+        </categoriasSolicitadas>
+                
+        <recursosAsignados>
+                        
+            <recurso>
+                                
+                <id>1111</id>
+                            
+            </recurso>
+                    
+        </recursosAsignados>
+            
+    </reserva>
+    
+    <reserva>
+        <id>2222</id>
+        <idFuncionario>305</idFuncionario>
+        <actividad>reservar mesas</actividad>
+        <fecha>2000-04-25</fecha>
+        <horaInicio>08:00</horaInicio>
+        <horaFin>13:30</horaFin>
         <estado>ACTIVA</estado>
         <categoriasSolicitadas>
             <categoria>
-                <id>1</id>
+                <id>3</id>
             </categoria>
         </categoriasSolicitadas>
         <recursosAsignados>
             <recurso>
-                <id>1111</id>
+                <id>3331</id>
             </recurso>
         </recursosAsignados>
     </reserva>

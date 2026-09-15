@@ -1,42 +1,23 @@
 package sistema.reservas.Presentation.Calendarizacion;
 
-import sistema.reservas.Logic.Recurso;
-
-import java.time.LocalTime;
-import java.util.Collections;
-import java.util.List;
+import sistema.reservas.Presentation.AbstractModel;
 
 /**
- * Resultado de CalendarizacionService.generarMatriz(...).
- *
- * Filas = horas del día. Columnas = cada recurso de la categoría
- * consultada. celda[fila][columna] = "" si está libre, o
- * "<actividad> - <funcionario>" si está ocupada en esa hora.
- *
- * Es un objeto de solo lectura (no se persiste); el Controller lo usa
- * para llenar el JTable de CalendarizacionPanel.
+ * Model de MVC para la pantalla de Calendarización.
+ * Guarda la última matriz cargada y notifica a la View cuando cambia.
  */
-public class ModelCalendario {
+public class ModelCalendario extends AbstractModel {
 
-    private final List<LocalTime> horas;
-    private final List<Recurso> recursos;
-    private final String[][] celdas;
+    public static final String MATRIZ = "matriz";
 
-    public ModelCalendario(List<LocalTime> horas, List<Recurso> recursos, String[][] celdas) {
-        this.horas = Collections.unmodifiableList(horas);
-        this.recursos = Collections.unmodifiableList(recursos);
-        this.celdas = celdas;
+    private MatrizCalendario matriz;
+
+    public MatrizCalendario getMatriz() {
+        return matriz;
     }
 
-    public List<LocalTime> getHoras() {
-        return horas;
-    }
-
-    public List<Recurso> getRecursos() {
-        return recursos;
-    }
-
-    public String getCelda(int fila, int columna) {
-        return celdas[fila][columna];
+    public void setMatriz(MatrizCalendario matriz) {
+        this.matriz = matriz;
+        firePropertyChange(MATRIZ);
     }
 }
