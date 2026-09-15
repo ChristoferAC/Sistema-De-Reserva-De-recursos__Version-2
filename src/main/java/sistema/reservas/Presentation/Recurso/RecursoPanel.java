@@ -5,17 +5,13 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import sistema.reservas.Logic.CategoriaRecurso;
 import sistema.reservas.Logic.Recurso;
-import sistema.reservas.Presentation.Recurso.Services.RecursoService;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
 import java.util.List;
 
 public class RecursoPanel implements PropertyChangeListener {
@@ -37,269 +33,70 @@ public class RecursoPanel implements PropertyChangeListener {
     private JTable tabla;
     private JScrollPane scrollTabla;
 
+    private DefaultTableModel tableModel;
 
-    private final List<CategoriaRecurso> categoriasDisponibles = new ArrayList<>();
+    // MVC
+    private RecursoModel model;
 
     public RecursoPanel() {
-
-        btnNuevo.addActionListener(new ActionListener() {
+        tableModel = new DefaultTableModel(new String[]{"ID", "Nombre", "Descripción", "Categoría"}, 0) {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                limpiar();
+            public boolean isCellEditable(int row, int column) {
+                return false;
             }
-        });
-
-        btnCancelar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                limpiar();
-            }
-        });
-
-        btnGuardar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sincronizarCategorias();   // trae las categorías más recientes antes de validar
-                if (validate()) {
-                    Recurso recurso = take();
-                    try {
-                        controller.crear(recurso);
-                        JOptionPane.showMessageDialog(panel1, "RECURSO REGISTRADO", "", JOptionPane.INFORMATION_MESSAGE);
-                        cargarRecursos();   // refresca la tabla con el recurso recien creado
-                        limpiar();
-                    } catch (Exception ex) {
-                        JOptionPane.showMessageDialog(panel1, ex.getMessage(),
-                                "Error", JOptionPane.ERROR_MESSAGE);
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(panel1,
-                            "Revise los campos marcados (pase el mouse sobre ellos para ver el detalle).",
-                            "Datos inválidos", JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
-
-        btnEditar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sincronizarCategorias();   // trae las categorías más recientes antes de validar
-                if (validate()) {
-                    Recurso recurso = take();
-                    try {
-                        controller.modificar(recurso);
-                        JOptionPane.showMessageDialog(panel1,
-                                "RECURSO MODIFICADO", "", JOptionPane.INFORMATION_MESSAGE);
-                        cargarRecursos();   // refresca la tabla con el cambio
-                        limpiar();
-                    } catch (Exception ex) {
-                        JOptionPane.showMessageDialog(panel1, ex.getMessage(),
-                                "Error", JOptionPane.ERROR_MESSAGE);
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(panel1,
-                            "Revise los campos marcados (pase el mouse sobre ellos para ver el detalle).",
-                            "Datos inválidos", JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
-
-        btnEliminar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int fila = tabla.getSelectedRow();
-                if (fila < 0) {
-                    JOptionPane.showMessageDialog(panel1,
-                            "Seleccione un recurso.", "Información", JOptionPane.INFORMATION_MESSAGE);
-                    return;
-                }
-
-                int respuesta = JOptionPane.showConfirmDialog(panel1,
-                        "¿Desea eliminar el recurso seleccionado?",
-                        "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
-
-                if (respuesta != JOptionPane.YES_OPTION) {
-                    return;
-                }
-
-                try {
-                    String id = tabla.getValueAt(fila, 0).toString();
-                    controller.eliminar(id);
-                    JOptionPane.showMessageDialog(panel1,
-                            "RECURSO ELIMINADO", "", JOptionPane.INFORMATION_MESSAGE);
-                    cargarRecursos();   // refresca la tabla tras eliminar
-                    limpiar();
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(panel1, ex.getMessage(),
-                            "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
-
-        btnBuscar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cargarRecursos();
-            }
-        });
-
-        tabla.getSelectionModel().addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
-                cargarRecursoSeleccionado();
-            }
-        });
+        };
+        tabla.setModel(tableModel);
     }
 
     public JPanel getPanel() {
         return panel1;
     }
 
-    RecursoController controller;
-    RecursoService service;
-
-    public void setController(RecursoController controller) {
-        this.controller = controller;
-        cargarRecursos();
-        sincronizarCategorias();
-    }
-
-    public void setService(RecursoService service) {
-        this.service = service;
+    public void setModel(RecursoModel model) {
+        this.model = model;
+        model.addPropertyChangeListener(this);
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        cargarRecursos();
-        panel1.revalidate();
-        panel1.repaint();
-    }
-
-    public Recurso take() {
-        return new Recurso(
-                txtId.getText().trim(),
-                txtNombre.getText().trim(),
-                txtDescripcion.getText().trim(),
-                obtenerCategoriaSeleccionada());
-    }
-
-
-    private CategoriaRecurso obtenerCategoriaSeleccionada() {
-        int indice = cmbCategoria.getSelectedIndex();
-        if (indice < 0 || indice >= categoriasDisponibles.size()) {
-            return null;
+        switch (evt.getPropertyName()) {
+            case RecursoModel.RECURSOS:
+                actualizarTabla(model.getRecursos());
+                break;
+            case RecursoModel.CATEGORIAS:
+                actualizarCategorias(model.getCategorias());
+                break;
+            case RecursoModel.CURRENT:
+                Recurso actual = model.getCurrent();
+                if (actual == null) {
+                    limpiarFormulario();
+                } else {
+                    cargarFormulario(actual);
+                }
+                break;
         }
-        return categoriasDisponibles.get(indice);
     }
 
-    private void sincronizarCategorias() {
-        if (controller == null) {
-            return;
+    private void actualizarTabla(List<Recurso> recursos) {
+        tableModel.setRowCount(0);
+        for (Recurso recurso : recursos) {
+            String categoria = recurso.getCategoria() != null ? recurso.getCategoria().getDescripcion() : "";
+            tableModel.addRow(new Object[]{recurso.getId(), recurso.getNombre(), recurso.getDescripcion(), categoria});
         }
+    }
 
+    private void actualizarCategorias(List<CategoriaRecurso> categorias) {
         String seleccionActual = (String) cmbCategoria.getSelectedItem();
-
-        categoriasDisponibles.clear();
         cmbCategoria.removeAllItems();
-
-        for (CategoriaRecurso categoria : controller.listarCategorias()) {
-            categoriasDisponibles.add(categoria);
+        for (CategoriaRecurso categoria : categorias) {
             cmbCategoria.addItem(categoria.getDescripcion());
         }
-
         if (seleccionActual != null) {
             cmbCategoria.setSelectedItem(seleccionActual);
         }
     }
 
-    private boolean validate() {
-        boolean valido = true;
-
-        if (txtId.getText().trim().isEmpty()) {
-            valido = false;
-            txtId.setToolTipText("ID requerido");
-        } else {
-            txtId.setToolTipText(null);
-        }
-
-        if (txtNombre.getText().trim().isEmpty()) {
-            valido = false;
-            txtNombre.setToolTipText("Nombre requerido");
-        } else {
-            txtNombre.setToolTipText(null);
-        }
-
-        if (txtDescripcion.getText().trim().isEmpty()) {
-            valido = false;
-            txtDescripcion.setToolTipText("Descripción requerida");
-        } else {
-            txtDescripcion.setToolTipText(null);
-        }
-
-        if (obtenerCategoriaSeleccionada() == null) {
-            valido = false;
-            cmbCategoria.setToolTipText("Categoría requerida");
-        } else {
-            cmbCategoria.setToolTipText(null);
-        }
-
-        return valido;
-    }
-
-    private void cargarRecursos() {
-        if (controller == null) {
-            return;
-        }
-
-        try {
-            List<Recurso> recursos = controller.listar();
-
-            String filtro = txtFiltroCategoria.getText() == null
-                    ? "" : txtFiltroCategoria.getText().trim().toLowerCase();
-
-            String[] columnas = {"ID", "Nombre", "Descripción", "Categoría"};
-
-            DefaultTableModel modelo = new DefaultTableModel(columnas, 0) {
-                @Override
-                public boolean isCellEditable(int row, int column) {
-                    return false;
-                }
-            };
-
-            for (Recurso recurso : recursos) {
-                String categoria = recurso.getCategoria() != null
-                        ? recurso.getCategoria().getDescripcion() : "";
-
-                if (!filtro.isEmpty() && !categoria.toLowerCase().contains(filtro)) {
-                    continue;
-                }
-
-                modelo.addRow(new Object[]{
-                        recurso.getId(),
-                        recurso.getNombre(),
-                        recurso.getDescripcion(),
-                        categoria
-                });
-            }
-
-            tabla.setModel(modelo);
-
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(panel1, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    private void cargarRecursoSeleccionado() {
-        int fila = tabla.getSelectedRow();
-        if (fila < 0) {
-            return;
-        }
-
-        txtId.setText(String.valueOf(tabla.getValueAt(fila, 0)));
-        txtNombre.setText(String.valueOf(tabla.getValueAt(fila, 1)));
-        txtDescripcion.setText(String.valueOf(tabla.getValueAt(fila, 2)));
-        cmbCategoria.setSelectedItem(String.valueOf(tabla.getValueAt(fila, 3)));
-    }
-
-    public void limpiar() {
+    public void limpiarFormulario() {
         txtId.setText("");
         txtNombre.setText("");
         txtDescripcion.setText("");
@@ -307,24 +104,64 @@ public class RecursoPanel implements PropertyChangeListener {
         tabla.clearSelection();
     }
 
-    /**
-     * Agrega una categoría real disponible; su descripción es lo que se muestra en el combo.
-     */
-    public void agregarCategoria(CategoriaRecurso categoria) {
-        if (categoria == null || categoria.getDescripcion() == null || categoria.getDescripcion().trim().isEmpty()) {
-            return;
-        }
-        categoriasDisponibles.add(categoria);
-        cmbCategoria.addItem(categoria.getDescripcion());
+    public void cargarFormulario(Recurso recurso) {
+        txtId.setText(recurso.getId());
+        txtNombre.setText(recurso.getNombre());
+        txtDescripcion.setText(recurso.getDescripcion());
+        cmbCategoria.setSelectedItem(recurso.getCategoria() != null ? recurso.getCategoria().getDescripcion() : null);
     }
 
-    public void limpiarCategorias() {
-        categoriasDisponibles.clear();
-        cmbCategoria.removeAllItems();
+
+    public JTextField getTxtId() {
+        return txtId;
     }
 
-    public CategoriaRecurso getCategoriaSeleccionada() {
-        return obtenerCategoriaSeleccionada();
+    public JTextField getTxtNombre() {
+        return txtNombre;
+    }
+
+    public JTextField getTxtDescripcion() {
+        return txtDescripcion;
+    }
+
+    public JComboBox<String> getCmbCategoria() {
+        return cmbCategoria;
+    }
+
+    public JTextField getTxtFiltroCategoria() {
+        return txtFiltroCategoria;
+    }
+
+    public JButton getBtnNuevo() {
+        return btnNuevo;
+    }
+
+    public JButton getBtnGuardar() {
+        return btnGuardar;
+    }
+
+    public JButton getBtnEditar() {
+        return btnEditar;
+    }
+
+    public JButton getBtnEliminar() {
+        return btnEliminar;
+    }
+
+    public JButton getBtnCancelar() {
+        return btnCancelar;
+    }
+
+    public JButton getBtnBuscar() {
+        return btnBuscar;
+    }
+
+    public JTable getTabla() {
+        return tabla;
+    }
+
+    public DefaultTableModel getTableModel() {
+        return tableModel;
     }
 
     {

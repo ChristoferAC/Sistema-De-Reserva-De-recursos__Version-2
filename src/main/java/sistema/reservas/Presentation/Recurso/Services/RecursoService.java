@@ -1,4 +1,3 @@
-// RecursoService.java
 package sistema.reservas.Presentation.Recurso.Services;
 
 import org.w3c.dom.Document;
