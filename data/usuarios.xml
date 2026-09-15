@@ -35,5 +35,12 @@
             <password>2303</password>
             <telefono>70574037</telefono>
         </usuario>
+        <usuario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="funcionario">
+            <id>305</id>
+            <nombre>Chris</nombre>
+            <username>ChrisAC</username>
+            <password>305</password>
+            <telefono>89959166</telefono>
+        </usuario>
     </usuarios>
 </usuariosData>

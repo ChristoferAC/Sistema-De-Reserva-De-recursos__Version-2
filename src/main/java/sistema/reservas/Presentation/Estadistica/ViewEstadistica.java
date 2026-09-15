@@ -4,12 +4,20 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.category.DefaultCategoryDataset;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.List;
 
-public class ViewEstadistica {
+public class ViewEstadistica implements PropertyChangeListener {
     private JPanel Estadistica;
     private JTextField txtDesdeRecurso;
     private JTextField txtHastaRecurso;
@@ -22,7 +30,6 @@ public class ViewEstadistica {
     private JPanel PanelGraficoRecursos;
     private JPanel PanelGraficoActividades;
     private DefaultTableModel tableModelRecursos;
-
 
 
     private DefaultTableModel tableModelActividades;
@@ -43,11 +50,11 @@ public class ViewEstadistica {
      */
     private void $$$setupUI$$$() {
         Estadistica = new JPanel();
-        Estadistica.setLayout(new GridLayoutManager(4, 7, new Insets(0, 0, 0, 0), -1, -1));
+        Estadistica.setLayout(new GridLayoutManager(5, 7, new Insets(0, 0, 0, 0), -1, -1));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         Estadistica.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        panel1.setBorder(BorderFactory.createTitledBorder(null, "Recursos", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
+        panel1.setBorder(BorderFactory.createTitledBorder(null, "", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
         final JLabel label1 = new JLabel();
         label1.setText("Desde:");
         panel1.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -78,24 +85,28 @@ public class ViewEstadistica {
         btnCargarRecurso = new JButton();
         btnCargarRecurso.setText("Cargar");
         Estadistica.add(btnCargarRecurso, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JScrollPane scrollPane1 = new JScrollPane();
-        Estadistica.add(scrollPane1, new GridConstraints(1, 0, 2, 5, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        tablaRecursos = new JTable();
-        scrollPane1.setViewportView(tablaRecursos);
-        final JScrollPane scrollPane2 = new JScrollPane();
-        Estadistica.add(scrollPane2, new GridConstraints(1, 6, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        tablaActividades = new JTable();
-        scrollPane2.setViewportView(tablaActividades);
         PanelGraficoRecursos = new JPanel();
         PanelGraficoRecursos.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        Estadistica.add(PanelGraficoRecursos, new GridConstraints(3, 0, 1, 5, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        Estadistica.add(PanelGraficoRecursos, new GridConstraints(4, 0, 1, 5, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         PanelGraficoRecursos.setBorder(BorderFactory.createTitledBorder(null, "Grafico", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
         PanelGraficoActividades = new JPanel();
         PanelGraficoActividades.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        Estadistica.add(PanelGraficoActividades, new GridConstraints(3, 6, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        Estadistica.add(PanelGraficoActividades, new GridConstraints(4, 6, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         PanelGraficoActividades.setBorder(BorderFactory.createTitledBorder(null, "Grafico", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
         final Spacer spacer1 = new Spacer();
-        Estadistica.add(spacer1, new GridConstraints(0, 5, 4, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        Estadistica.add(spacer1, new GridConstraints(0, 5, 5, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        final JScrollPane scrollPane1 = new JScrollPane();
+        Estadistica.add(scrollPane1, new GridConstraints(1, 0, 3, 5, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        final JScrollPane scrollPane2 = new JScrollPane();
+        scrollPane1.setViewportView(scrollPane2);
+        tablaRecursos = new JTable();
+        scrollPane2.setViewportView(tablaRecursos);
+        final JScrollPane scrollPane3 = new JScrollPane();
+        Estadistica.add(scrollPane3, new GridConstraints(2, 6, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        final JScrollPane scrollPane4 = new JScrollPane();
+        scrollPane3.setViewportView(scrollPane4);
+        tablaActividades = new JTable();
+        scrollPane4.setViewportView(tablaActividades);
     }
 
     /**
@@ -104,6 +115,8 @@ public class ViewEstadistica {
     public JComponent $$$getRootComponent$$$() {
         return Estadistica;
     }
+
+    private ModelEstadistica model;
 
     public ViewEstadistica() {
         tableModelRecursos = new DefaultTableModel() {
@@ -121,6 +134,60 @@ public class ViewEstadistica {
             }
         };
         tablaActividades.setModel(tableModelActividades);
+    }
+
+    public void setModel(ModelEstadistica model) {
+        this.model = model;
+        model.addPropertyChangeListener(this);
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (ModelEstadistica.POR_CATEGORIA.equals(evt.getPropertyName())) {
+            pintarTabla(tableModelRecursos, "Categoria", model.getPorCategoria());
+            pintarGrafico(PanelGraficoRecursos, "Recursos Usados", "Recurso", model.getPorCategoria());
+        } else if (ModelEstadistica.POR_SEMANA.equals(evt.getPropertyName())) {
+            pintarTabla(tableModelActividades, "Semana", model.getPorSemana());
+            pintarGrafico(PanelGraficoActividades, "Actividades Realizadas", "Semana", model.getPorSemana());
+        }
+    }
+
+    /**
+     * Antes vivía en ControllerEstadistica; pintar la tabla es responsabilidad de la View.
+     */
+    private void pintarTabla(DefaultTableModel modelo, String nombreColumnaEtiqueta, ResultadoEstadistica datos) {
+        modelo.setRowCount(0);
+        modelo.setColumnCount(0);
+        modelo.addColumn(nombreColumnaEtiqueta);
+        modelo.addColumn("Cantidad");
+
+        List<String> etiquetas = datos.getEtiquetas();
+        List<Integer> cantidades = datos.getCantidades();
+        for (int i = 0; i < etiquetas.size(); i++) {
+            modelo.addRow(new Object[]{etiquetas.get(i), cantidades.get(i)});
+        }
+    }
+
+    /**
+     * Antes vivía en ControllerEstadistica; armar el gráfico es responsabilidad de la View.
+     */
+    private void pintarGrafico(JPanel contenedor, String titulo, String nombreSerie, ResultadoEstadistica datos) {
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+        List<String> etiquetas = datos.getEtiquetas();
+        List<Integer> cantidades = datos.getCantidades();
+        for (int i = 0; i < etiquetas.size(); i++) {
+            dataset.addValue(cantidades.get(i), nombreSerie, etiquetas.get(i));
+        }
+
+        JFreeChart chart = ChartFactory.createBarChart(titulo, "", "Cantidad", dataset);
+        ChartPanel chartPanel = new ChartPanel(chart);
+
+        contenedor.removeAll();
+        contenedor.setLayout(new BorderLayout());
+        contenedor.add(chartPanel, BorderLayout.CENTER);
+        contenedor.revalidate();
+        contenedor.repaint();
     }
 
     public JPanel getEstadistica() {

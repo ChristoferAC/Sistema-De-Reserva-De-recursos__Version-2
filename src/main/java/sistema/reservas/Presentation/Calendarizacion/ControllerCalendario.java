@@ -2,13 +2,11 @@ package sistema.reservas.Presentation.Calendarizacion;
 
 import sistema.reservas.Data.PDF.GeneradorPDF;
 import sistema.reservas.Logic.CategoriaRecurso;
-import sistema.reservas.Logic.Recurso;
 import sistema.reservas.Presentation.Calendarizacion.Services.ServiceCalendario;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -18,23 +16,24 @@ import java.util.function.Supplier;
 /**
  * Controller de Calendarización. Responsable: Integrante 3.
  *
- * Puebla el combo de categorías, arma la matriz al presionar "Cargar"
- * y genera el PDF al presionar "Imprimir".
- *
- * Recibe un Supplier<List<CategoriaRecurso>> (en vez de depender
- * directo de CategoriaRecursoService) para no acoplarse a un módulo
- * de otro integrante — igual decisión que se tomó desde el principio.
+ * Ya NO pinta la tabla directamente: le pide la matriz a ServiceCalendario
+ * y se la entrega al Model (model.setMatriz(...)). Es la View, escuchando
+ * el Model vía PropertyChangeListener, la que se encarga de pintarse sola.
  */
 public class ControllerCalendario {
 
     private final ViewCalendario view;
+    private final ModelCalendario model;
     private final ServiceCalendario service;
     private final List<CategoriaRecurso> categorias;
 
-    public ControllerCalendario(ViewCalendario view, ServiceCalendario service, Supplier<List<CategoriaRecurso>> proveedorCategorias) {
+    public ControllerCalendario(ViewCalendario view, ModelCalendario model, ServiceCalendario service, Supplier<List<CategoriaRecurso>> proveedorCategorias) {
         this.view = view;
+        this.model = model;
         this.service = service;
         this.categorias = proveedorCategorias.get();
+
+        view.setModel(model);
 
         poblarComboCategorias();
 
@@ -50,11 +49,6 @@ public class ControllerCalendario {
         }
     }
 
-    /**
-     * En este proyecto las categorías se crean solo con descripción
-     * (el campo "nombre" queda vacío) — ver data/categorias.xml. Se usa
-     * getDescripcion() como respaldo para que el combo no aparezca en blanco.
-     */
     private String textoCategoria(CategoriaRecurso categoria) {
         String nombre = categoria.getNombre();
         if (nombre != null && !nombre.isBlank()) {
@@ -73,8 +67,8 @@ public class ControllerCalendario {
                 return;
             }
 
-            ModelCalendario matriz = service.generarMatriz(fecha, categoria);
-            pintarMatriz(matriz);
+            MatrizCalendario matriz = service.generarMatriz(fecha, categoria);
+            model.setMatriz(matriz); // <-- antes aquí se llamaba pintarMatriz(matriz) directo
 
         } catch (DateTimeParseException ex) {
             JOptionPane.showMessageDialog(view.getPanel1(), "Fecha inválida. Use el formato AAAA-MM-DD.");
@@ -89,28 +83,6 @@ public class ControllerCalendario {
             return null;
         }
         return categorias.get(indice);
-    }
-
-    private void pintarMatriz(ModelCalendario matriz) {
-        DefaultTableModel modelo = view.getTableModel();
-        modelo.setRowCount(0);
-        modelo.setColumnCount(0);
-
-        modelo.addColumn("Hora");
-        List<Recurso> recursos = matriz.getRecursos();
-        for (Recurso recurso : recursos) {
-            modelo.addColumn(recurso.getNombre());
-        }
-
-        List<LocalTime> horas = matriz.getHoras();
-        for (int fila = 0; fila < horas.size(); fila++) {
-            Object[] filaDatos = new Object[recursos.size() + 1];
-            filaDatos[0] = horas.get(fila).toString();
-            for (int columna = 0; columna < recursos.size(); columna++) {
-                filaDatos[columna + 1] = matriz.getCelda(fila, columna);
-            }
-            modelo.addRow(filaDatos);
-        }
     }
 
     private void onImprimir() {

@@ -1,33 +1,36 @@
 package sistema.reservas.Presentation.Estadistica;
 
-import java.util.Collections;
-import java.util.List;
+import sistema.reservas.Presentation.AbstractModel;
 
 /**
- * Resultado de ServiceEstadistica.contarPorCategoria(...) y
- * .contarPorSemana(...).
- *
- * Es genérico a propósito: los dos bloques de la pantalla (Recursos y
- * Actividades) necesitan exactamente lo mismo — una lista de
- * etiquetas (nombre de categoría, o fecha de inicio de semana) y una
- * cantidad por cada una — así que no hace falta una clase distinta
- * para cada bloque.
+ * Model de MVC para la pantalla de Estadísticas.
+ * La pantalla tiene 2 bloques independientes (Recursos y Actividades),
+ * así que el Model guarda un resultado separado para cada uno y notifica
+ * por separado cuál cambió.
  */
-public class ModelEstadistica {
+public class ModelEstadistica extends AbstractModel {
 
-    private final List<String> etiquetas;
-    private final List<Integer> cantidades;
+    public static final String POR_CATEGORIA = "porCategoria"; // bloque Recursos
+    public static final String POR_SEMANA = "porSemana";       // bloque Actividades
 
-    public ModelEstadistica(List<String> etiquetas, List<Integer> cantidades) {
-        this.etiquetas = Collections.unmodifiableList(etiquetas);
-        this.cantidades = Collections.unmodifiableList(cantidades);
+    private ResultadoEstadistica porCategoria;
+    private ResultadoEstadistica porSemana;
+
+    public ResultadoEstadistica getPorCategoria() {
+        return porCategoria;
     }
 
-    public List<String> getEtiquetas() {
-        return etiquetas;
+    public void setPorCategoria(ResultadoEstadistica porCategoria) {
+        this.porCategoria = porCategoria;
+        firePropertyChange(POR_CATEGORIA);
     }
 
-    public List<Integer> getCantidades() {
-        return cantidades;
+    public ResultadoEstadistica getPorSemana() {
+        return porSemana;
+    }
+
+    public void setPorSemana(ResultadoEstadistica porSemana) {
+        this.porSemana = porSemana;
+        firePropertyChange(POR_SEMANA);
     }
 }

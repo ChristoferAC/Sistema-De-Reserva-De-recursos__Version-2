@@ -5,12 +5,15 @@ import sistema.reservas.Logic.Funcionario;
 import sistema.reservas.Logic.Sesion;
 
 import sistema.reservas.Presentation.Actividad.ControllerActividad;
+import sistema.reservas.Presentation.Actividad.ModelActividad;
 import sistema.reservas.Presentation.Actividad.Services.ServiceActividad;
 import sistema.reservas.Presentation.Calendarizacion.ControllerCalendario;
+import sistema.reservas.Presentation.Calendarizacion.ModelCalendario;
 import sistema.reservas.Presentation.Calendarizacion.Services.ServiceCalendario;
 import sistema.reservas.Presentation.Categoria.CategoriaModel;
 import sistema.reservas.Presentation.Categoria.CategoriaRecursoController;
 import sistema.reservas.Presentation.Estadistica.ControllerEstadistica;
+import sistema.reservas.Presentation.Estadistica.ModelEstadistica;
 import sistema.reservas.Presentation.Estadistica.Service.ServiceEstadistica;
 import sistema.reservas.Presentation.Funcionario.FuncionarioController;
 import sistema.reservas.Presentation.Funcionario.FuncionarioModel;
@@ -82,14 +85,18 @@ public class Application {
             mainWindow.reservaPanel.setController(reservaController);
         }
 
-        new ControllerActividad(mainWindow.actividadPanel, new ServiceActividad(reservaService));
+        ModelActividad modelActividad = new ModelActividad();
+        new ControllerActividad(mainWindow.actividadPanel, modelActividad, new ServiceActividad(reservaService));
 
+        ModelCalendario modelCalendario = new ModelCalendario();
         new ControllerCalendario(
                 mainWindow.calendarioPanel,
+                modelCalendario,
                 new ServiceCalendario(reservaService, recursoService),
                 recursoService::listarCategorias);
 
-        new ControllerEstadistica(mainWindow.estadisticaPanel, new ServiceEstadistica(reservaService));
+        ModelEstadistica modelEstadistica = new ModelEstadistica();
+        new ControllerEstadistica(mainWindow.estadisticaPanel, modelEstadistica, new ServiceEstadistica(reservaService));
 
         mainWindow.setVisible(true);
     }

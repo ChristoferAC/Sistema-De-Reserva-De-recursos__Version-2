@@ -1,6 +1,6 @@
 package sistema.reservas.Presentation.Calendarizacion.Services;
 
-import sistema.reservas.Presentation.Calendarizacion.ModelCalendario;
+import sistema.reservas.Presentation.Calendarizacion.MatrizCalendario;
 import sistema.reservas.Presentation.Recurso.RecursoService;
 import sistema.reservas.Presentation.Reserva.ReservaService;
 import sistema.reservas.Logic.CategoriaRecurso;
@@ -19,17 +19,9 @@ import java.util.List;
  * filas = horas del día, columnas = cada recurso de esa categoría, y
  * cada celda indica si el recurso está reservado a esa hora (actividad +
  * funcionario).
- *
- * Importante: esta clase NO tiene persistencia propia. Todos los datos
- * salen de Reserva a través de ReservaService (Integrante 2) y de
- * RecursoService (Integrante 2) para saber qué recursos pertenecen a la
- * categoría consultada.
  */
 public class ServiceCalendario {
 
-    // Decisión de diseño: rango de horario laboral que cubre la matriz.
-    // El enunciado no especifica el rango exacto; se deja centralizado
-    // aquí para poder ajustarlo fácilmente si el equipo decide otro.
     private static final int HORA_INICIO_DIA = 6;
     private static final int HORA_FIN_DIA = 22;
 
@@ -41,7 +33,7 @@ public class ServiceCalendario {
         this.recursoService = recursoService;
     }
 
-    public ModelCalendario generarMatriz(LocalDate fecha, CategoriaRecurso categoria) {
+    public MatrizCalendario generarMatriz(LocalDate fecha, CategoriaRecurso categoria) {
         if (fecha == null) {
             throw new IllegalArgumentException("La fecha es obligatoria.");
         }
@@ -71,7 +63,7 @@ public class ServiceCalendario {
             }
         }
 
-        return new ModelCalendario(horas, recursos, celdas);
+        return new MatrizCalendario(horas, recursos, celdas);
     }
 
     private Reserva buscarReservaQueOcupa(List<Reserva> reservasDelDia, Recurso recurso, LocalTime hora) {

@@ -4,11 +4,17 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 
+import sistema.reservas.Logic.Recurso;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.time.LocalTime;
+import java.util.List;
 
-public class ViewCalendario {
+public class ViewCalendario implements PropertyChangeListener {
     private JPanel panel1;
     private JTextField txtFecha;
     private JComboBox comboCategoria;
@@ -49,15 +55,17 @@ public class ViewCalendario {
         btnImprimir = new JButton();
         btnImprimir.setText("Imprimir");
         panel1.add(btnImprimir, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JScrollPane scrollPane1 = new JScrollPane();
-        panel1.add(scrollPane1, new GridConstraints(2, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        tabla = new JTable();
-        scrollPane1.setViewportView(tabla);
         btnCargar = new JButton();
         btnCargar.setText("Carga");
         panel1.add(btnCargar, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
         panel1.add(spacer1, new GridConstraints(1, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        final JScrollPane scrollPane1 = new JScrollPane();
+        panel1.add(scrollPane1, new GridConstraints(2, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        final JScrollPane scrollPane2 = new JScrollPane();
+        scrollPane1.setViewportView(scrollPane2);
+        tabla = new JTable();
+        scrollPane2.setViewportView(tabla);
     }
 
     /**
@@ -68,6 +76,7 @@ public class ViewCalendario {
     }
 
     private DefaultTableModel tableModel;
+    private ModelCalendario model;
 
     public ViewCalendario() {
         tableModel = new DefaultTableModel() {
@@ -77,6 +86,42 @@ public class ViewCalendario {
             }
         };
         tabla.setModel(tableModel);
+    }
+
+    public void setModel(ModelCalendario model) {
+        this.model = model;
+        model.addPropertyChangeListener(this);
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (ModelCalendario.MATRIZ.equals(evt.getPropertyName())) {
+            pintarMatriz(model.getMatriz());
+        }
+    }
+
+    /**
+     * Antes vivía en ControllerCalendario; pintar la tabla es responsabilidad de la View.
+     */
+    private void pintarMatriz(MatrizCalendario matriz) {
+        tableModel.setRowCount(0);
+        tableModel.setColumnCount(0);
+
+        tableModel.addColumn("Hora");
+        List<Recurso> recursos = matriz.getRecursos();
+        for (Recurso recurso : recursos) {
+            tableModel.addColumn(recurso.getNombre());
+        }
+
+        List<LocalTime> horas = matriz.getHoras();
+        for (int fila = 0; fila < horas.size(); fila++) {
+            Object[] filaDatos = new Object[recursos.size() + 1];
+            filaDatos[0] = horas.get(fila).toString();
+            for (int columna = 0; columna < recursos.size(); columna++) {
+                filaDatos[columna + 1] = matriz.getCelda(fila, columna);
+            }
+            tableModel.addRow(filaDatos);
+        }
     }
 
     public JPanel getPanel1() {

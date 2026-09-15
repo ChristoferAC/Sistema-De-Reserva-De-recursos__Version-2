@@ -2,7 +2,7 @@ package sistema.reservas.Presentation.Estadistica.Service;
 
 import sistema.reservas.Logic.CategoriaRecurso;
 import sistema.reservas.Logic.Reserva;
-import sistema.reservas.Presentation.Estadistica.ModelEstadistica;
+import sistema.reservas.Presentation.Estadistica.ResultadoEstadistica;
 import sistema.reservas.Presentation.Reserva.ReservaService;
 
 import java.time.DayOfWeek;
@@ -16,10 +16,6 @@ import java.util.TreeMap;
 
 /**
  * Servicio de Estadísticas (funcionalidad 8 del enunciado).
- *
- * Igual que Calendarización y Actividades, no tiene persistencia
- * propia: todos los conteos salen de Reserva a través de
- * ReservaService (Integrante 2).
  */
 public class ServiceEstadistica {
 
@@ -32,18 +28,9 @@ public class ServiceEstadistica {
         this.reservaService = reservaService;
     }
 
-    /**
-     * Cuenta cuántas reservas activas, dentro del rango [desde, hasta],
-     * solicitaron cada categoría de recurso. Si una reserva pidió
-     * varias categorías, cuenta una vez por cada una.
-     */
-    public ModelEstadistica contarPorCategoria(LocalDate desde, LocalDate hasta) {
+    public ResultadoEstadistica contarPorCategoria(LocalDate desde, LocalDate hasta) {
         validarRango(desde, hasta);
 
-        // Decisión de diseño: LinkedHashMap para conservar el orden en
-        // que aparece cada categoría por primera vez (no hay un orden
-        // "correcto" evidente para categorías, a diferencia de las
-        // semanas que sí tiene sentido ordenar cronológicamente).
         Map<String, Integer> conteos = new LinkedHashMap<>();
 
         for (Reserva reserva : reservaService.listarReservas()) {
@@ -56,19 +43,12 @@ public class ServiceEstadistica {
             }
         }
 
-        return aModelo(conteos);
+        return aResultado(conteos);
     }
 
-    /**
-     * Cuenta cuántas reservas activas hubo en cada semana (identificada
-     * por la fecha del lunes de esa semana) dentro del rango
-     * [desde, hasta].
-     */
-    public ModelEstadistica contarPorSemana(LocalDate desde, LocalDate hasta) {
+    public ResultadoEstadistica contarPorSemana(LocalDate desde, LocalDate hasta) {
         validarRango(desde, hasta);
 
-        // TreeMap: las claves son fechas en formato AAAA-MM-DD, así que
-        // ordenan cronológicamente solas.
         Map<String, Integer> conteos = new TreeMap<>();
 
         for (Reserva reserva : reservaService.listarReservas()) {
@@ -79,7 +59,7 @@ public class ServiceEstadistica {
             conteos.merge(lunes.toString(), 1, Integer::sum);
         }
 
-        return aModelo(conteos);
+        return aResultado(conteos);
     }
 
     private void validarRango(LocalDate desde, LocalDate hasta) {
@@ -102,12 +82,12 @@ public class ServiceEstadistica {
         return categoria.getDescripcion();
     }
 
-    private ModelEstadistica aModelo(Map<String, Integer> conteos) {
+    private ResultadoEstadistica aResultado(Map<String, Integer> conteos) {
         List<String> etiquetas = new ArrayList<>(conteos.keySet());
         List<Integer> cantidades = new ArrayList<>();
         for (String etiqueta : etiquetas) {
             cantidades.add(conteos.get(etiqueta));
         }
-        return new ModelEstadistica(etiquetas, cantidades);
+        return new ResultadoEstadistica(etiquetas, cantidades);
     }
 }

@@ -1,6 +1,6 @@
 package sistema.reservas.Presentation.Actividad.Services;
 
-import sistema.reservas.Presentation.Actividad.ModelActividad;
+import sistema.reservas.Presentation.Actividad.MatrizActividad;
 import sistema.reservas.Presentation.Reserva.ReservaService;
 import sistema.reservas.Logic.Reserva;
 
@@ -25,9 +25,6 @@ import java.util.List;
  */
 public class ServiceActividad {
 
-    // Decisión de diseño: mismo rango horario que Calendarización
-    // (6:00 a 22:00), para mantener consistencia entre ambos módulos.
-    // El enunciado no especifica el rango exacto.
     private static final int HORA_INICIO_DIA = 6;
     private static final int HORA_FIN_DIA = 22;
 
@@ -40,7 +37,7 @@ public class ServiceActividad {
         this.reservaService = reservaService;
     }
 
-    public ModelActividad generarMatriz(LocalDate fechaReferencia) {
+    public MatrizActividad generarMatriz(LocalDate fechaReferencia) {
         if (fechaReferencia == null) {
             throw new IllegalArgumentException("La fecha de referencia es obligatoria.");
         }
@@ -50,8 +47,6 @@ public class ServiceActividad {
 
         List<Reserva> reservasDeLaSemana = new ArrayList<>();
         for (Reserva reserva : reservaService.listarReservas()) {
-            // Decisión de diseño: solo se muestran reservas ACTIVAS;
-            // una reserva cancelada no debe aparecer como actividad vigente.
             if (reserva.isActiva() && dias.contains(reserva.getFecha())) {
                 reservasDeLaSemana.add(reserva);
             }
@@ -66,15 +61,9 @@ public class ServiceActividad {
             }
         }
 
-        return new ModelActividad(horas, dias, celdas);
+        return new MatrizActividad(horas, dias, celdas);
     }
 
-    /**
-     * Junta el texto de todas las reservas que ocupan ese día y hora.
-     * A diferencia de Calendarización (una columna = un recurso), aquí
-     * una columna es un día completo, así que puede haber más de una
-     * actividad al mismo tiempo si usan recursos distintos.
-     */
     private String actividadesEn(List<Reserva> reservas, LocalDate dia, LocalTime hora) {
         StringBuilder texto = new StringBuilder();
 
