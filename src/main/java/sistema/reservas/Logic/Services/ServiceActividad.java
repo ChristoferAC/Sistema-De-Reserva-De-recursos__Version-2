@@ -1,7 +1,6 @@
-package sistema.reservas.Presentation.Actividad.Services;
+package sistema.reservas.Logic.Services;
 
 import sistema.reservas.Presentation.Actividad.ModelActividad;
-import sistema.reservas.Logic.Services.ReservaService;
 import sistema.reservas.Logic.Reserva;
 
 import java.time.DayOfWeek;

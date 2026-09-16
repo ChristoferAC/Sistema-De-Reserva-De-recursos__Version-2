@@ -3,7 +3,7 @@ package sistema.reservas.Presentation.Calendarizacion;
 import sistema.reservas.Data.PDF.GeneradorPDF;
 import sistema.reservas.Logic.CategoriaRecurso;
 import sistema.reservas.Logic.Recurso;
-import sistema.reservas.Presentation.Calendarizacion.Services.ServiceCalendario;
+import sistema.reservas.Logic.Services.ServiceCalendario;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;

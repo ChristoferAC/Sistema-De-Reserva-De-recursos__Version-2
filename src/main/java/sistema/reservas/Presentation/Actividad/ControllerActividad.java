@@ -1,7 +1,7 @@
 package sistema.reservas.Presentation.Actividad;
 
 import sistema.reservas.Data.PDF.GeneradorPDF;
-import sistema.reservas.Presentation.Actividad.Services.ServiceActividad;
+import sistema.reservas.Logic.Services.ServiceActividad;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;

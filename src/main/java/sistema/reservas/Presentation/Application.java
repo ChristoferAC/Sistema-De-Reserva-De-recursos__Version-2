@@ -5,13 +5,13 @@ import sistema.reservas.Logic.Funcionario;
 import sistema.reservas.Logic.Sesion;
 
 import sistema.reservas.Presentation.Actividad.ControllerActividad;
-import sistema.reservas.Presentation.Actividad.Services.ServiceActividad;
+import sistema.reservas.Logic.Services.ServiceActividad;
 import sistema.reservas.Presentation.Calendarizacion.ControllerCalendario;
-import sistema.reservas.Presentation.Calendarizacion.Services.ServiceCalendario;
+import sistema.reservas.Logic.Services.ServiceCalendario;
 import sistema.reservas.Presentation.Categoria.CategoriaModel;
 import sistema.reservas.Presentation.Categoria.CategoriaRecursoController;
 import sistema.reservas.Presentation.Estadistica.ControllerEstadistica;
-import sistema.reservas.Presentation.Estadistica.Service.ServiceEstadistica;
+import sistema.reservas.Logic.Services.ServiceEstadistica;
 import sistema.reservas.Presentation.Funcionario.FuncionarioController;
 import sistema.reservas.Presentation.Funcionario.FuncionarioModel;
 import sistema.reservas.Presentation.Login.LoginModel;

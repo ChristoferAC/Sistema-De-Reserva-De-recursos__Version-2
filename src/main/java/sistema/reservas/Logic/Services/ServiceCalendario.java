@@ -1,8 +1,6 @@
-package sistema.reservas.Presentation.Calendarizacion.Services;
+package sistema.reservas.Logic.Services;
 
 import sistema.reservas.Presentation.Calendarizacion.ModelCalendario;
-import sistema.reservas.Logic.Services.RecursoService;
-import sistema.reservas.Logic.Services.ReservaService;
 import sistema.reservas.Logic.CategoriaRecurso;
 import sistema.reservas.Logic.Recurso;
 import sistema.reservas.Logic.Reserva;
