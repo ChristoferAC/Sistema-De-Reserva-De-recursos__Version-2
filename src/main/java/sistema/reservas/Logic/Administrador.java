@@ -2,11 +2,12 @@ package sistema.reservas.Logic;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement(name = "administrador")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Administrador extends Usuario {
 
-    /** JAXB necesita un constructor vacio para poder des-serializar. */
     public Administrador() {
         super();
     }
