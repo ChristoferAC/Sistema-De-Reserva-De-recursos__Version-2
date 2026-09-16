@@ -4,7 +4,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 
 import sistema.reservas.Logic.Usuario;
-import sistema.reservas.Presentation.Usuario.UsuarioController;
+import sistema.reservas.Presentation.Login.LoginController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,7 +23,7 @@ public class LoginView extends JDialog implements PropertyChangeListener {
     private boolean authenticated = false;
 
     // MVC
-    private UsuarioController controller;
+    private LoginController controller;
     private LoginModel model;
 
     public LoginView() {
@@ -58,7 +58,7 @@ public class LoginView extends JDialog implements PropertyChangeListener {
 
     // --- MVC: enlace con Controller y Model ---
 
-    public void setController(UsuarioController controller) {
+    public void setController(LoginController controller) {
         this.controller = controller;
     }
 

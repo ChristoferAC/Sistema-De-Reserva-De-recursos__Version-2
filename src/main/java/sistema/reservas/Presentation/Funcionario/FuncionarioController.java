@@ -1,6 +1,7 @@
 package sistema.reservas.Presentation.Funcionario;
 
 import sistema.reservas.Logic.Funcionario;
+import sistema.reservas.Logic.Services.FuncionarioService;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;

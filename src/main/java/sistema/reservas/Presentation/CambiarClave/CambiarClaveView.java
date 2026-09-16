@@ -5,9 +5,11 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
-public class CambiarClaveView extends JDialog {
-    /// funciona?
+public class CambiarClaveView extends JDialog implements PropertyChangeListener {
+
     private JPanel contentPane;
     private JPasswordField txtClaveActual;
     private JPasswordField txtClaveNueva;
@@ -15,6 +17,9 @@ public class CambiarClaveView extends JDialog {
     private JLabel lblMensaje;
     private JButton btnConfirmar;
     private JButton btnCancelar;
+
+    // MVC
+    private CambiarClaveModel model;
 
     public CambiarClaveView(Dialog owner) {
         super(owner, "Cambiar Clave", true);
@@ -25,6 +30,30 @@ public class CambiarClaveView extends JDialog {
 
         btnCancelar.addActionListener(e -> dispose());
     }
+
+    // --- MVC: enlace con el Model ---
+
+    public void setModel(CambiarClaveModel model) {
+        this.model = model;
+        model.addPropertyChangeListener(this);
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        switch (evt.getPropertyName()) {
+            case CambiarClaveModel.MENSAJE:
+                lblMensaje.setText(model.getMensaje());
+                break;
+            case CambiarClaveModel.EXITO:
+                if (model.isExito()) {
+                    JOptionPane.showMessageDialog(this, "Clave actualizada correctamente.");
+                    dispose();
+                }
+                break;
+        }
+    }
+
+    // --- Getters usados por el Controller ---
 
     public char[] getClaveActual() {
         return txtClaveActual.getPassword();
@@ -40,14 +69,6 @@ public class CambiarClaveView extends JDialog {
 
     public JButton getBtnConfirmar() {
         return btnConfirmar;
-    }
-
-    public JButton getBtnCancelar() {
-        return btnCancelar;
-    }
-
-    public void mostrarMensaje(String mensaje) {
-        lblMensaje.setText(mensaje);
     }
 
     {
@@ -103,5 +124,4 @@ public class CambiarClaveView extends JDialog {
     public JComponent $$$getRootComponent$$$() {
         return contentPane;
     }
-
 }
