@@ -7,22 +7,25 @@ public class CambiarClaveController {
 
     private final CambiarClaveView view;
     private final CambiarClaveModel model;
-    private final Usuario usuario;
 
-    public CambiarClaveController(CambiarClaveView view, CambiarClaveModel model, Usuario usuario) {
-        this.view    = view;
-        this.model   = model;
-        this.usuario = usuario;
+    public CambiarClaveController(CambiarClaveView view, CambiarClaveModel model) {
+        this.view  = view;
+        this.model = model;
 
-        // El Controller conecta el botón — no la View ni nadie más
         view.setModel(model);
         view.getBtnConfirmar().addActionListener(e -> cambiarClave());
     }
 
     private void cambiarClave() {
+        String username       = view.getUsuario().trim();
         String claveActual    = new String(view.getClaveActual());
         String claveNueva     = new String(view.getClaveNueva());
         String claveConfirmar = new String(view.getClaveNuevaConfirmar());
+
+        if (username.isBlank()) {
+            model.setMensaje("Ingrese su usuario.");
+            return;
+        }
 
         if (claveNueva.isBlank()) {
             model.setMensaje("La clave nueva no puede estar vacía.");
@@ -36,8 +39,10 @@ public class CambiarClaveController {
 
         try {
             UsuarioService service = new UsuarioService();
+            // Primero validamos que el usuario y clave actual sean correctos
+            Usuario usuario = service.login(username, claveActual);
+            // Si llegamos aquí, las credenciales son correctas — cambiamos
             service.cambiarClave(usuario, claveActual, claveNueva);
-            // Notifica éxito → View reacciona en propertyChange("exito") y se cierra
             model.setExito(true);
         } catch (Exception ex) {
             model.setMensaje(ex.getMessage());
