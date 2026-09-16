@@ -23,7 +23,7 @@ import sistema.reservas.Logic.Services.RecursoService;
 import sistema.reservas.Presentation.Reserva.ReservaController;
 import sistema.reservas.Presentation.Reserva.ReservaModel;
 import sistema.reservas.Logic.Services.ReservaService;
-import sistema.reservas.Presentation.Usuario.UsuarioController;
+import sistema.reservas.Presentation.Login.LoginController;
 
 import javax.swing.*;
 import java.util.List;
@@ -50,7 +50,7 @@ public class Application {
     private static void doLogin() {
         LoginView view = new LoginView();
         LoginModel model = new LoginModel();
-        new UsuarioController(view, model);
+        new LoginController(view, model);
 
         view.setVisible(true);
     }

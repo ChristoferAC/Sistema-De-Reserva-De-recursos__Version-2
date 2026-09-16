@@ -5,7 +5,7 @@
             <id>1</id>
             <nombre>Administrador</nombre>
             <username>admin</username>
-            <password>admin</password>
+            <password>1234</password>
         </usuario>
         <usuario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="funcionario">
             <id>1234</id>

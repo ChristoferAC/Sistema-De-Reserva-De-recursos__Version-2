@@ -1,4 +1,4 @@
-package sistema.reservas.Presentation.Usuario;
+package sistema.reservas.Logic.Services;
 
 import sistema.reservas.Data.persistence.UsuarioXmlPersister;
 import sistema.reservas.Data.persistence.UsuariosData;
