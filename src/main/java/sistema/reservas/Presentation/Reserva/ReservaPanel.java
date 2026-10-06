@@ -32,6 +32,7 @@ public class ReservaPanel implements PropertyChangeListener {
     private JButton btnLimpiar;
     private JButton btnUsarIA;
     private JTable tablaReservas;
+    private JButton imprimeButton;
 
     private DefaultTableModel tableModel;
     private Funcionario funcionarioActual;
@@ -218,6 +219,10 @@ public class ReservaPanel implements PropertyChangeListener {
         return btnUsarIA;
     }
 
+    public JButton getImprimeButton() {
+        return imprimeButton;
+    }
+
     public JTable getTablaReservas() {
         return tablaReservas;
     }
@@ -247,8 +252,6 @@ public class ReservaPanel implements PropertyChangeListener {
         final JLabel label1 = new JLabel();
         label1.setText("Funcionario:");
         panel1.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final Spacer spacer1 = new Spacer();
-        panel1.add(spacer1, new GridConstraints(0, 2, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         lblFuncionario = new JLabel();
         lblFuncionario.setText("");
         panel1.add(lblFuncionario, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -287,8 +290,8 @@ public class ReservaPanel implements PropertyChangeListener {
         btnNueva = new JButton();
         btnNueva.setText("Nueva");
         panel2.add(btnNueva, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final Spacer spacer2 = new Spacer();
-        panel2.add(spacer2, new GridConstraints(0, 6, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        final Spacer spacer1 = new Spacer();
+        panel2.add(spacer1, new GridConstraints(0, 6, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         btnReservar = new JButton();
         btnReservar.setText("Registrar reserva");
         panel2.add(btnReservar, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -311,6 +314,9 @@ public class ReservaPanel implements PropertyChangeListener {
         scrollPane1.setBorder(BorderFactory.createTitledBorder(null, "Reservas", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
         tablaReservas = new JTable();
         scrollPane1.setViewportView(tablaReservas);
+        imprimeButton = new JButton();
+        imprimeButton.setText("PDF");
+        panel1.add(imprimeButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**

@@ -30,8 +30,10 @@ public class RecursoPanel implements PropertyChangeListener {
     private JButton btnCancelar;
     private JButton btnBuscar;
 
+
     private JTable tabla;
     private JScrollPane scrollTabla;
+    private JButton imprimeButton;
 
     private DefaultTableModel tableModel;
 
@@ -156,6 +158,10 @@ public class RecursoPanel implements PropertyChangeListener {
         return btnBuscar;
     }
 
+    public JButton getImprimeButton() {
+        return imprimeButton;
+    }
+
     public JTable getTabla() {
         return tabla;
     }
@@ -188,8 +194,6 @@ public class RecursoPanel implements PropertyChangeListener {
         btnNuevo = new JButton();
         btnNuevo.setText("Nuevo");
         panel2.add(btnNuevo, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final Spacer spacer1 = new Spacer();
-        panel2.add(spacer1, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         btnGuardar = new JButton();
         btnGuardar.setText("Guardar");
         panel2.add(btnGuardar, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -202,6 +206,9 @@ public class RecursoPanel implements PropertyChangeListener {
         btnCancelar = new JButton();
         btnCancelar.setText("Cancelar");
         panel2.add(btnCancelar, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        imprimeButton = new JButton();
+        imprimeButton.setText("Imprime PDF");
+        panel2.add(imprimeButton, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel3 = new JPanel();
         panel3.setLayout(new GridLayoutManager(3, 4, new Insets(0, 0, 0, 0), -1, -1));
         panel1.add(panel3, new GridConstraints(0, 0, 1, 4, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));

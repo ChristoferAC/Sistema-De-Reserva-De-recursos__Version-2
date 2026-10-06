@@ -3,6 +3,8 @@ package sistema.reservas.Presentation.Recurso;
 import sistema.reservas.Logic.CategoriaRecurso;
 import sistema.reservas.Logic.Recurso;
 import sistema.reservas.Logic.Services.RecursoService;
+import sistema.reservas.Data.PDF.GeneradorPDF;
+import javax.swing.table.DefaultTableModel;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -27,6 +29,7 @@ public class RecursoController {
         view.getBtnEditar().addActionListener(e -> editar());
         view.getBtnEliminar().addActionListener(e -> eliminar());
         view.getBtnBuscar().addActionListener(e -> buscar());
+        view.getImprimeButton().addActionListener(e -> imprimir());
         view.getTabla().getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) cargarSeleccion();
         });
@@ -120,6 +123,34 @@ public class RecursoController {
 
     private void limpiar() {
         model.setCurrent(null);
+    }
+
+    private void imprimir() {
+        DefaultTableModel tableModel = view.getTableModel();
+        if (tableModel.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(view.getPanel(),
+                    "No hay recursos para imprimir.", "Información", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        String[] columnas = {"ID", "Nombre", "Descripción", "Categoría"};
+        List<String[]> filas = new ArrayList<>();
+
+        for (int fila = 0; fila < tableModel.getRowCount(); fila++) {
+            String[] datosFila = new String[columnas.length];
+            for (int columna = 0; columna < columnas.length; columna++) {
+                Object valor = tableModel.getValueAt(fila, columna);
+                datosFila[columna] = valor == null ? "" : valor.toString();
+            }
+            filas.add(datosFila);
+        }
+
+        try {
+            new GeneradorPDF().generar("recursos.pdf", "Listado de Recursos", columnas, filas);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(view.getPanel(),
+                    "No se pudo generar el PDF: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void cargarSeleccion() {

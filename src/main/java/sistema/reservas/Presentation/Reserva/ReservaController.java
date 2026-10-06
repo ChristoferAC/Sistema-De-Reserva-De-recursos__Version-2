@@ -4,6 +4,8 @@ import sistema.reservas.Data.llm.ReservaExtraccion;
 import sistema.reservas.Logic.Recurso;
 import sistema.reservas.Logic.Reserva;
 import sistema.reservas.Logic.Services.ReservaService;
+import sistema.reservas.Data.PDF.GeneradorPDF;
+import javax.swing.table.DefaultTableModel;
 
 import javax.swing.*;
 import java.time.LocalDate;
@@ -30,6 +32,7 @@ public class ReservaController {
         view.getBtnEditar().addActionListener(e -> editar());
         view.getBtnCancelar().addActionListener(e -> cancelar());
         view.getBtnUsarIA().addActionListener(e -> usarIA());
+        view.getImprimeButton().addActionListener(e -> imprimir());
         view.getTablaReservas().getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) cargarSeleccion();
         });
@@ -103,6 +106,33 @@ public class ReservaController {
 
     private void limpiar() {
         model.setCurrent(null);
+    }
+
+    private void imprimir() {
+        DefaultTableModel tableModel = view.getTableModel();
+        if (tableModel.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(view.getPanel(),
+                    "No hay reservas para imprimir.", "Información", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        String[] columnas = {"ID", "Funcionario", "Actividad", "Fecha", "Hora Inicio", "Hora Fin", "Recursos"};
+        List<String[]> filas = new ArrayList<>();
+
+        for (int fila = 0; fila < tableModel.getRowCount(); fila++) {
+            String[] datosFila = new String[columnas.length];
+            for (int columna = 0; columna < columnas.length; columna++) {
+                Object valor = tableModel.getValueAt(fila, columna);
+                datosFila[columna] = valor == null ? "" : valor.toString();
+            }
+            filas.add(datosFila);
+        }
+        try {
+            new GeneradorPDF().generar("reservas.pdf", "Listado de Reservas", columnas, filas);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(view.getPanel(),
+                    "No se pudo generar el PDF: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void cargarSeleccion() {
