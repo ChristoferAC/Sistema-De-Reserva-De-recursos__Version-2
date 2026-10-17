@@ -1,10 +1,13 @@
 package sistema.reservas.Logic;
+import java.io.Serializable;
 
-public class Recurso {
+public class Recurso implements Serializable {
     private String id;
     private String nombre;
     private String descripcion;
     private CategoriaRecurso categoria;
+
+    private static final long serialVersionUID = 1L;
 
     public Recurso(String id,String nombre,String descripcion, CategoriaRecurso categoria){
         this.id=id;

@@ -4,9 +4,10 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.Serializable;
 
 
-public class Reserva {
+public class Reserva implements Serializable {
 
     public enum Estado {
         ACTIVA,
@@ -23,6 +24,8 @@ public class Reserva {
 
     private List<CategoriaRecurso> categoriasSolicitadas;
     private List<Recurso> recursosAsignados;
+
+    private static final long serialVersionUID = 1L;
 
     public Reserva() {
         categoriasSolicitadas = new ArrayList<>();

@@ -10,6 +10,9 @@ import sistema.reservas.Data.persistence.CategoriaXmlPersister;
 import java.util.ArrayList;
 import java.util.List;
 
+
+/*Este sera eliminado, Pero todavia no*/
+
 public class RecursoService {
 
     private static final String RUTA_RECURSOS = XmlUtil.CARPETA_DATOS + "/recursos.xml";
