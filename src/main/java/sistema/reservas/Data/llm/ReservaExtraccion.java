@@ -1,11 +1,15 @@
 package sistema.reservas.Data.llm;
 import java.util.List;
-public class ReservaExtraccion {
+import java.io.Serializable;
+
+public class ReservaExtraccion implements Serializable  {
     private String actividad;
     private String fecha;
     private String horaInicio;
     private String horaFinal;
     private List<String> categoriasRecurso;
+
+    private static final long serialVersionUID = 1L;
 
     public ReservaExtraccion() {}
 
