@@ -3,6 +3,7 @@ package sistema.reservas.Data.llm;
 import dev.langchain4j.service.SystemMessage;
 import dev.langchain4j.service.UserMessage;
 import dev.langchain4j.service.V;
+import sistema.reservas.Logic.ReservaExtraccion;
 
 public interface ReservaExtractorService {
 
@@ -26,4 +27,5 @@ public interface ReservaExtractorService {
         a lo que el usuario describe.
         """)
     ReservaExtraccion extraer(@V("frase") String frase, @V("categorias") String categoriasList, @V("hoy") String fechaHoy);
+
 }

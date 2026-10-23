@@ -1,6 +1,6 @@
 package sistema.reservas.Logic.Services;
 
-import sistema.reservas.Data.llm.ReservaExtraccion;
+import sistema.reservas.Logic.ReservaExtraccion;
 import sistema.reservas.Logic.Reserva;
 import java.util.List;
 

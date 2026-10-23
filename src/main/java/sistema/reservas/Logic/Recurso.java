@@ -9,6 +9,8 @@ public class Recurso implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    public Recurso() {}
+
     public Recurso(String id,String nombre,String descripcion, CategoriaRecurso categoria){
         this.id=id;
         this.nombre= nombre;
@@ -54,3 +56,6 @@ public class Recurso implements Serializable {
         return "Recurso{" + "id='" + id + '\'' + ", categoria=" + categoria + ", descripcion='" + descripcion + '\'' + '}';
     }
 }
+
+
+
