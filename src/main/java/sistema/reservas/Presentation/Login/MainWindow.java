@@ -8,6 +8,9 @@ import sistema.reservas.Presentation.Funcionario.FuncionarioPanel;
 import sistema.reservas.Presentation.Recurso.RecursoPanel;
 import sistema.reservas.Presentation.Reserva.ReservaPanel;
 import sistema.reservas.Logic.Usuario;
+import sistema.reservas.Presentation.Alerta.ViewAlerta;
+
+import java.awt.*;
 
 import javax.swing.*;
 
@@ -22,6 +25,7 @@ public class MainWindow extends JFrame {
     public final ViewCalendario calendarioPanel;
     public final ViewActividad actividadPanel;
     public final ViewEstadistica estadisticaPanel;
+    public final ViewAlerta alertaView;
 
     /** Mantiene compatibilidad si algo todavia crea MainWindow sin usuario. */
     public MainWindow() {
@@ -38,6 +42,7 @@ public class MainWindow extends JFrame {
         calendarioPanel = new ViewCalendario();
         actividadPanel = new ViewActividad();
         estadisticaPanel = new ViewEstadistica();
+        alertaView = new ViewAlerta();
 
         boolean esAdministrador = usuarioActual != null && "ADMIN".equals(usuarioActual.getRol());
         boolean esFuncionario = usuarioActual != null && "FUNCIONARIO".equals(usuarioActual.getRol());
@@ -65,8 +70,10 @@ public class MainWindow extends JFrame {
         tabbedPane.addTab("Estadisticas", estadisticaPanel.getEstadistica());           // I3
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(950, 620);
+
+        setSize(1250, 620);
         setLocationRelativeTo(null);
-        add(tabbedPane);
+        add(tabbedPane, BorderLayout.CENTER);
+        add(alertaView.getPanel(), BorderLayout.EAST);
     }
 }

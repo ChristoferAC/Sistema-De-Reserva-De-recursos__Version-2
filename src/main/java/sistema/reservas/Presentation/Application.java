@@ -24,6 +24,9 @@ import sistema.reservas.Presentation.Reserva.ReservaController;
 import sistema.reservas.Presentation.Reserva.ReservaModel;
 import sistema.reservas.Logic.Services.ReservaService;
 import sistema.reservas.Presentation.Login.LoginController;
+import sistema.reservas.Presentation.Alerta.ControllerAlerta;
+import sistema.reservas.Presentation.Alerta.ModelAlerta;
+
 
 import javax.swing.*;
 import java.util.List;
@@ -85,6 +88,7 @@ public class Application {
                 recursoService::listarCategorias);
 
         new ControllerEstadistica(mainWindow.estadisticaPanel, new ServiceEstadistica(reservaService));
+        new ControllerAlerta(mainWindow.alertaView, new ModelAlerta());
 
         mainWindow.setVisible(true);
     }
