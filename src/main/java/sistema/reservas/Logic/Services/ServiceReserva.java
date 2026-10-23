@@ -2,13 +2,14 @@ package sistema.reservas.Logic.Services;
 
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.service.AiServices;
-import sistema.reservas.Data.llm.ReservaExtraccion;
 import sistema.reservas.Data.llm.ReservaExtractorService;
 import sistema.reservas.Data.persistence.RecursoDAO;
 import sistema.reservas.Data.persistence.ReservaDAO;
 import sistema.reservas.Logic.CategoriaRecurso;
 import sistema.reservas.Logic.Recurso;
 import sistema.reservas.Logic.Reserva;
+import sistema.reservas.Logic.ReservaExtraccion;
+
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 
 /**
  * Una instancia por Worker (sus DAO usan la conexión de ese Worker)
- *  El candado es UNO SOLO para todo el proceso.
+ *  El candado es UNO SOLO para to-do el proceso.
  */
 public class ServiceReserva implements IServiceReserva {
 

@@ -1,11 +1,11 @@
 package sistema.reservas.Presentation.Reserva;
 
-import sistema.reservas.Data.llm.ReservaExtraccion;
 import sistema.reservas.Logic.Recurso;
 import sistema.reservas.Logic.Reserva;
 import sistema.reservas.Logic.Services.ReservaService;
 import sistema.reservas.Data.PDF.GeneradorPDF;
 import javax.swing.table.DefaultTableModel;
+import sistema.reservas.Logic.ReservaExtraccion;
 
 import javax.swing.*;
 import java.time.LocalDate;
