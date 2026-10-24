@@ -1,31 +1,44 @@
+// ============================================================
+// FRONTEND / src/main/java/sistema/reservas/Logic/Services/ServiceEstadistica.java
+// Calcula sobre findAll(Reserva) del Service (Proxy). La lógica de conteo no cambia.
+// ============================================================
 package sistema.reservas.Logic.Services;
 
 import sistema.reservas.Logic.CategoriaRecurso;
+import sistema.reservas.Logic.IService;
 import sistema.reservas.Logic.Reserva;
-import sistema.reservas.Logic.ReservaService;
+import sistema.reservas.Logic.Service;
 import sistema.reservas.Presentation.Estadistica.ModelEstadistica;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Servicio de Estadísticas (funcionalidad 8 del enunciado).
  *
  * Igual que Calendarización y Actividades, no tiene persistencia
- * propia: todos los conteos salen de Reserva a través de
- * ReservaService (Integrante 2).
+ * propia: todos los conteos salen de findAll(Reserva) del Service.
  */
 public class ServiceEstadistica {
 
-    private final ReservaService reservaService;
+    private final IService service;
 
-    public ServiceEstadistica(ReservaService reservaService) {
-        if (reservaService == null) {
-            throw new IllegalArgumentException("El ReservaService no puede ser nulo.");
+    public ServiceEstadistica() {
+        this(Service.instance());
+    }
+
+    /** Para pruebas: permite inyectar un IService falso sin abrir un socket. */
+    public ServiceEstadistica(IService service) {
+        if (service == null) {
+            throw new IllegalArgumentException("El Service no puede ser nulo.");
         }
-        this.reservaService = reservaService;
+        this.service = service;
     }
 
     /**
@@ -42,7 +55,7 @@ public class ServiceEstadistica {
         // semanas que sí tiene sentido ordenar cronológicamente).
         Map<String, Integer> conteos = new LinkedHashMap<>();
 
-        for (Reserva reserva : reservaService.listarReservas()) {
+        for (Reserva reserva : cargarReservas()) {
             if (!reserva.isActiva() || fueraDeRango(reserva.getFecha(), desde, hasta)) {
                 continue;
             }
@@ -67,7 +80,7 @@ public class ServiceEstadistica {
         // ordenan cronológicamente solas.
         Map<String, Integer> conteos = new TreeMap<>();
 
-        for (Reserva reserva : reservaService.listarReservas()) {
+        for (Reserva reserva : cargarReservas()) {
             if (!reserva.isActiva() || fueraDeRango(reserva.getFecha(), desde, hasta)) {
                 continue;
             }
@@ -76,6 +89,19 @@ public class ServiceEstadistica {
         }
 
         return aModelo(conteos);
+    }
+
+    /**
+     * findAll declara "throws Exception" (red o error del Backend). Se convierte en
+     * IllegalArgumentException porque es la que ControllerEstadistica ya captura
+     * y muestra con el mensaje real.
+     */
+    private List<Reserva> cargarReservas() {
+        try {
+            return service.findAll(new Reserva());
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("No se pudieron cargar las reservas: " + ex.getMessage(), ex);
+        }
     }
 
     private void validarRango(LocalDate desde, LocalDate hasta) {

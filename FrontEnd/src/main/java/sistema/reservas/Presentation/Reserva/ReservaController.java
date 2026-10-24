@@ -1,10 +1,16 @@
+// ============================================================
+// FRONTEND / src/main/java/sistema/reservas/Presentation/Reserva/ReservaController.java
+// Usa Service.instance(). El id de una reserva nueva lo genera MySQL: se ignora al crear
+// y solo se exige al editar.
+// ============================================================
 package sistema.reservas.Presentation.Reserva;
 
 import sistema.reservas.Data.PDF.GeneradorPDF;
+import sistema.reservas.Logic.IService;
 import sistema.reservas.Logic.Recurso;
 import sistema.reservas.Logic.Reserva;
 import sistema.reservas.Logic.ReservaExtraccion;
-import sistema.reservas.Logic.ReservaService;
+import sistema.reservas.Logic.Service;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -17,12 +23,17 @@ public class ReservaController {
 
     private final ReservaPanel view;
     private final ReservaModel model;
-    private final ReservaService reservaService;
+    private final IService service;
 
-    public ReservaController(ReservaPanel view, ReservaModel model, ReservaService reservaService) {
+    public ReservaController(ReservaPanel view, ReservaModel model) {
+        this(view, model, Service.instance());
+    }
+
+    /** Para pruebas: permite inyectar un IService falso sin abrir un socket. */
+    public ReservaController(ReservaPanel view, ReservaModel model, IService service) {
         this.view = view;
         this.model = model;
-        this.reservaService = reservaService;
+        this.service = service;
 
         view.setModel(model);
 
@@ -37,45 +48,72 @@ public class ReservaController {
             if (!e.getValueIsAdjusting()) cargarSeleccion();
         });
 
-        model.setRecursos(reservaService.listarRecursos());
-        model.setReservas(reservaService.listarReservas());
+        try {
+            refrescarRecursos();
+            refrescarReservas();
+        } catch (Exception ex) {
+            mostrarError(ex);
+        }
     }
 
+    // ---------------------- datos desde el Service ----------------------
+
+    private void refrescarRecursos() throws Exception {
+        model.setRecursos(service.findAll(new Recurso()));   // por si se creó un recurso nuevo en esta sesión
+    }
+
+    private void refrescarReservas() throws Exception {
+        model.setReservas(service.findAll(new Reserva()));
+    }
+
+    private void mostrarError(Exception ex) {
+        String mensaje = ex.getMessage() != null ? ex.getMessage() : ex.toString();
+        JOptionPane.showMessageDialog(view.getPanel(), mensaje, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    // ------------------------------ acciones ------------------------------
+
     private void reservar() {
-        model.setRecursos(reservaService.listarRecursos()); // por si se creó un recurso nuevo en esta sesión
-        if (!validate()) {
-            JOptionPane.showMessageDialog(view.getPanel(),
-                    "Revise los campos marcados (pase el mouse sobre ellos para ver el detalle).",
-                    "Datos inválidos", JOptionPane.WARNING_MESSAGE);
+        try {
+            refrescarRecursos();
+        } catch (Exception ex) {
+            mostrarError(ex);
             return;
         }
-        Reserva reserva = take();
+        if (!validate(false)) {
+            avisarDatosInvalidos();
+            return;
+        }
+        Reserva reserva = take(false);
         try {
-            reservaService.crearReserva(reserva);
+            service.create(reserva);   // devuelve la reserva con el id generado por MySQL
             JOptionPane.showMessageDialog(view.getPanel(), "RESERVA APLICADA", "", JOptionPane.INFORMATION_MESSAGE);
             model.setCurrent(null);
-            model.setReservas(reservaService.listarReservas());
+            refrescarReservas();
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(view.getPanel(), ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            mostrarError(ex);
         }
     }
 
     private void editar() {
-        model.setRecursos(reservaService.listarRecursos());
-        if (!validate()) {
-            JOptionPane.showMessageDialog(view.getPanel(),
-                    "Revise los campos marcados (pase el mouse sobre ellos para ver el detalle).",
-                    "Datos inválidos", JOptionPane.WARNING_MESSAGE);
+        try {
+            refrescarRecursos();
+        } catch (Exception ex) {
+            mostrarError(ex);
             return;
         }
-        Reserva reserva = take();
+        if (!validate(true)) {
+            avisarDatosInvalidos();
+            return;
+        }
+        Reserva reserva = take(true);
         try {
-            reservaService.modificarReserva(reserva);
+            service.update(reserva);
             JOptionPane.showMessageDialog(view.getPanel(), "RESERVA MODIFICADA", "", JOptionPane.INFORMATION_MESSAGE);
             model.setCurrent(null);
-            model.setReservas(reservaService.listarReservas());
+            refrescarReservas();
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(view.getPanel(), ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            mostrarError(ex);
         }
     }
 
@@ -95,12 +133,14 @@ public class ReservaController {
 
         try {
             int id = Integer.parseInt(view.getTableModel().getValueAt(fila, 0).toString());
-            reservaService.cancelarReserva(id);
+            Reserva aCancelar = new Reserva();
+            aCancelar.setId(id);
+            service.cancelar(aCancelar);
             JOptionPane.showMessageDialog(view.getPanel(), "RESERVA CANCELADA", "", JOptionPane.INFORMATION_MESSAGE);
             model.setCurrent(null);
-            model.setReservas(reservaService.listarReservas());
+            refrescarReservas();
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(view.getPanel(), ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            mostrarError(ex);
         }
     }
 
@@ -135,11 +175,17 @@ public class ReservaController {
         }
     }
 
+    /** Sin ir a la red: la fila seleccionada sale de la misma lista que ya tiene el Model. */
     private void cargarSeleccion() {
         int fila = view.getTablaReservas().getSelectedRow();
         if (fila < 0) return;
         int id = Integer.parseInt(view.getTableModel().getValueAt(fila, 0).toString());
-        model.setCurrent(reservaService.buscarReserva(id));
+        for (Reserva reserva : model.getReservas()) {
+            if (reserva.getId() == id) {
+                model.setCurrent(reserva);
+                return;
+            }
+        }
     }
 
     private void usarIA() {
@@ -155,10 +201,10 @@ public class ReservaController {
         }
 
         try {
-            ReservaExtraccion datos = reservaService.extraerReserva(texto);
+            ReservaExtraccion datos = service.extraerConIA(texto);   // se ejecuta en el Backend
             aplicarDatosDeIA(datos);
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(view.getPanel(), ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            mostrarError(ex);
         }
     }
 
@@ -209,9 +255,18 @@ public class ReservaController {
         JOptionPane.showMessageDialog(view.getPanel(), mensaje, "Usar IA", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    private Reserva take() {
+    // --------------------------- formulario ---------------------------
+
+    private void avisarDatosInvalidos() {
+        JOptionPane.showMessageDialog(view.getPanel(),
+                "Revise los campos marcados (pase el mouse sobre ellos para ver el detalle).",
+                "Datos inválidos", JOptionPane.WARNING_MESSAGE);
+    }
+
+    /** @param conId true al editar (el id viene del formulario); false al crear (lo genera MySQL). */
+    private Reserva take(boolean conId) {
         Reserva reserva = new Reserva();
-        reserva.setId(Integer.parseInt(view.getTxtId().getText().trim()));
+        reserva.setId(conId ? Integer.parseInt(view.getTxtId().getText().trim()) : 0);
         reserva.setFuncionario(view.getFuncionario());
         reserva.setActividad(view.getTxtActividad().getText().trim());
         reserva.setFecha(LocalDate.parse(view.getTxtFecha().getText().trim()));
@@ -239,20 +294,25 @@ public class ReservaController {
         return recurso.getNombre() + " (" + categoria + ")";
     }
 
-    private boolean validate() {
+    /** @param exigeId true al editar: el ID debe existir y ser numérico. Al crear se ignora. */
+    private boolean validate(boolean exigeId) {
         boolean valido = true;
 
-        if (view.getTxtId().getText().trim().isEmpty()) {
-            valido = false;
-            view.getTxtId().setToolTipText("ID requerido");
-        } else {
-            try {
-                Integer.parseInt(view.getTxtId().getText().trim());
-                view.getTxtId().setToolTipText(null);
-            } catch (NumberFormatException e) {
+        if (exigeId) {
+            if (view.getTxtId().getText().trim().isEmpty()) {
                 valido = false;
-                view.getTxtId().setToolTipText("El ID debe ser numérico.");
+                view.getTxtId().setToolTipText("Seleccione una reserva de la tabla para editarla");
+            } else {
+                try {
+                    Integer.parseInt(view.getTxtId().getText().trim());
+                    view.getTxtId().setToolTipText(null);
+                } catch (NumberFormatException e) {
+                    valido = false;
+                    view.getTxtId().setToolTipText("El ID debe ser numérico.");
+                }
             }
+        } else {
+            view.getTxtId().setToolTipText(null);
         }
 
         if (view.getTxtActividad().getText().trim().isEmpty()) {

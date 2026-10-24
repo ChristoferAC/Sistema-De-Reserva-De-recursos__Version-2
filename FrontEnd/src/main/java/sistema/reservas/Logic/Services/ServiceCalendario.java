@@ -1,7 +1,16 @@
+// ============================================================
+// FRONTEND / src/main/java/sistema/reservas/Logic/Services/ServiceCalendario.java
+// Calcula sobre findRecursosByCategoria(...) y findAll(Reserva) del Service (Proxy).
+// Se agregaron los imports de Recurso, CategoriaRecurso y Reserva, que antes llegaban
+// por estar en el mismo paquete.
+// ============================================================
 package sistema.reservas.Logic.Services;
 
-import sistema.reservas.Logic.RecursoService;
-import sistema.reservas.Logic.ReservaService;
+import sistema.reservas.Logic.CategoriaRecurso;
+import sistema.reservas.Logic.IService;
+import sistema.reservas.Logic.Recurso;
+import sistema.reservas.Logic.Reserva;
+import sistema.reservas.Logic.Service;
 import sistema.reservas.Presentation.Calendarizacion.ModelCalendario;
 
 import java.time.LocalDate;
@@ -17,10 +26,9 @@ import java.util.List;
  * cada celda indica si el recurso está reservado a esa hora (actividad +
  * funcionario).
  *
- * Importante: esta clase NO tiene persistencia propia. Todos los datos
- * salen de Reserva a través de ReservaService (Integrante 2) y de
- * RecursoService (Integrante 2) para saber qué recursos pertenecen a la
- * categoría consultada.
+ * Esta clase NO tiene persistencia propia: los recursos de la categoría salen de
+ * findRecursosByCategoria y las reservas de findAll(Reserva), ambos del Service
+ * (en el Frontend siempre es el Proxy).
  */
 public class ServiceCalendario {
 
@@ -30,12 +38,18 @@ public class ServiceCalendario {
     private static final int HORA_INICIO_DIA = 6;
     private static final int HORA_FIN_DIA = 22;
 
-    private final ReservaService reservaService;
-    private final RecursoService recursoService;
+    private final IService service;
 
-    public ServiceCalendario(ReservaService reservaService, RecursoService recursoService) {
-        this.reservaService = reservaService;
-        this.recursoService = recursoService;
+    public ServiceCalendario() {
+        this(Service.instance());
+    }
+
+    /** Para pruebas: permite inyectar un IService falso sin abrir un socket. */
+    public ServiceCalendario(IService service) {
+        if (service == null) {
+            throw new IllegalArgumentException("El Service no puede ser nulo.");
+        }
+        this.service = service;
     }
 
     public ModelCalendario generarMatriz(LocalDate fecha, CategoriaRecurso categoria) {
@@ -46,11 +60,20 @@ public class ServiceCalendario {
             throw new IllegalArgumentException("La categoría es obligatoria.");
         }
 
-        List<Recurso> recursos = recursoService.listarPorCategoria(categoria.getId());
+        List<Recurso> recursos;
+        List<Reserva> todas;
+        try {
+            recursos = service.findRecursosByCategoria(categoria);
+            todas = service.findAll(new Reserva());
+        } catch (Exception ex) {
+            // IllegalArgumentException es la que ControllerCalendario ya captura y muestra
+            throw new IllegalArgumentException("No se pudo cargar el calendario: " + ex.getMessage(), ex);
+        }
+
         List<LocalTime> horas = generarHoras();
 
         List<Reserva> reservasDelDia = new ArrayList<>();
-        for (Reserva reserva : reservaService.listarReservas()) {
+        for (Reserva reserva : todas) {
             if (reserva.isActiva() && fecha.equals(reserva.getFecha())) {
                 reservasDelDia.add(reserva);
             }
@@ -75,7 +98,7 @@ public class ServiceCalendario {
         for (Reserva reserva : reservasDelDia) {
             boolean usaEsteRecurso = false;
             for (Recurso asignado : reserva.getRecursosAsignados()) {
-                if (asignado.getId().equals(recurso.getId())) {
+                if (asignado.getId().equals(recurso.getId())) {   // ids de recurso son texto: equals, nunca ==
                     usaEsteRecurso = true;
                     break;
                 }

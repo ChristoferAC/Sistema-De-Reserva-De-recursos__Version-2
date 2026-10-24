@@ -1,4 +1,4 @@
-package sistema.reservas.Presentation;
+package sistema.reservas;
 
 public class Application {
 /*

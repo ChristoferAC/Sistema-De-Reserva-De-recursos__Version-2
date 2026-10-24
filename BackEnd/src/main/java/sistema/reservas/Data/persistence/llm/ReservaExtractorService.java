@@ -1,4 +1,4 @@
-package sistema.reservas.Data.llm;
+package sistema.reservas.Data.persistence.llm;
 
 import dev.langchain4j.service.SystemMessage;
 import dev.langchain4j.service.UserMessage;

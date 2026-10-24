@@ -59,8 +59,8 @@ public class Application {
         // dependen Actividades, Calendarizacion y Estadisticas
         // (Integrante 3), asi que se crean una sola vez, sin importar
         // el rol del usuario logueado (esas 3 pestanas se ven siempre).
-        RecursoService recursoService = new RecursoService();
-        ReservaService reservaService = new ReservaService(recursoService);
+        new RecursoController(mainWindow.recursoPanel, new RecursoModel());
+        new ReservaController(mainWindow.reservaPanel, new ReservaModel());
         List<CategoriaRecurso> categorias = recursoService.listarCategorias();
 
         if ("ADMIN".equals(Sesion.getUsuario().getRol())) {

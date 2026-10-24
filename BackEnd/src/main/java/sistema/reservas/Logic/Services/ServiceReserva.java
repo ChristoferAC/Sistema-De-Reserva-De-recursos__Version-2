@@ -7,9 +7,10 @@ package sistema.reservas.Logic.Services;
 
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.service.AiServices;
-import sistema.reservas.Data.llm.ReservaExtractorService;
+
 import sistema.reservas.Data.persistence.RecursoDAO;
 import sistema.reservas.Data.persistence.ReservaDAO;
+import sistema.reservas.Data.persistence.llm.ReservaExtractorService;
 import sistema.reservas.Logic.CategoriaRecurso;
 import sistema.reservas.Logic.Recurso;
 import sistema.reservas.Logic.Reserva;
@@ -348,4 +349,4 @@ public class ServiceReserva {
         }
         return sb.toString();
     }
-}}
+}

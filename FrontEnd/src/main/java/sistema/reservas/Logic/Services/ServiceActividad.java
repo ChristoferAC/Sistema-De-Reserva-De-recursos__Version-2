@@ -1,7 +1,13 @@
+// ============================================================
+// FRONTEND / src/main/java/sistema/reservas/Logic/Services/ServiceActividad.java
+// Supuesto: el Proxy de I3 es sistema.reservas.Logic.Service con Service.instance().
+// Si su paquete o nombre es otro, solo cambia el import de Service.
+// ============================================================
 package sistema.reservas.Logic.Services;
 
+import sistema.reservas.Logic.IService;
 import sistema.reservas.Logic.Reserva;
-import sistema.reservas.Logic.ReservaService;
+import sistema.reservas.Logic.Service;
 import sistema.reservas.Presentation.Actividad.ModelActividad;
 
 import java.time.DayOfWeek;
@@ -19,9 +25,8 @@ import java.util.List;
  * domingo), y cada celda muestra la(s) actividad(es) reservada(s) en
  * ese día y hora.
  *
- * Igual que CalendarizacionService, esta clase NO tiene persistencia
- * propia: todos los datos salen de Reserva a través de ReservaService
- * (Integrante 2).
+ * Esta clase NO tiene persistencia propia: calcula sobre findAll(Reserva)
+ * del Service (en el Frontend siempre es el Proxy; el real vive en el Backend).
  */
 public class ServiceActividad {
 
@@ -31,13 +36,18 @@ public class ServiceActividad {
     private static final int HORA_INICIO_DIA = 6;
     private static final int HORA_FIN_DIA = 22;
 
-    private final ReservaService reservaService;
+    private final IService service;
 
-    public ServiceActividad(ReservaService reservaService) {
-        if (reservaService == null) {
-            throw new IllegalArgumentException("El ReservaService no puede ser nulo.");
+    public ServiceActividad() {
+        this(Service.instance());
+    }
+
+    /** Para pruebas: permite inyectar un IService falso sin abrir un socket. */
+    public ServiceActividad(IService service) {
+        if (service == null) {
+            throw new IllegalArgumentException("El Service no puede ser nulo.");
         }
-        this.reservaService = reservaService;
+        this.service = service;
     }
 
     public ModelActividad generarMatriz(LocalDate fechaReferencia) {
@@ -49,7 +59,7 @@ public class ServiceActividad {
         List<LocalTime> horas = generarHoras();
 
         List<Reserva> reservasDeLaSemana = new ArrayList<>();
-        for (Reserva reserva : reservaService.listarReservas()) {
+        for (Reserva reserva : cargarReservas()) {
             // Decisión de diseño: solo se muestran reservas ACTIVAS;
             // una reserva cancelada no debe aparecer como actividad vigente.
             if (reserva.isActiva() && dias.contains(reserva.getFecha())) {
@@ -67,6 +77,19 @@ public class ServiceActividad {
         }
 
         return new ModelActividad(horas, dias, celdas);
+    }
+
+    /**
+     * findAll declara "throws Exception" (red o error del Backend). Se convierte en
+     * IllegalArgumentException porque es la que ControllerActividad ya captura
+     * y muestra en un JOptionPane con el mensaje real.
+     */
+    private List<Reserva> cargarReservas() {
+        try {
+            return service.findAll(new Reserva());
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("No se pudieron cargar las reservas: " + ex.getMessage(), ex);
+        }
     }
 
     /**
