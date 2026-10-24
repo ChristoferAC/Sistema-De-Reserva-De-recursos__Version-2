@@ -26,7 +26,7 @@ import javax.swing.*;
 import java.util.List;
 
 public class Application {
-
+/*
     public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
@@ -85,5 +85,5 @@ public class Application {
         new ControllerAlerta(mainWindow.alertaView, new ModelAlerta());
 
         mainWindow.setVisible(true);
-    }
+    }*/
 }

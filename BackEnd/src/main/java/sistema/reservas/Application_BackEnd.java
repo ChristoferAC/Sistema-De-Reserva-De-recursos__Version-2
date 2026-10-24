@@ -1,6 +1,31 @@
 package sistema.reservas;
 
-public class Application {
+import sistema.reservas.Logic.*;
+import sistema.reservas.Logic.Services.ServiceActividad;
+import sistema.reservas.Logic.Services.ServiceCalendario;
+import sistema.reservas.Logic.Services.ServiceEstadistica;
+import sistema.reservas.Presentation.Actividad.ControllerActividad;
+import sistema.reservas.Presentation.Alerta.ControllerAlerta;
+import sistema.reservas.Presentation.Alerta.ModelAlerta;
+import sistema.reservas.Presentation.Calendarizacion.ControllerCalendario;
+import sistema.reservas.Presentation.Categoria.CategoriaModel;
+import sistema.reservas.Presentation.Categoria.CategoriaRecursoController;
+import sistema.reservas.Presentation.Estadistica.ControllerEstadistica;
+import sistema.reservas.Presentation.Funcionario.FuncionarioController;
+import sistema.reservas.Presentation.Funcionario.FuncionarioModel;
+import sistema.reservas.Presentation.Login.LoginController;
+import sistema.reservas.Presentation.Login.LoginModel;
+import sistema.reservas.Presentation.Login.LoginView;
+import sistema.reservas.Presentation.Login.MainWindow;
+import sistema.reservas.Presentation.Recurso.RecursoController;
+import sistema.reservas.Presentation.Recurso.RecursoModel;
+import sistema.reservas.Presentation.Reserva.ReservaController;
+import sistema.reservas.Presentation.Reserva.ReservaModel;
+
+import javax.swing.*;
+import java.util.List;
+
+public class Application_BackEnd {
 /*
     public static void main(String[] args) {
         try {
@@ -34,8 +59,8 @@ public class Application {
         // dependen Actividades, Calendarizacion y Estadisticas
         // (Integrante 3), asi que se crean una sola vez, sin importar
         // el rol del usuario logueado (esas 3 pestanas se ven siempre).
-        RecursoService recursoService = new RecursoService();
-        ReservaService reservaService = new ReservaService(recursoService);
+        new RecursoController(mainWindow.recursoPanel, new RecursoModel());
+        new ReservaController(mainWindow.reservaPanel, new ReservaModel());
         List<CategoriaRecurso> categorias = recursoService.listarCategorias();
 
         if ("ADMIN".equals(Sesion.getUsuario().getRol())) {
@@ -61,4 +86,5 @@ public class Application {
 
         mainWindow.setVisible(true);
     }*/
+
 }
