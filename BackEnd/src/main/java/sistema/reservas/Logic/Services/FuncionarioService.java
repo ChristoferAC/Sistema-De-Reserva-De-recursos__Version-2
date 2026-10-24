@@ -1,4 +1,4 @@
-package sistema.reservas.Logic;
+package sistema.reservas.Logic.Services;
 
 import sistema.reservas.Logic.Funcionario;
 import sistema.reservas.Logic.Usuario;

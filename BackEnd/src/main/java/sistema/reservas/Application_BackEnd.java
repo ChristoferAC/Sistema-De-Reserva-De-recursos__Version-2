@@ -1,26 +1,5 @@
 package sistema.reservas;
 
-import sistema.reservas.Logic.*;
-import sistema.reservas.Logic.Services.ServiceActividad;
-import sistema.reservas.Logic.Services.ServiceCalendario;
-import sistema.reservas.Logic.Services.ServiceEstadistica;
-import sistema.reservas.Presentation.Actividad.ControllerActividad;
-import sistema.reservas.Presentation.Alerta.ControllerAlerta;
-import sistema.reservas.Presentation.Alerta.ModelAlerta;
-import sistema.reservas.Presentation.Calendarizacion.ControllerCalendario;
-import sistema.reservas.Presentation.Categoria.CategoriaModel;
-import sistema.reservas.Presentation.Categoria.CategoriaRecursoController;
-import sistema.reservas.Presentation.Estadistica.ControllerEstadistica;
-import sistema.reservas.Presentation.Funcionario.FuncionarioController;
-import sistema.reservas.Presentation.Funcionario.FuncionarioModel;
-import sistema.reservas.Presentation.Login.LoginController;
-import sistema.reservas.Presentation.Login.LoginModel;
-import sistema.reservas.Presentation.Login.LoginView;
-import sistema.reservas.Presentation.Login.MainWindow;
-import sistema.reservas.Presentation.Recurso.RecursoController;
-import sistema.reservas.Presentation.Recurso.RecursoModel;
-import sistema.reservas.Presentation.Reserva.ReservaController;
-import sistema.reservas.Presentation.Reserva.ReservaModel;
 
 import javax.swing.*;
 import java.util.List;
