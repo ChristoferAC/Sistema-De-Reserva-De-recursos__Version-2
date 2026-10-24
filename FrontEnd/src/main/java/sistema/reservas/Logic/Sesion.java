@@ -6,6 +6,7 @@ package sistema.reservas.Logic;
  * (Administrador o Funcionario), sin tener que pasarlo como parametro
  * por todos lados.
  */
+
 public class Sesion {
 
     private static Usuario usuario;

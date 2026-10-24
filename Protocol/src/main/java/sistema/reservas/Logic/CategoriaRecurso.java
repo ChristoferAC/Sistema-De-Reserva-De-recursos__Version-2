@@ -1,15 +1,18 @@
+// ============================================================
+// PROTOCOL / src/main/java/sistema/reservas/Logic/CategoriaRecurso.java
+// ============================================================
 package sistema.reservas.Logic;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
+import java.io.Serializable;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-public class CategoriaRecurso {
+public class CategoriaRecurso implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     private int id;
     private String nombre;
     private String descripcion;
 
-    /** JAXB necesita un constructor vacio para poder des-serializar. */
     public CategoriaRecurso() {
     }
 

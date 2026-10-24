@@ -1,5 +1,4 @@
-package sistema.reservas.scratch;
-
+package test.java.sistema.reservas.scratch;
 
 import sistema.reservas.Data.persistence.RecursoDAOJdbc;
 import sistema.reservas.Logic.CategoriaRecurso;

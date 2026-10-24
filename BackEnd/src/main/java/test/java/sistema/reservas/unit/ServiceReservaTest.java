@@ -1,4 +1,4 @@
-package sistema.reservas.unit;
+package test.java.sistema.reservas.unit;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

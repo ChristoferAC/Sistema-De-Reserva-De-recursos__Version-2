@@ -1,5 +1,5 @@
 // SCRATCH: no se commitea (la carpeta scratch va en ´popope).
-package sistema.reservas.scratch;
+package test.java.sistema.reservas.scratch;
 
 import sistema.reservas.Data.persistence.ReservaDAOJdbc;
 import sistema.reservas.Logic.CategoriaRecurso;

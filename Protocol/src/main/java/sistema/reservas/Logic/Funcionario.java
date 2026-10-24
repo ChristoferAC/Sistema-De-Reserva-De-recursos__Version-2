@@ -1,12 +1,11 @@
+// ============================================================
+// PROTOCOL / src/main/java/sistema/reservas/Logic/Funcionario.java
+// ============================================================
 package sistema.reservas.Logic;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement(name = "funcionario")
-@XmlAccessorType(XmlAccessType.FIELD)
 public class Funcionario extends Usuario {
+
+    private static final long serialVersionUID = 1L;
 
     private String telefono;
 

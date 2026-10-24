@@ -1,23 +1,20 @@
+// ============================================================
+// PROTOCOL / src/main/java/sistema/reservas/Logic/Usuario.java
+// Sin JAXB; Serializable. El password lo devuelve el Backend siempre en null (regla 5).
+// ============================================================
 package sistema.reservas.Logic;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlSeeAlso;
+import java.io.Serializable;
 
-/**
- * @XmlSeeAlso le dice a JAXB cuales son las subclases concretas que
- * puede encontrarse al serializar/des-serializar una lista de Usuario
- * (ya que Usuario es abstracta, JAXB necesita saber esto de antemano).
- */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlSeeAlso({Administrador.class, Funcionario.class})
-public abstract class Usuario {
+public abstract class Usuario implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     private int id;
     private String nombre;
     private String username;
     private String password;
 
-    /** JAXB necesita un constructor vacio para poder des-serializar. */
     protected Usuario() {
     }
 
