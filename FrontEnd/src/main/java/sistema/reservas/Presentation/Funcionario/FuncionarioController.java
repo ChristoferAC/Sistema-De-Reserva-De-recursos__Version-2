@@ -1,21 +1,20 @@
 package sistema.reservas.Presentation.Funcionario;
 
 import sistema.reservas.Logic.Funcionario;
-import sistema.reservas.Logic.FuncionarioService;
+import sistema.reservas.Logic.Service;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.util.List;
 
 public class FuncionarioController {
 
     private final FuncionarioPanel view;
     private final FuncionarioModel model;
-    private final FuncionarioService funcionarioService;
 
     public FuncionarioController(FuncionarioPanel view, FuncionarioModel model) {
         this.view = view;
         this.model = model;
-        this.funcionarioService = new FuncionarioService();
 
         view.setModel(model);
 
@@ -27,24 +26,39 @@ public class FuncionarioController {
             if (!e.getValueIsAdjusting()) cargarSeleccion();
         });
 
-        model.setFuncionarios(funcionarioService.listarTodos());
+        cargarTodos();
+    }
+
+    private void cargarTodos() {
+        try {
+            model.setFuncionarios(Service.instance().findAll(new Funcionario()));
+        } catch (Exception ex) {
+            mostrar(ex.getMessage());
+        }
     }
 
     private void buscar() {
         String idTexto = view.getTxtBuscarId().getText().trim();
         String nombre = view.getTxtBuscarNombre().getText().trim();
 
-        if (!idTexto.isEmpty()) {
-            try {
-                Funcionario f = funcionarioService.buscarPorId(Integer.parseInt(idTexto));
-                model.setFuncionarios(f == null ? java.util.List.of() : java.util.List.of(f));
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(view.getPanel1(), "El ID debe ser numérico.");
+        try {
+            if (!idTexto.isEmpty()) {
+                Funcionario filtro = new Funcionario();
+                filtro.setId(Integer.parseInt(idTexto));
+                try {
+                    model.setFuncionarios(List.of(Service.instance().read(filtro)));
+                } catch (Exception noExiste) {
+                    model.setFuncionarios(List.of());
+                }
+            } else if (!nombre.isEmpty()) {
+                model.setFuncionarios(Service.instance().findFuncionariosByNombre(nombre));
+            } else {
+                cargarTodos();
             }
-        } else if (!nombre.isEmpty()) {
-            model.setFuncionarios(funcionarioService.buscarPorNombre(nombre));
-        } else {
-            model.setFuncionarios(funcionarioService.listarTodos());
+        } catch (NumberFormatException ex) {
+            mostrar("El ID debe ser numérico.");
+        } catch (Exception ex) {
+            mostrar(ex.getMessage());
         }
     }
 
@@ -57,48 +71,47 @@ public class FuncionarioController {
 
             if (idTexto.isEmpty()) {
                 // Nuevo funcionario: se pide un ID ya que no es autogenerado
-                JOptionPane.showMessageDialog(view.getPanel1(), "Debe indicar el ID del funcionario.");
+                mostrar("Debe indicar el ID del funcionario.");
                 return;
             }
 
             int id = Integer.parseInt(idTexto);
-            Funcionario existente = funcionarioService.buscarPorId(id);
+            // Se arma el objeto con lo del formulario; la clave la maneja el Backend
+            Funcionario funcionario = new Funcionario(id, nombre, username, null, telefono);
 
-            if (existente == null) {
-                Funcionario nuevo = new Funcionario(id, nombre, username, "", telefono);
-                funcionarioService.crear(nuevo);
+            Funcionario actual = model.getCurrent();
+            if (actual != null && actual.getId() == id) {
+                Service.instance().update(funcionario);
             } else {
-                existente.setNombre(nombre);
-                existente.setTelefono(telefono);
-                existente.setUsername(username);
-                funcionarioService.actualizar(existente);
+                Service.instance().create(funcionario);
             }
 
             model.setCurrent(null);
-            model.setFuncionarios(funcionarioService.listarTodos());
+            cargarTodos();
 
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(view.getPanel1(), "El ID debe ser numérico.");
-        } catch (IllegalArgumentException ex) {
-            JOptionPane.showMessageDialog(view.getPanel1(), ex.getMessage());
+            mostrar("El ID debe ser numérico.");
+        } catch (Exception ex) {
+            mostrar(ex.getMessage());
         }
     }
 
     private void borrar() {
         String idTexto = view.getTxtId().getText().trim();
         if (idTexto.isEmpty()) {
-            JOptionPane.showMessageDialog(view.getPanel1(), "Seleccione un funcionario para borrar.");
+            mostrar("Seleccione un funcionario para borrar.");
             return;
         }
         try {
-            int id = Integer.parseInt(idTexto);
-            funcionarioService.eliminar(id);
+            Funcionario funcionario = new Funcionario();
+            funcionario.setId(Integer.parseInt(idTexto));
+            Service.instance().delete(funcionario);
             model.setCurrent(null);
-            model.setFuncionarios(funcionarioService.listarTodos());
+            cargarTodos();
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(view.getPanel1(), "El ID debe ser numérico.");
-        } catch (IllegalArgumentException ex) {
-            JOptionPane.showMessageDialog(view.getPanel1(), ex.getMessage());
+            mostrar("El ID debe ser numérico.");
+        } catch (Exception ex) {
+            mostrar(ex.getMessage());
         }
     }
 
@@ -111,8 +124,17 @@ public class FuncionarioController {
         if (fila < 0) return;
 
         DefaultTableModel tableModel = view.getTableModel();
-        int id = Integer.parseInt(tableModel.getValueAt(fila, 0).toString());
+        Funcionario filtro = new Funcionario();
+        filtro.setId(Integer.parseInt(tableModel.getValueAt(fila, 0).toString()));
 
-        model.setCurrent(funcionarioService.buscarPorId(id));
+        try {
+            model.setCurrent(Service.instance().read(filtro));
+        } catch (Exception ex) {
+            mostrar(ex.getMessage());
+        }
+    }
+
+    private void mostrar(String mensaje) {
+        JOptionPane.showMessageDialog(view.getPanel1(), mensaje);
     }
 }

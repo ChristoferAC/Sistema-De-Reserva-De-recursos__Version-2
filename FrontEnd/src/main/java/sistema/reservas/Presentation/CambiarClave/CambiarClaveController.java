@@ -1,7 +1,6 @@
 package sistema.reservas.Presentation.CambiarClave;
 
-import sistema.reservas.Logic.Usuario;
-import sistema.reservas.Logic.UsuarioService;
+import sistema.reservas.Logic.Service;
 
 public class CambiarClaveController {
 
@@ -38,11 +37,8 @@ public class CambiarClaveController {
         }
 
         try {
-            UsuarioService service = new UsuarioService();
-            // Primero validamos que el usuario y clave actual sean correctos
-            Usuario usuario = service.login(username, claveActual);
-            // Si llegamos aquí, las credenciales son correctas — cambiamos
-            service.cambiarClave(usuario, claveActual, claveNueva);
+            // El Backend valida la clave actual y hace el cambio en una sola peticion
+            Service.instance().cambiarClave(username, claveActual, claveNueva);
             model.setExito(true);
         } catch (Exception ex) {
             model.setMensaje(ex.getMessage());

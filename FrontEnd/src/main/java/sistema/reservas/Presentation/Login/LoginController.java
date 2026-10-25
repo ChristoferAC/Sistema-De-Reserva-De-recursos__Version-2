@@ -1,8 +1,8 @@
 package sistema.reservas.Presentation.Login;
 
+import sistema.reservas.Logic.Service;
 import sistema.reservas.Logic.Sesion;
 import sistema.reservas.Logic.Usuario;
-import sistema.reservas.Logic.UsuarioService;
 import sistema.reservas.Presentation.CambiarClave.CambiarClaveController;
 import sistema.reservas.Presentation.CambiarClave.CambiarClaveModel;
 import sistema.reservas.Presentation.CambiarClave.CambiarClaveView;
@@ -11,12 +11,10 @@ public class LoginController {
 
     private final LoginView view;
     private final LoginModel model;
-    private final UsuarioService usuarioService;
 
     public LoginController(LoginView view, LoginModel model) {
-        this.view           = view;
-        this.model          = model;
-        this.usuarioService = new UsuarioService();
+        this.view  = view;
+        this.model = model;
 
         view.setController(this);
         view.setModel(model);
@@ -25,7 +23,8 @@ public class LoginController {
     }
 
     public Usuario login(String username, String password) throws Exception {
-        Usuario usuario = usuarioService.login(username, password);
+        // El Backend valida la clave y devuelve el usuario con password = null
+        Usuario usuario = Service.instance().login(username, password);
         Sesion.setUsuario(usuario);
         return usuario;
     }

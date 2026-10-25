@@ -69,8 +69,149 @@ public class Service implements IService {
         }
     }
 
-    // ---------- I1: 101-399 Usuarios, Funcionarios, Categorías ----------
-    // (I1 agrega aquí sus métodos del Proxy)
+    // ---------- I1: 101-199 Usuarios ----------
+    @Override
+    public synchronized Usuario login(String username, String password) throws Exception {
+        os.reset();
+        os.writeInt(Protocol.USUARIO_LOGIN);
+        os.writeObject(username);
+        os.writeObject(password);
+        os.flush();
+        leerEstado();
+        return (Usuario) is.readObject();
+    }
+
+    @Override
+    public synchronized void cambiarClave(String username, String claveActual, String claveNueva) throws Exception {
+        os.reset();
+        os.writeInt(Protocol.USUARIO_CAMBIAR_CLAVE);
+        os.writeObject(username);
+        os.writeObject(claveActual);
+        os.writeObject(claveNueva);
+        os.flush();
+        leerEstado();
+    }
+
+    // ---------- I1: 201-299 Funcionarios ----------
+    @Override
+    public synchronized void create(Funcionario funcionario) throws Exception {
+        os.reset();
+        os.writeInt(Protocol.FUNCIONARIO_CREATE);
+        os.writeObject(funcionario);
+        os.flush();
+        leerEstado();
+    }
+
+    @Override
+    public synchronized Funcionario read(Funcionario funcionario) throws Exception {
+        os.reset();
+        os.writeInt(Protocol.FUNCIONARIO_READ);
+        os.writeObject(funcionario);
+        os.flush();
+        leerEstado();
+        return (Funcionario) is.readObject();
+    }
+
+    @Override
+    public synchronized void update(Funcionario funcionario) throws Exception {
+        os.reset();
+        os.writeInt(Protocol.FUNCIONARIO_UPDATE);
+        os.writeObject(funcionario);
+        os.flush();
+        leerEstado();
+    }
+
+    @Override
+    public synchronized void delete(Funcionario funcionario) throws Exception {
+        os.reset();
+        os.writeInt(Protocol.FUNCIONARIO_DELETE);
+        os.writeObject(funcionario);
+        os.flush();
+        leerEstado();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public synchronized List<Funcionario> findAll(Funcionario filtro) throws Exception {
+        os.reset();
+        os.writeInt(Protocol.FUNCIONARIO_FIND_ALL);
+        os.writeObject(filtro);
+        os.flush();
+        leerEstado();
+        return (List<Funcionario>) is.readObject();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public synchronized List<Funcionario> findFuncionariosByNombre(String nombre) throws Exception {
+        os.reset();
+        os.writeInt(Protocol.FUNCIONARIO_FIND_BY_NOMBRE);
+        os.writeObject(nombre);
+        os.flush();
+        leerEstado();
+        return (List<Funcionario>) is.readObject();
+    }
+
+    // ---------- I1: 301-399 Categorías ----------
+    @Override
+    public synchronized CategoriaRecurso create(CategoriaRecurso categoria) throws Exception {
+        os.reset();
+        os.writeInt(Protocol.CATEGORIA_CREATE);
+        os.writeObject(categoria);
+        os.flush();
+        leerEstado();
+        return (CategoriaRecurso) is.readObject();
+    }
+
+    @Override
+    public synchronized CategoriaRecurso read(CategoriaRecurso categoria) throws Exception {
+        os.reset();
+        os.writeInt(Protocol.CATEGORIA_READ);
+        os.writeObject(categoria);
+        os.flush();
+        leerEstado();
+        return (CategoriaRecurso) is.readObject();
+    }
+
+    @Override
+    public synchronized void update(CategoriaRecurso categoria) throws Exception {
+        os.reset();
+        os.writeInt(Protocol.CATEGORIA_UPDATE);
+        os.writeObject(categoria);
+        os.flush();
+        leerEstado();
+    }
+
+    @Override
+    public synchronized void delete(CategoriaRecurso categoria) throws Exception {
+        os.reset();
+        os.writeInt(Protocol.CATEGORIA_DELETE);
+        os.writeObject(categoria);
+        os.flush();
+        leerEstado();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public synchronized List<CategoriaRecurso> findAll(CategoriaRecurso filtro) throws Exception {
+        os.reset();
+        os.writeInt(Protocol.CATEGORIA_FIND_ALL);
+        os.writeObject(filtro);
+        os.flush();
+        leerEstado();
+        return (List<CategoriaRecurso>) is.readObject();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public synchronized List<CategoriaRecurso> findCategoriasByDescripcion(String descripcion) throws Exception {
+        os.reset();
+        os.writeInt(Protocol.CATEGORIA_FIND_BY_DESCRIPCION);
+        os.writeObject(descripcion);
+        os.flush();
+        leerEstado();
+        return (List<CategoriaRecurso>) is.readObject();
+    }
 
     // ---------- I2: 401-499 Recursos ----------
     @Override
@@ -193,10 +334,4 @@ public class Service implements IService {
         leerEstado();
         return (ReservaExtraccion) is.readObject();
     }
-
-
-
-
-
-
 }

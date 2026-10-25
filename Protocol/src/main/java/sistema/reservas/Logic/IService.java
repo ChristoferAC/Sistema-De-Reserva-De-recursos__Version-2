@@ -16,7 +16,36 @@ public interface IService {
     void stop();
 
     // ---------- I1: 101-399 Usuarios, Funcionarios, Categorías ----------
-    // (I1 agrega aquí sus métodos)
+    // Usuarios: devuelve el usuario con password = null; lanza Exception si no coincide
+    Usuario login(String username, String password) throws Exception;
+
+    void cambiarClave(String username, String claveActual, String claveNueva) throws Exception;
+
+    // Funcionarios: la clave inicial (= id) la asigna el Backend
+    void create(Funcionario funcionario) throws Exception;
+
+    Funcionario read(Funcionario funcionario) throws Exception;      // busca por id
+
+    void update(Funcionario funcionario) throws Exception;
+
+    void delete(Funcionario funcionario) throws Exception;
+
+    List<Funcionario> findAll(Funcionario filtro) throws Exception;
+
+    List<Funcionario> findFuncionariosByNombre(String nombre) throws Exception;
+
+    // Categorías: create devuelve la categoría con el id que generó MySQL
+    CategoriaRecurso create(CategoriaRecurso categoria) throws Exception;
+
+    CategoriaRecurso read(CategoriaRecurso categoria) throws Exception;   // busca por id
+
+    void update(CategoriaRecurso categoria) throws Exception;
+
+    void delete(CategoriaRecurso categoria) throws Exception;
+
+    List<CategoriaRecurso> findAll(CategoriaRecurso filtro) throws Exception;
+
+    List<CategoriaRecurso> findCategoriasByDescripcion(String descripcion) throws Exception;
 
     // ---------- I2: 401-499 Recursos ----------
     void create(Recurso recurso) throws Exception;

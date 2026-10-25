@@ -18,6 +18,22 @@ public class Protocol {
 
     // ---------- I1: 101-199 Usuarios y login | 201-299 Funcionarios | 301-399 Categorías ----------
     // (I1 agrega aquí sus constantes: USUARIO_LOGIN, FUNCIONARIO_CREATE = 201, ...)
+    public static final int USUARIO_LOGIN = 101;
+    public static final int USUARIO_CAMBIAR_CLAVE = 102;
+
+    public static final int FUNCIONARIO_CREATE = 201;
+    public static final int FUNCIONARIO_READ = 202;
+    public static final int FUNCIONARIO_UPDATE = 203;
+    public static final int FUNCIONARIO_DELETE = 204;
+    public static final int FUNCIONARIO_FIND_ALL = 205;
+    public static final int FUNCIONARIO_FIND_BY_NOMBRE = 206;
+
+    public static final int CATEGORIA_CREATE = 301;
+    public static final int CATEGORIA_READ = 302;
+    public static final int CATEGORIA_UPDATE = 303;
+    public static final int CATEGORIA_DELETE = 304;
+    public static final int CATEGORIA_FIND_ALL = 305;
+    public static final int CATEGORIA_FIND_BY_DESCRIPCION = 306;
 
     // ---------- I2: 401-499 Recursos ----------
     public static final int RECURSO_CREATE = 401;

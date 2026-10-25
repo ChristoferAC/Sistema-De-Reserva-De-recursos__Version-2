@@ -1,7 +1,7 @@
 package sistema.reservas.Presentation.Categoria;
 
 import sistema.reservas.Logic.CategoriaRecurso;
-import sistema.reservas.Logic.CategoriaRecursoService;
+import sistema.reservas.Logic.Service;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -10,12 +10,10 @@ public class CategoriaRecursoController {
 
     private final CategoriaPanel view;
     private final CategoriaModel model;
-    private final CategoriaRecursoService categoriaService;
 
     public CategoriaRecursoController(CategoriaPanel view, CategoriaModel model) {
         this.view = view;
         this.model = model;
-        this.categoriaService = new CategoriaRecursoService();
 
         view.setModel(model);
 
@@ -27,15 +25,27 @@ public class CategoriaRecursoController {
             if (!e.getValueIsAdjusting()) cargarSeleccion();
         });
 
-        model.setCategorias(categoriaService.listarTodas());
+        cargarTodas();
+    }
+
+    private void cargarTodas() {
+        try {
+            model.setCategorias(Service.instance().findAll(new CategoriaRecurso()));
+        } catch (Exception ex) {
+            mostrar(ex.getMessage());
+        }
     }
 
     private void buscar() {
         String descripcion = view.getTxtBuscarDescripcion().getText().trim();
         if (descripcion.isEmpty()) {
-            model.setCategorias(categoriaService.listarTodas());
-        } else {
-            model.setCategorias(categoriaService.buscarPorDescripcion(descripcion));
+            cargarTodas();
+            return;
+        }
+        try {
+            model.setCategorias(Service.instance().findCategoriasByDescripcion(descripcion));
+        } catch (Exception ex) {
+            mostrar(ex.getMessage());
         }
     }
 
@@ -45,45 +55,44 @@ public class CategoriaRecursoController {
             String descripcion = view.getTxtDescripcion().getText().trim();
 
             if (idTexto.isEmpty()) {
+                // id 0: lo genera MySQL al guardar (AUTO_INCREMENT)
                 CategoriaRecurso nueva = new CategoriaRecurso(0, "", descripcion);
-                // id 0: lo asigna el Service al guardar (autogenerado)
-                categoriaService.crear(nueva);
+                Service.instance().create(nueva);
             } else {
-                int id = Integer.parseInt(idTexto);
-                CategoriaRecurso existente = categoriaService.buscarPorId(id);
-                if (existente == null) {
-                    JOptionPane.showMessageDialog(view.getPanel1(), "No existe esa categoría.");
+                CategoriaRecurso actual = model.getCurrent();
+                if (actual == null) {
+                    mostrar("No existe esa categoría.");
                     return;
                 }
-                existente.setDescripcion(descripcion);
-                categoriaService.actualizar(existente);
+                // Se modifica la copia local y se envia al Backend para que haga el UPDATE
+                actual.setDescripcion(descripcion);
+                Service.instance().update(actual);
             }
 
             model.setCurrent(null);
-            model.setCategorias(categoriaService.listarTodas());
+            cargarTodas();
 
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(view.getPanel1(), "El ID debe ser numérico.");
-        } catch (IllegalArgumentException ex) {
-            JOptionPane.showMessageDialog(view.getPanel1(), ex.getMessage());
+        } catch (Exception ex) {
+            mostrar(ex.getMessage());
         }
     }
 
     private void borrar() {
         String idTexto = view.getTxtId().getText().trim();
         if (idTexto.isEmpty()) {
-            JOptionPane.showMessageDialog(view.getPanel1(), "Seleccione una categoría para borrar.");
+            mostrar("Seleccione una categoría para borrar.");
             return;
         }
         try {
-            int id = Integer.parseInt(idTexto);
-            categoriaService.eliminar(id);
+            CategoriaRecurso categoria = new CategoriaRecurso();
+            categoria.setId(Integer.parseInt(idTexto));
+            Service.instance().delete(categoria);
             model.setCurrent(null);
-            model.setCategorias(categoriaService.listarTodas());
+            cargarTodas();
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(view.getPanel1(), "El ID debe ser numérico.");
-        } catch (IllegalArgumentException ex) {
-            JOptionPane.showMessageDialog(view.getPanel1(), ex.getMessage());
+            mostrar("El ID debe ser numérico.");
+        } catch (Exception ex) {
+            mostrar(ex.getMessage());
         }
     }
 
@@ -96,8 +105,17 @@ public class CategoriaRecursoController {
         if (fila < 0) return;
 
         DefaultTableModel tableModel = view.getTableModel();
-        int id = Integer.parseInt(tableModel.getValueAt(fila, 0).toString());
+        CategoriaRecurso filtro = new CategoriaRecurso();
+        filtro.setId(Integer.parseInt(tableModel.getValueAt(fila, 0).toString()));
 
-        model.setCurrent(categoriaService.buscarPorId(id));
+        try {
+            model.setCurrent(Service.instance().read(filtro));
+        } catch (Exception ex) {
+            mostrar(ex.getMessage());
+        }
+    }
+
+    private void mostrar(String mensaje) {
+        JOptionPane.showMessageDialog(view.getPanel1(), mensaje);
     }
 }
