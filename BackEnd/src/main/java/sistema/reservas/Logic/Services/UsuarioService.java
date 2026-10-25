@@ -61,6 +61,6 @@ public class UsuarioService {
     }
 
     private boolean esVacio(String texto) {
-        return texto == null || texto.isBlank();
+        return texto == null;
     }
 }

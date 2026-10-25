@@ -1,5 +1,16 @@
+// ============================================================
+// BACKEND / src/main/java/sistema/reservas/Logic/Services/FuncionarioService.java
+// Reemplaza al FuncionarioService XML (FaltaPorMover_O_Borrar). Ya no depende de UsuarioService:
+// usa el UsuarioDAO directamente.
+//
+// Conexión con el resto (en el Service del Backend, con la conexión cx del Worker):
+//   UsuarioDAO usuarioDao = new UsuarioDAOJdbc(cx);
+//   UsuarioService usuarios = new UsuarioService(usuarioDao);
+//   FuncionarioService funcionarios = new FuncionarioService(usuarioDao);
+// ============================================================
 package sistema.reservas.Logic.Services;
 
+import sistema.reservas.Data.persistence.UsuarioDAO;
 import sistema.reservas.Logic.Funcionario;
 import sistema.reservas.Logic.Usuario;
 
@@ -7,27 +18,41 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Los Funcionarios son un tipo de Usuario, asi que viven en la misma
- * lista/archivo que los Administradores (data/usuarios.xml) - este
- * Service simplemente filtra esa lista por los que son Funcionario,
- * y delega en UsuarioService para persistir cualquier cambio.
+ * Funcionarios sobre MySQL. Un Funcionario es un Usuario con rol FUNCIONARIO, así que este
+ * Service usa el mismo UsuarioDAO (tabla usuario) y filtra por tipo. Una instancia por Worker.
+ * Regla 5: todo Funcionario que sale de aquí lleva password = null.
  */
 public class FuncionarioService {
 
-    public Funcionario buscarPorId(int id) {
-        for (Usuario u : UsuarioService.listarTodos()) {
-            if (u instanceof Funcionario && u.getId() == id) {
-                return (Funcionario) u;
-            }
+    // Límites de la tabla usuario (sql/01_usuarios_categorias.sql)
+    private static final int MAX_NOMBRE = 50;
+    private static final int MAX_USERNAME = 30;
+    private static final int MAX_TELEFONO = 20;
+
+    private final UsuarioDAO usuarioDAO;
+
+    public FuncionarioService(UsuarioDAO usuarioDAO) {
+        if (usuarioDAO == null) {
+            throw new IllegalArgumentException("El UsuarioDAO no puede ser nulo.");
         }
-        return null;
+        this.usuarioDAO = usuarioDAO;
+    }
+
+    /** null si no existe o si ese id es de un administrador. */
+    public Funcionario buscarPorId(int id) {
+        Usuario usuario = usuarioDAO.buscarPorId(id);
+        return usuario instanceof Funcionario ? (Funcionario) usuario : null;
     }
 
     public List<Funcionario> buscarPorNombre(String nombre) {
+        if (nombre == null || nombre.isBlank()) {
+            return listarTodos();
+        }
+        String buscado = nombre.trim().toLowerCase();
         List<Funcionario> resultado = new ArrayList<>();
-        for (Usuario u : UsuarioService.listarTodos()) {
-            if (u instanceof Funcionario && u.getNombre().toLowerCase().contains(nombre.toLowerCase())) {
-                resultado.add((Funcionario) u);
+        for (Funcionario funcionario : listarTodos()) {
+            if (funcionario.getNombre() != null && funcionario.getNombre().toLowerCase().contains(buscado)) {
+                resultado.add(funcionario);
             }
         }
         return resultado;
@@ -35,43 +60,49 @@ public class FuncionarioService {
 
     public List<Funcionario> listarTodos() {
         List<Funcionario> resultado = new ArrayList<>();
-        for (Usuario u : UsuarioService.listarTodos()) {
-            if (u instanceof Funcionario) {
-                resultado.add((Funcionario) u);
+        for (Usuario usuario : usuarioDAO.listar()) {
+            if (usuario instanceof Funcionario) {
+                resultado.add((Funcionario) usuario);
             }
         }
         return resultado;
     }
 
-    public void crear(Funcionario funcionario) {
+    /** Regla del enunciado: la clave inicial queda igual al id. */
+    public Funcionario crear(Funcionario funcionario) {
         validar(funcionario);
-        if (buscarPorId(funcionario.getId()) != null) {
-            throw new IllegalArgumentException("Ya existe un funcionario con ese ID.");
+        if (funcionario.getId() <= 0) {
+            throw new IllegalArgumentException("El ID del funcionario debe ser un número positivo.");
         }
-        // Regla del enunciado: la clave inicial del usuario queda igual al id.
-        funcionario.setPassword(String.valueOf(funcionario.getId()));
-        UsuarioService.registrar(funcionario);
+        if (usuarioDAO.buscarPorId(funcionario.getId()) != null) {
+            throw new IllegalArgumentException("Ya existe un usuario con ese ID.");
+        }
+        usuarioDAO.insertar(funcionario, String.valueOf(funcionario.getId()));
+        funcionario.setPassword(null);   // la clave nunca vuelve al cliente
+        return funcionario;
     }
 
+    /** No cambia la clave ni el rol: solo nombre, usuario y teléfono. */
     public void actualizar(Funcionario funcionario) {
         validar(funcionario);
         if (buscarPorId(funcionario.getId()) == null) {
             throw new IllegalArgumentException("No existe un funcionario con ese ID.");
         }
-        // El Controller ya modifico los campos directamente sobre la
-        // misma instancia que esta en la lista; solo falta guardar.
-        UsuarioService.guardarCambios();
+        usuarioDAO.actualizar(funcionario);
     }
 
+    /** Si tiene reservas, el DAO responde "No se puede borrar: tiene reservas." */
     public void eliminar(int id) {
-        Funcionario existente = buscarPorId(id);
-        if (existente == null) {
+        if (buscarPorId(id) == null) {
             throw new IllegalArgumentException("No existe un funcionario con ese ID.");
         }
-        UsuarioService.eliminar(existente);
+        usuarioDAO.eliminar(id);
     }
 
     private void validar(Funcionario funcionario) {
+        if (funcionario == null) {
+            throw new IllegalArgumentException("El funcionario no puede ser nulo.");
+        }
         if (funcionario.getNombre() == null || funcionario.getNombre().isBlank()) {
             throw new IllegalArgumentException("El nombre es obligatorio.");
         }
@@ -80,6 +111,19 @@ public class FuncionarioService {
         }
         if (funcionario.getUsername() == null || funcionario.getUsername().isBlank()) {
             throw new IllegalArgumentException("El usuario es obligatorio.");
+        }
+        funcionario.setNombre(funcionario.getNombre().trim());
+        funcionario.setTelefono(funcionario.getTelefono().trim());
+        funcionario.setUsername(funcionario.getUsername().trim());
+
+        if (funcionario.getNombre().length() > MAX_NOMBRE) {
+            throw new IllegalArgumentException("El nombre no puede superar los " + MAX_NOMBRE + " caracteres.");
+        }
+        if (funcionario.getUsername().length() > MAX_USERNAME) {
+            throw new IllegalArgumentException("El usuario no puede superar los " + MAX_USERNAME + " caracteres.");
+        }
+        if (funcionario.getTelefono().length() > MAX_TELEFONO) {
+            throw new IllegalArgumentException("El teléfono no puede superar los " + MAX_TELEFONO + " caracteres.");
         }
     }
 }
