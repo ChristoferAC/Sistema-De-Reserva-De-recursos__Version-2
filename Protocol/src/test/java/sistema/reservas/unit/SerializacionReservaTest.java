@@ -5,6 +5,7 @@ import sistema.reservas.Logic.CategoriaRecurso;
 import sistema.reservas.Logic.Funcionario;
 import sistema.reservas.Logic.Recurso;
 import sistema.reservas.Logic.Reserva;
+import sistema.reservas.Logic.ReservaExtraccion;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
