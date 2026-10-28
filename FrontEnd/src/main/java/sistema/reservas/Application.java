@@ -4,23 +4,25 @@
 // BORRAR cuando I1 publique login(); entonces Application.java vuelve a ser la entrada.
 //
 // Uso (el Backend debe estar corriendo con el handler de I2 conectado al Worker):
-//   java -cp FrontEnd.jar sistema.reservas.PruebaI2 FUNCIONARIO   -> pestaña Reservas
-//   java -cp FrontEnd.jar sistema.reservas.PruebaI2 ADMIN          -> pestaña Recursos
-// El funcionario usa el id 1234, el de la semilla de sql/02_recursos_reservas.sql
-// (debe existir en la tabla usuario, creada por el script de I1).
+//   java -jar FrontEnd.jar FUNCIONARIO          -> pestaña Reservas, funcionario 1234
+//   java -jar FrontEnd.jar FUNCIONARIO 4321     -> igual, pero como el funcionario 4321
+//   java -jar FrontEnd.jar ADMIN                -> pestaña Recursos
+// El id debe existir en la tabla usuario (semilla de sql/01_usuarios_categorias.sql: 1234, 4321, 2303...).
+// Para probar alertas abra DOS Frontends con ids DISTINTOS: el creador de la reserva no recibe su propia alerta.
 // ============================================================
 package sistema.reservas;
 
 import sistema.reservas.Logic.Administrador;
+import sistema.reservas.Logic.AlertaMonitor;
 import sistema.reservas.Logic.CategoriaRecurso;
 import sistema.reservas.Logic.Funcionario;
+import sistema.reservas.Logic.Protocol;
 import sistema.reservas.Logic.Recurso;
-import sistema.reservas.Logic.Service;
-import sistema.reservas.Logic.Services.ServiceActividad;
-import sistema.reservas.Logic.Services.ServiceCalendario;
-import sistema.reservas.Logic.Services.ServiceEstadistica;
+import sistema.reservas.Logic.Services.*;
 import sistema.reservas.Logic.Sesion;
 import sistema.reservas.Presentation.Actividad.ControllerActividad;
+import sistema.reservas.Presentation.Alerta.ControllerAlerta;
+import sistema.reservas.Presentation.Alerta.ModelAlerta;
 import sistema.reservas.Presentation.Calendarizacion.ControllerCalendario;
 import sistema.reservas.Presentation.Estadistica.ControllerEstadistica;
 import sistema.reservas.Presentation.Login.MainWindow;
@@ -28,7 +30,6 @@ import sistema.reservas.Presentation.Recurso.RecursoController;
 import sistema.reservas.Presentation.Recurso.RecursoModel;
 import sistema.reservas.Presentation.Reserva.ReservaController;
 import sistema.reservas.Presentation.Reserva.ReservaModel;
-
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -41,6 +42,15 @@ public class Application { //Prueba
 
     public static void main(String[] args) {
         String rol = args.length > 0 ? args[0].trim().toUpperCase() : "FUNCIONARIO";
+        int idFuncionario = 1234;
+        if (args.length > 1) {
+            try {
+                idFuncionario = Integer.parseInt(args[1].trim());
+            } catch (NumberFormatException ex) {
+                System.err.println("Id inválido: '" + args[1] + "'. Uso: Application [FUNCIONARIO|ADMIN] [idFuncionario]");
+                return;
+            }
+        }
 
         try {
             UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
@@ -55,15 +65,30 @@ public class Application { //Prueba
             return;
         }
 
-        Funcionario funcionario = new Funcionario(1234, "Funcionario de prueba", "funcionario", null, "0000-0000");
+        Funcionario funcionario = new Funcionario(idFuncionario, "Funcionario de prueba", "funcionario", null, "0000-0000");
         Sesion.setUsuario("ADMIN".equals(rol)
                 ? new Administrador(1, "Administrador de prueba", "admin", null)
                 : funcionario);
 
         MainWindow mainWindow = new MainWindow(Sesion.getUsuario());
+
+        // Alertas: el canal asincrónico se abre después del "login", independiente del Service.
+        ControllerAlerta controllerAlerta = new ControllerAlerta(mainWindow.alertaView, new ModelAlerta());
+        AlertaMonitor alertas = new AlertaMonitor(Protocol.SERVER, Protocol.PORT_ALERTAS,
+                Sesion.getUsuario().getId(), controllerAlerta);
+        try {
+            alertas.start();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null,
+                    "No se pudo abrir el canal de alertas: " + ex.getMessage()
+                            + "\nLa aplicación funcionará, pero no recibirá alertas de otros usuarios.",
+                    "Alertas", JOptionPane.WARNING_MESSAGE);
+        }
+
         mainWindow.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
+                alertas.close();
                 Service.instance().stop();   // el Server debe imprimir "Quedan: 0"
             }
         });

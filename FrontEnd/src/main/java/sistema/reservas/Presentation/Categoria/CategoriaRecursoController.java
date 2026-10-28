@@ -1,7 +1,7 @@
 package sistema.reservas.Presentation.Categoria;
 
 import sistema.reservas.Logic.CategoriaRecurso;
-import sistema.reservas.Logic.Service;
+import sistema.reservas.Logic.Services.Service;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;

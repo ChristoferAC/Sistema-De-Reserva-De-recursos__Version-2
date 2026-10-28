@@ -1,13 +1,12 @@
 // ============================================================
 // FRONTEND / src/main/java/sistema/reservas/Logic/Services/ServiceActividad.java
-// Supuesto: el Proxy de I3 es sistema.reservas.Logic.Service con Service.instance().
+// Supuesto: el Proxy de I3 es sistema.reservas.Logic.Services.Service con Service.instance().
 // Si su paquete o nombre es otro, solo cambia el import de Service.
 // ============================================================
 package sistema.reservas.Logic.Services;
 
 import sistema.reservas.Logic.IService;
 import sistema.reservas.Logic.Reserva;
-import sistema.reservas.Logic.Service;
 import sistema.reservas.Presentation.Actividad.ModelActividad;
 
 import java.time.DayOfWeek;

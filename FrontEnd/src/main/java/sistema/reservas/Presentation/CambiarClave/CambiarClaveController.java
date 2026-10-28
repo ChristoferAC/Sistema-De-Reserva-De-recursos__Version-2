@@ -1,6 +1,6 @@
 package sistema.reservas.Presentation.CambiarClave;
 
-import sistema.reservas.Logic.Service;
+import sistema.reservas.Logic.Services.Service;
 
 public class CambiarClaveController {
 

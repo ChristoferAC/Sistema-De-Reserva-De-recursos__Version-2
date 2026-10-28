@@ -1,6 +1,7 @@
 package sistema.reservas;
 
 import sistema.reservas.Data.persistence.DataBase;
+import sistema.reservas.Logic.AlertaServer;
 import sistema.reservas.Logic.Protocol;
 import sistema.reservas.Logic.Server;
 import sistema.reservas.Logic.FabricaContextoMySQL;
@@ -34,12 +35,21 @@ public class Application_BackEnd {
             return;
         }
 
-        // 2) Abrir el servidor.
-        Server server = new Server(puerto, new FabricaContextoMySQL());
+        // 2) Abrir el canal de alertas (segundo puerto) y el servidor.
+        AlertaServer alertas = new AlertaServer(Protocol.PORT_ALERTAS);
+        try {
+            alertas.start();
+        } catch (Exception ex) {
+            System.err.println("No se pudo abrir el puerto de alertas " + Protocol.PORT_ALERTAS + " (¿ya hay otro servidor corriendo?): " + ex.getMessage());
+            return;
+        }
+
+        Server server = new Server(puerto, new FabricaContextoMySQL(alertas));
         try {
             server.start();
         } catch (Exception ex) {
             System.err.println("No se pudo abrir el puerto " + puerto + " (¿ya hay otro servidor corriendo?): " + ex.getMessage());
+            alertas.stop();
             return;
         }
 
@@ -47,6 +57,7 @@ public class Application_BackEnd {
         System.out.println("Presione ENTER para detener el servidor.");
         new Scanner(System.in).nextLine();
         server.stop();
+        alertas.stop();
         System.out.println("Servidor detenido.");
     }
 }

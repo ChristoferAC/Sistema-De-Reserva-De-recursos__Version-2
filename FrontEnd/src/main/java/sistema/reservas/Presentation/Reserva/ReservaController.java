@@ -10,7 +10,7 @@ import sistema.reservas.Logic.IService;
 import sistema.reservas.Logic.Recurso;
 import sistema.reservas.Logic.Reserva;
 import sistema.reservas.Logic.ReservaExtraccion;
-import sistema.reservas.Logic.Service;
+import sistema.reservas.Logic.Services.Service;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;

@@ -13,7 +13,9 @@
 //    que el Controller modificó y volvió a mandar.
 //  - Métodos synchronized: un solo hilo a la vez usa el socket (EDT + hilos de fondo).
 // ============================================================
-package sistema.reservas.Logic;
+package sistema.reservas.Logic.Services;
+
+import sistema.reservas.Logic.*;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

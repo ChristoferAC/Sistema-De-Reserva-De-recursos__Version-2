@@ -1,5 +1,6 @@
 package sistema.reservas.Presentation.Alerta;
 
+import sistema.reservas.Logic.AlertaListener;
 import sistema.reservas.Logic.Funcionario;
 import sistema.reservas.Logic.Recurso;
 import sistema.reservas.Logic.Reserva;
@@ -8,7 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-public class ControllerAlerta {
+public class ControllerAlerta implements AlertaListener {
     ViewAlerta view;
     ModelAlerta model;
 
@@ -19,7 +20,8 @@ public class ControllerAlerta {
         view.setModel(model);
     }
 
-    // Llega una reserva nueva: se agrega de primera en la lista
+    // Llega una reserva nueva (en el EDT): se agrega de primera en la lista
+    @Override
     public void alerta(Reserva reserva) {
         List<Reserva> alertas = model.getAlertas();
         alertas.addFirst(reserva);

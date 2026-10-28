@@ -11,7 +11,7 @@ import sistema.reservas.Data.PDF.GeneradorPDF;
 import sistema.reservas.Logic.CategoriaRecurso;
 import sistema.reservas.Logic.IService;
 import sistema.reservas.Logic.Recurso;
-import sistema.reservas.Logic.Service;
+import sistema.reservas.Logic.Services.Service;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;

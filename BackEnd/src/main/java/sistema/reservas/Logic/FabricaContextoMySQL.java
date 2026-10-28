@@ -1,6 +1,7 @@
 package sistema.reservas.Logic;
 
 import sistema.reservas.Data.persistence.DataBase;
+import sistema.reservas.Logic.Services.Notificador;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -14,6 +15,17 @@ import java.util.List;
  * Es el UNICO lugar donde I1 e I2 enchufan sus Handlers (ver construirHandlers).
  */
 public class FabricaContextoMySQL implements FabricaContexto {
+
+    /** Aviso de reservas nuevas a los demas clientes (AlertaServer); puede ser null. */
+    private final Notificador notificador;
+
+    public FabricaContextoMySQL() {
+        this(null);
+    }
+
+    public FabricaContextoMySQL(Notificador notificador) {
+        this.notificador = notificador;
+    }
 
     @Override
     public ContextoCliente crear(Worker worker) throws Exception {
@@ -44,12 +56,12 @@ public class FabricaContextoMySQL implements FabricaContexto {
 
     /**
      * Aqui se agregan los handlers de cada modulo, una linea por integrante:
-     *     handlers.add(new UsuariosCategoriasHandler(conexion, worker));   // I1 (pendiente)
+     *   TODO:  handlers.add(new UsuariosCategoriasHandler(conexion, worker));   // I1
      * 'worker' sirve de "origen" para el Notificador (para no avisarle al que creo la reserva).
      */
     private List<Handler> construirHandlers(Connection conexion, Worker worker) throws Exception {
         List<Handler> handlers = new ArrayList<>();
-        handlers.add(new RecursosReservasHandler(conexion, worker));     // I2
+        handlers.add(new RecursosReservasHandler(conexion, worker, notificador));     // I2
         return handlers;
     }
 }

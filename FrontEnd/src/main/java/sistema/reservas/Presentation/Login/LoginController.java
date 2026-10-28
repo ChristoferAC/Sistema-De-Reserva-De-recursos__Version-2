@@ -1,6 +1,6 @@
 package sistema.reservas.Presentation.Login;
 
-import sistema.reservas.Logic.Service;
+import sistema.reservas.Logic.Services.Service;
 import sistema.reservas.Logic.Sesion;
 import sistema.reservas.Logic.Usuario;
 import sistema.reservas.Presentation.CambiarClave.CambiarClaveController;
