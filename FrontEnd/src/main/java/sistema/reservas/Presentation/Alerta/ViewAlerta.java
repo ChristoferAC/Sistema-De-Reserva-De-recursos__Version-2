@@ -8,8 +8,6 @@ import sistema.reservas.Logic.Reserva;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -18,7 +16,6 @@ import java.beans.PropertyChangeListener;
 public class ViewAlerta implements PropertyChangeListener {
     private JPanel panel;
     private JTable alertas;
-    private JButton simular;
 
     public ViewAlerta() {
         alertas.getTableHeader().setReorderingAllowed(false);
@@ -41,12 +38,6 @@ public class ViewAlerta implements PropertyChangeListener {
             }
         });
 
-        simular.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                controller.simular();
-            }
-        });
     }
 
     public JPanel getPanel() {
@@ -106,15 +97,12 @@ public class ViewAlerta implements PropertyChangeListener {
      */
     private void $$$setupUI$$$() {
         panel = new JPanel();
-        panel.setLayout(new GridLayoutManager(2, 1, new Insets(5, 5, 5, 5), -1, -1));
+        panel.setLayout(new GridLayoutManager(1, 1, new Insets(5, 5, 5, 5), -1, -1));
         panel.setBorder(BorderFactory.createTitledBorder(null, "Alertas", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
         final JScrollPane scrollPane1 = new JScrollPane();
         panel.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(260, -1), null, 0, false));
         alertas = new JTable();
         scrollPane1.setViewportView(alertas);
-        simular = new JButton();
-        simular.setText("Simular alerta");
-        panel.add(simular, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**

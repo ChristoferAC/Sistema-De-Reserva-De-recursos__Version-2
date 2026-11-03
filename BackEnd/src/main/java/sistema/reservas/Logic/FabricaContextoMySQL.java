@@ -55,12 +55,12 @@ public class FabricaContextoMySQL implements FabricaContexto {
     }
 
     /**
-     * Aqui se agregan los handlers de cada modulo, una linea por integrante:
-     *   TODO:  handlers.add(new UsuariosCategoriasHandler(conexion, worker));   // I1
+     * Aqui se agregan los handlers de cada modulo, una linea por integrante.
      * 'worker' sirve de "origen" para el Notificador (para no avisarle al que creo la reserva).
      */
     private List<Handler> construirHandlers(Connection conexion, Worker worker) throws Exception {
         List<Handler> handlers = new ArrayList<>();
+        handlers.add(new UsuariosHandler(conexion));                                   // I1
         handlers.add(new RecursosReservasHandler(conexion, worker, notificador));     // I2
         return handlers;
     }
