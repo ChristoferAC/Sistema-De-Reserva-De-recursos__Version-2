@@ -1,10 +1,13 @@
 package sistema.reservas.Presentation.Categoria;
 
+import sistema.reservas.Data.PDF.GeneradorPDF;
 import sistema.reservas.Logic.CategoriaRecurso;
 import sistema.reservas.Logic.Services.Service;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CategoriaRecursoController {
 
@@ -21,6 +24,7 @@ public class CategoriaRecursoController {
         this.view.getBtnGuardar().addActionListener(e -> guardar());
         this.view.getBtnBorrar().addActionListener(e -> borrar());
         this.view.getBtnLimpiar().addActionListener(e -> limpiar());
+        this.view.getBtnImprimir().addActionListener(e -> imprimir());
         this.view.getTabla().getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) cargarSeleccion();
         });
@@ -93,6 +97,32 @@ public class CategoriaRecursoController {
             mostrar("El ID debe ser numérico.");
         } catch (Exception ex) {
             mostrar(ex.getMessage());
+        }
+    }
+
+    private void imprimir() {
+        DefaultTableModel tableModel = view.getTableModel();
+        if (tableModel.getRowCount() == 0) {
+            mostrar("No hay categorías para imprimir.");
+            return;
+        }
+
+        String[] columnas = {"ID", "Descripcion"};
+        List<String[]> filas = new ArrayList<>();
+
+        for (int fila = 0; fila < tableModel.getRowCount(); fila++) {
+            String[] datosFila = new String[columnas.length];
+            for (int columna = 0; columna < columnas.length; columna++) {
+                Object valor = tableModel.getValueAt(fila, columna);
+                datosFila[columna] = valor == null ? "" : valor.toString();
+            }
+            filas.add(datosFila);
+        }
+
+        try {
+            new GeneradorPDF().generar("categorias.pdf", "Listado de Categorías", columnas, filas);
+        } catch (Exception ex) {
+            mostrar("No se pudo generar el PDF: " + ex.getMessage());
         }
     }
 
